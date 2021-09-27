@@ -61,8 +61,7 @@ class Tetris:
     def __init__(self, height, width):      #should be at least 4x4
         self.height = height
         self.width = width
-        self.field = [ [ -1 for i in range(width) ] for j in range(height) ]    #[[-1]*(width)]*(height)
-        #print(self.field)
+        self.field = [ [ -1 for i in range(width) ] for j in range(height) ]
 
     def new_figure(self):
         self.figure = Figure((self.width//2)-2,0)
@@ -70,23 +69,11 @@ class Tetris:
     def intersects(self):
         intersection = False
 
-#        for i in range(4):
-#            for j in range(4):
-#                if i*4+j in self.figure.image():
-#                    print(self.field[i+self.figure.y][j+self.figure.x])
-#                    if i+self.figure.y > self.height-1 or \
-#                         j+self.figure.x > self.width-1 or \
-#                         j+self.figure.x < 0 or \
-#                         self.field[i+self.figure.y][j+self.figure.x] > 0:
-#                             intersection = True
 
         for block in self.figure.image():
             i = block//4
             j = block%4
-#            print("next:")
-#            print(i+self.figure.y)
-#            print(j+self.figure.x)
-#            print(self.field[i+self.figure.y][j+self.figure.x])
+
             if i+self.figure.y > self.height-1 or \
                 j+self.figure.x > self.width-1 or \
                 j+self.figure.x < 0 or \
@@ -95,20 +82,10 @@ class Tetris:
         return intersection
 
     def freeze(self):
-#        print("before:")
-#        print(self.field)
         for block in self.figure.image():
             i = block//4
             j = block%4
-            print("next:")
-            print(i+self.figure.y, j+self.figure.x)
-            print(self.field[i+self.figure.y][j+self.figure.x])
-            print(self.figure.type)
-            print("before:")
-            print(self.field)
             self.field[i+self.figure.y][j+self.figure.x] = self.figure.type
-            print("after:")
-            print(self.field)
         self.break_lines()
         self.new_figure()
         if self.intersects():
@@ -149,7 +126,6 @@ class Tetris:
             self.figure.x = old_x
 
     def rotate(self):
-        print("trying to rotate")
         old_rotation = self.figure.rotation
         self.figure.rotate()
         if self.intersects():
