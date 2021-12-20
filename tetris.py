@@ -76,7 +76,6 @@ class Tetris:
     def intersects(self):
         intersection = False
 
-
         for block in self.piece.image():
             i = block//4
             j = block%4
@@ -145,13 +144,18 @@ if __name__ == '__main__':
 
     pygame.init()
 
-    window_width = 400
+    window_width = 500
     window_lenght = 500
     screen = pygame.display.set_mode((window_width, window_lenght))
 
-    screen_width_margin = window_width/8
+    screen_lenght_margin = window_lenght//20
+    screen_width_margin = window_width//8
 
     pygame.display.set_caption("Tetris")
+
+    text_font_size = 19
+    text_font = pygame.font.SysFont('Calibri', text_font_size, True, False)
+    title_font = pygame.font.SysFont('Calibri', 65, True, False)
 
     done = False
     clock = pygame.time.Clock()
@@ -212,11 +216,27 @@ if __name__ == '__main__':
                      game.y + game.zoom*(i+game.piece.y)+1,
                      game.zoom-2, game.zoom-2])
 
-        text_font = pygame.font.SysFont('Calibri', 25, True, False)
-        title_font = pygame.font.SysFont('Calibri', 65, True, False)
+        #draw next
+        pygame.draw.rect(screen, GRAY, [game.x + game.zoom*(game.width+0.5), game.y, game.zoom*6, game.zoom*6], 1)
+        text_next = text_font.render("Next", True, BLACK)
+        screen.blit(text_next, [game.x + game.zoom*(game.width+2.5), game.y])
+        for i in range(4):
+            for j in range(4):
+                pygame.draw.rect(screen, GRAY, [game.x + game.zoom*(j+game.width+1.5), game.y+game.zoom*(i+1), game.zoom, game.zoom], 1)
+
+        if game.next_piece is not None:
+            for block in game.next_piece.image():
+                i = block//4
+                j = block%4
+                pygame.draw.rect(screen, game.next_piece.color,
+                    [game.x + game.zoom*(j+game.width+1.5)+1,
+                     game.y + game.zoom*(i+1)+1,
+                     game.zoom-2, game.zoom-2])
+
+
+        pygame.draw.rect(screen, GRAY, [game.x + game.zoom*(game.width+0.5), game.y+game.zoom*(7), game.zoom*6, game.zoom*7], 1)
 
         text_score = text_font.render("Score: " + str(game.score), True, BLACK)
-
         text_lines = text_font.render("Lines: " + str(game.lines), True, BLACK)
         text_pieces = text_font.render("Pieces: " + str(game.pieces), True, BLACK)
         text_level = text_font.render("Level: " + str(game.level), True, BLACK)
@@ -224,10 +244,10 @@ if __name__ == '__main__':
         text_game_over = title_font.render("GAME OVER", True, (255, 125, 0))
         text_reset = title_font.render("Press ESC", True, (255, 215, 0))
 
-        screen.blit(text_score, [screen_width_margin, 0])
-        screen.blit(text_lines, [window_width // 2 + screen_width_margin, 0])
-        screen.blit(text_pieces, [screen_width_margin, 50])
-        screen.blit(text_level, [window_width // 2 + screen_width_margin, 50])
+        screen.blit(text_score, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*0.5])
+        screen.blit(text_lines, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*2])
+        screen.blit(text_pieces, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*3.5])
+        screen.blit(text_level, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*5])
         if game.state == "gameover":
             screen.blit(text_game_over, [20, 200])
             screen.blit(text_reset, [25, 265])
