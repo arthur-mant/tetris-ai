@@ -160,10 +160,11 @@ if __name__ == '__main__':
     done = False
     clock = pygame.time.Clock()
     fps = 60
-    game = Tetris(20, 10, 100, 60, 20)
+    game = Tetris(20, 10, 100, 40, 20)
     counter = 0
     game_over = False
 
+    true_fps = 1
     pressing_down = False
 
     while not done:
@@ -234,12 +235,13 @@ if __name__ == '__main__':
                      game.zoom-2, game.zoom-2])
 
 
-        pygame.draw.rect(screen, GRAY, [game.x + game.zoom*(game.width+0.5), game.y+game.zoom*(7), game.zoom*6, game.zoom*7], 1)
+        pygame.draw.rect(screen, GRAY, [game.x + game.zoom*(game.width+0.5), game.y+game.zoom*(7), game.zoom*6, game.zoom*8], 1)
 
         text_score = text_font.render("Score: " + str(game.score), True, BLACK)
         text_lines = text_font.render("Lines: " + str(game.lines), True, BLACK)
         text_pieces = text_font.render("Pieces: " + str(game.pieces), True, BLACK)
         text_level = text_font.render("Level: " + str(game.level), True, BLACK)
+        text_fps = text_font.render("FPS: " + str(1000//true_fps), True, BLACK)
 
         text_game_over = title_font.render("GAME OVER", True, (255, 125, 0))
         text_reset = title_font.render("Press ESC", True, (255, 215, 0))
@@ -248,12 +250,13 @@ if __name__ == '__main__':
         screen.blit(text_lines, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*2])
         screen.blit(text_pieces, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*3.5])
         screen.blit(text_level, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*5])
+        screen.blit(text_fps, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*6.5])
         if game.state == "gameover":
             screen.blit(text_game_over, [20, 200])
             screen.blit(text_reset, [25, 265])
             game_over = True
 
         pygame.display.flip()
-        clock.tick(fps)
+        true_fps = clock.tick(fps)
 
     pygame.quit()
