@@ -1,19 +1,7 @@
 import pygame
 import random
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GRAY = (128, 128, 128)
-
-colors = [          #adicionar cores
-    (0, 0, 204),
-    (0, 204, 0),
-    (204, 0, 0),
-    (102, 0, 204),
-    (255, 153, 0),
-    (255, 0, 255),
-    (0, 204, 255)
-]
+import screen
+import interface_keyboard
 
 class Piece:
     x = 0
@@ -34,7 +22,6 @@ class Piece:
         self.x = x
         self.y = y
         self.type = random.randint(0, len(self.pieces) - 1)
-        self.color = colors[self.type]
         self.rotation = 0
 
     def image(self):
@@ -49,23 +36,18 @@ class Tetris:
     score = 0
     lines = 0
     pieces = -2
+    fps = 0
     field = []
     height = 0
     width = 0
 
     state = "start"
-    x = 0
-    y = 0
-    zoom = 1
     piece = None
     next_piece = None
 
-    def __init__(self, height, width, x, y, zoom):      #should be at least 4x4
+    def __init__(self, height, width):      #should be at least 4x4
         self.height = height
         self.width = width
-        self.x = x
-        self.y = y
-        self.zoom = zoom
         self.field = [ [ -1 for i in range(width) ] for j in range(height) ]
 
     def new_piece(self):
@@ -105,7 +87,6 @@ class Tetris:
                 if self.field[i][j] == -1:
                     holes += 1
             if holes == 0:
-                print("eliminate line")
                 lines += 1
                 for k in range(i, 1, -1):
                     for l in range(self.width):
@@ -144,30 +125,20 @@ if __name__ == '__main__':
 
     pygame.init()
 
-    window_width = 500
-    window_lenght = 500
-    screen = pygame.display.set_mode((window_width, window_lenght))
-
-    screen_lenght_margin = window_lenght//20
-    screen_width_margin = window_width//8
-
-    pygame.display.set_caption("Tetris")
-
-    text_font_size = 19
-    text_font = pygame.font.SysFont('Calibri', text_font_size, True, False)
-    title_font = pygame.font.SysFont('Calibri', 65, True, False)
-
     done = False
     clock = pygame.time.Clock()
     fps = 60
-    game = Tetris(20, 10, 100, 40, 20)
+    game = Tetris(20, 10)
     counter = 0
-    game_over = False
 
-    true_fps = 1
+    screen_i = screen.Screen(pygame, 500, 500, 100, 60, 20)
+    keyb = interface_keyboard.Keyboard()
+
     pressing_down = False
+    true_fps = 1
 
     while not done:
+
         if game.piece is None:
             game.new_piece()
         counter += 1
@@ -178,85 +149,10 @@ if __name__ == '__main__':
             if game.state == "start":
                 game.go_down()
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                done = True
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    game.rotate()
-                if event.key == pygame.K_DOWN:
-                    pressing_down = True
-                if event.key == pygame.K_LEFT:
-                    game.go_side(-1)
-                if event.key == pygame.K_RIGHT:
-                    game.go_side(1)
-                if event.key == pygame.K_SPACE:
-                    game.hard_drop()
-                if event.key == pygame.K_ESCAPE and game_over:
-                    game.__init__(20, 10)
-                    game_over = False
+        done, pressing_down = keyb.get_event_from_keyboard(pygame, game, pressing_down)
 
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_DOWN:
-                pressing_down = False
+        screen_i.update_screen(game)
 
-        screen.fill(WHITE)
-
-        for i in range(game.height):
-            for j in range(game.width):
-                pygame.draw.rect(screen, GRAY, [game.x + game.zoom * j, game.y + game.zoom * i, game.zoom, game.zoom], 1)
-                if game.field[i][j] > -1:
-                    pygame.draw.rect(screen, colors[game.field[i][j]], [game.x + game.zoom * j + 1, game.y + game.zoom * i + 1, game.zoom - 2, game.zoom - 1])
-
-        if game.piece is not None:
-            for block in game.piece.image():
-                i = block//4
-                j = block%4
-                pygame.draw.rect(screen, game.piece.color,
-                    [game.x + game.zoom*(j+game.piece.x)+1,
-                     game.y + game.zoom*(i+game.piece.y)+1,
-                     game.zoom-2, game.zoom-2])
-
-        #draw next
-        pygame.draw.rect(screen, GRAY, [game.x + game.zoom*(game.width+0.5), game.y, game.zoom*6, game.zoom*6], 1)
-        text_next = text_font.render("Next", True, BLACK)
-        screen.blit(text_next, [game.x + game.zoom*(game.width+2.5), game.y])
-        for i in range(4):
-            for j in range(4):
-                pygame.draw.rect(screen, GRAY, [game.x + game.zoom*(j+game.width+1.5), game.y+game.zoom*(i+1), game.zoom, game.zoom], 1)
-
-        if game.next_piece is not None:
-            for block in game.next_piece.image():
-                i = block//4
-                j = block%4
-                pygame.draw.rect(screen, game.next_piece.color,
-                    [game.x + game.zoom*(j+game.width+1.5)+1,
-                     game.y + game.zoom*(i+1)+1,
-                     game.zoom-2, game.zoom-2])
-
-
-        pygame.draw.rect(screen, GRAY, [game.x + game.zoom*(game.width+0.5), game.y+game.zoom*(7), game.zoom*6, game.zoom*8], 1)
-
-        text_score = text_font.render("Score: " + str(game.score), True, BLACK)
-        text_lines = text_font.render("Lines: " + str(game.lines), True, BLACK)
-        text_pieces = text_font.render("Pieces: " + str(game.pieces), True, BLACK)
-        text_level = text_font.render("Level: " + str(game.level), True, BLACK)
-        text_fps = text_font.render("FPS: " + str(1000//true_fps), True, BLACK)
-
-        text_game_over = title_font.render("GAME OVER", True, (255, 125, 0))
-        text_reset = title_font.render("Press ESC", True, (255, 215, 0))
-
-        screen.blit(text_score, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*0.5])
-        screen.blit(text_lines, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*2])
-        screen.blit(text_pieces, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*3.5])
-        screen.blit(text_level, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*5])
-        screen.blit(text_fps, [game.x + game.zoom*(game.width+1), game.y+game.zoom*(7)+text_font_size*6.5])
-        if game.state == "gameover":
-            screen.blit(text_game_over, [20, 200])
-            screen.blit(text_reset, [25, 265])
-            game_over = True
-
-        pygame.display.flip()
-        true_fps = clock.tick(fps)
+        game.fps = 1000 // clock.tick(fps)
 
     pygame.quit()
