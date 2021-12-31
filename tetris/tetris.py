@@ -37,22 +37,22 @@ class Tetris:
     score = 0
     lines = 0
     pieces = -2
-    fps = 0
     field = []
     height = 0
     width = 0
+    fps = 0
 
     state = "start"
     piece = None
     next_piece = None
 
-    interface_queue = None
-
-    def __init__(self, height, width):      #should be at least 4x4
+    def __init__(self, height, width, field=None):      #should be at least 4x4
         self.height = height
         self.width = width
-        self.interface_queue = queue_interface.interface_queue()
-        self.field = [ [ -1 for i in range(width) ] for j in range(height) ]
+        if bool(field):
+            self.field = field
+        else:
+            self.field = [ [ -1 for i in range(width) ] for j in range(height) ]
 
     def new_piece(self):
         self.piece = self.next_piece
@@ -81,7 +81,7 @@ class Tetris:
         self.break_lines()
         self.new_piece()
         if self.intersects():
-            game.state = "gameover"
+            self.state = "gameover"
 
     def break_lines(self):
         lines = 0
@@ -125,38 +125,66 @@ class Tetris:
     def level_up(self):
         self.level += 1
 
-if __name__ == '__main__':
 
-    pygame.init()
+class GameRun:
 
     done = False
     clock = pygame.time.Clock()
     fps = 60
-    game = Tetris(20, 10)
+    game = None
     counter = 0
 
-    screen_i = screen.Screen(pygame, 500, 500, 100, 60, 20)
-    keyb = interface_keyboard.Keyboard()
-
+    keyb = None
+    interface_queue = None
+    screen_i = None
     pressing_down = False
     true_fps = 1
 
-    while not done:
+    def __init__(self, game, fps, use_screen=True, use_keyboard=False):
+        pygame.init()
+        self.game = game
+        self.fps = fps
 
-        if game.piece is None:
-            game.new_piece()
-        counter += 1
-        if counter > 100000:
-            counter = 0
+        if bool(use_screen):
+            self.screen_i = screen.Screen(pygame, 500, 500, 100, 60, 20)
+        if bool(use_keyboard):
+            self.keyb = interface_keyboard.Keyboard()
+        else:
+            self.interface_queue = queue_interface.interface_queue()
 
-        if counter % (fps // (2*game.level)) == 0 or pressing_down:
-            if game.state == "start":
-                game.go_down()
+    def run_frame(self):
+        if self.game.piece is None:
+            self.game.new_piece()
+        self.counter += 1
+        if self.counter > 100000:
+            self.counter = 0
 
-        done, pressing_down = keyb.get_event_from_keyboard(pygame, game, pressing_down)
+        if self.counter % (self.fps // (2*self.game.level)) == 0 or self.pressing_down:
+            if self.game.state == "start":
+                self.game.go_down()
 
-        screen_i.update_screen(game)
+        if bool(self.keyb):
+            self.done, self.pressing_down = self.keyb.get_event_from_keyboard(pygame, self.game, self.pressing_down)
+        else:
+            self.queue_interface.exe_command(game)
 
-        game.fps = 1000 // clock.tick(fps)
+        if bool(self.screen_i):
+            self.screen_i.update_screen(self.game)
 
-    pygame.quit()
+        self.game.fps = self.true_fps = 1000 // self.clock.tick(self.fps)
+
+        if self.done:
+            self.close_game()
+            return False
+
+        return True
+
+    def close_game(self):
+        pygame.quit()
+
+if __name__ == '__main__':
+
+    game_run = GameRun(Tetris(20,10), 60, use_screen=True, use_keyboard=True)
+
+    while game_run.run_frame():
+        aux = None

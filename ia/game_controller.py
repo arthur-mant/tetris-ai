@@ -1,3 +1,4 @@
+import numpy
 from tetris import tetris
 
 class Controller:
@@ -32,6 +33,8 @@ class Controller:
             path = ["D"]+path
         for i in range(x1, (self.game.width//2)-2, 1):
             path = ["E"]+path
+
+        return path
 
     def create_path(self, x, y, rot, visitados):
 
@@ -93,20 +96,33 @@ class Controller:
                         if placeable and has_block_under:
                             return_list.append((x, y, rot, get_path(x, y, rot))
         for elem in return_list:
-            if elem[3] == []:
+            if elem[3] == None:
                 return_list.remove(elem)
 
+    def path_to_command(self, path):
+        for i in path:
+            if i == "E":
+                self.game.interface_queue.move(-1)
+            if i == "D":
+                self.game.interface_queue.move(1)
+            if i == "R":
+                self.game.interface_queue.rotate(1)
+            if i == "B":
+                self.game.interface_queue.down(1)
 
-    def put_piece(self, rotation, x, y):
+
+    def put_piece(self, rotation, x, y, path=None):
 
         hard_drop = (y == self.get_piece_shadow(x))
 
-        self.game.interface_queue.move(x - self.game.piece.x)
         if hard_drop:
+            self.game.interface_queue.move(x - self.game.piece.x)
             self.game.interface_queue.rotate(rotation)
             self.game.interface_queue.hard_drop()
 
         else:
-            
+            if path:
+                path_to_command(path)
+            else:
+                path_to_command(get_path(x, y, rotation))
 
-        return ((x == self.
