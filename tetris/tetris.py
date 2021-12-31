@@ -2,6 +2,7 @@ import pygame
 import random
 import screen
 import interface_keyboard
+import queue_interface
 
 class Piece:
     x = 0
@@ -45,9 +46,12 @@ class Tetris:
     piece = None
     next_piece = None
 
+    interface_queue = None
+
     def __init__(self, height, width):      #should be at least 4x4
         self.height = height
         self.width = width
+        self.interface_queue = queue_interface.interface_queue()
         self.field = [ [ -1 for i in range(width) ] for j in range(height) ]
 
     def new_piece(self):
