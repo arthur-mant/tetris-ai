@@ -4,7 +4,7 @@ class interface_queue:
     q = None
 
     def __init__(self):
-        q = queue.SimpleQueue()
+        self.q = queue.SimpleQueue()
 
     def rotate(self, num):
         for i in range(num % 4):
@@ -25,6 +25,7 @@ class interface_queue:
         self.q.put('Q')
 
     def exec_command(self, game):
+        aux = None
         try:
             aux = self.q.get(block=False)
         except queue.Empty:
@@ -42,5 +43,7 @@ class interface_queue:
             game.go_down()
         elif aux == 'Q':
             game.hard_drop()
+        elif aux == None:
+            pass
         else:
             print("Unexpected entry in interface_queue: ",  aux)

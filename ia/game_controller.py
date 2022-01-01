@@ -1,5 +1,5 @@
 import numpy
-from tetris import tetris
+import tetris
 
 class Controller:
 
@@ -24,8 +24,14 @@ class Controller:
         return y
 
     def get_path(self, x, y, rot):
-        visitados = [ [ self.game.pieces[self.game.type] for i in range(self.game.width) ] for j in range(height) ]
-        path, x1, y1 = create_path(x, y, rot, visitados)
+        visitados = [ [ self.game.piece.pieces[self.game.piece.type] for i in range(self.game.width) ] for j in range(self.game.height) ]
+
+        path, x1, y1 = self.create_path(x, y, rot, visitados)
+
+        if path == None:
+            print("(", x,", ", y, ", ", rot, ") has no path!")
+            return None
+
         for i in range(y1, 0, -1):
             path = ["B"]+path
 
@@ -54,7 +60,7 @@ class Controller:
             i = block // 4
             j = block % 4
             for k in range(y, 0, -1):
-                if (self.game.field[k+i][x+j] > -1)
+                if (self.game.field[k+i][x+j] > -1):
                     is_free = False
 
         if is_free:
@@ -79,25 +85,27 @@ class Controller:
     def get_all_possible_pos(self):         #returns list of tuple(x, y, rot, path)
         return_list = []
 
-        for y in range(self.game.height):
-            for x in range(self.game.width):
-                for rot in len(self.game.piece.pieces[self.game.piece.type]):
+        for y in range(-2, self.game.height):
+            for x in range(-2, self.game.width):
+                for rot in range(len(self.game.piece.pieces[self.game.piece.type])):
                     placeable = True
                     has_block_under = False
                     for block in self.game.piece.pieces[self.game.piece.type][rot]:
                         i = block // 4
                         j = block % 4
-                        if (self.game.field[y+i][x+j] > -1):
+                        if (y+i >= self.game.height) or (x+j >= self.game.width) or (x+j < 0) or (self.game.field[y+i][x+j] > -1):
                             placeable = False
 
-                        if (y+i+1 > self.game.height-1) or (self.game.field[y+i+1][x+j] > -1):
+
+                        if placeable and ((y+i+1 > self.game.height-1) or (self.game.field[y+i+1][x+j] > -1)):
                             has_block_under = True
 
-                        if placeable and has_block_under:
-                            return_list.append((x, y, rot, get_path(x, y, rot))
-        for elem in return_list:
-            if elem[3] == None:
-                return_list.remove(elem)
+                    if placeable and has_block_under:
+                        return_list.append((x, y, rot, self.get_path(x, y, rot)))
+#        for elem in return_list:
+#            if elem[3] == None:
+#                return_list.remove(elem)
+        return return_list
 
     def path_to_command(self, path):
         for i in path:

@@ -135,7 +135,7 @@ class GameRun:
     counter = 0
 
     keyb = None
-    interface_queue = None
+    queue_i = None
     screen_i = None
     pressing_down = False
     true_fps = 1
@@ -147,10 +147,10 @@ class GameRun:
 
         if bool(use_screen):
             self.screen_i = screen.Screen(pygame, 500, 500, 100, 60, 20)
-        if bool(use_keyboard):
+        if bool(use_keyboard) and bool(use_screen):
             self.keyb = interface_keyboard.Keyboard()
         else:
-            self.interface_queue = queue_interface.interface_queue()
+            self.queue_i = queue_interface.interface_queue()
 
     def run_frame(self):
         if self.game.piece is None:
@@ -165,13 +165,18 @@ class GameRun:
 
         if bool(self.keyb):
             self.done, self.pressing_down = self.keyb.get_event_from_keyboard(pygame, self.game, self.pressing_down)
+        elif bool(self.queue_i):
+            self.queue_i.exec_command(self.game)
         else:
-            self.queue_interface.exe_command(game)
+            print("ERROR: NO INPUT")
 
         if bool(self.screen_i):
             self.screen_i.update_screen(self.game)
 
         self.game.fps = self.true_fps = 1000 // self.clock.tick(self.fps)
+
+#        if self.game.state == "gameover" and bool(self.queue_i):
+#            self.done = True
 
         if self.done:
             self.close_game()
@@ -182,9 +187,10 @@ class GameRun:
     def close_game(self):
         pygame.quit()
 
+
 if __name__ == '__main__':
 
     game_run = GameRun(Tetris(20,10), 60, use_screen=True, use_keyboard=True)
 
     while game_run.run_frame():
-        aux = None
+        pass
