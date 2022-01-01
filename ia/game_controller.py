@@ -27,27 +27,39 @@ class Controller:
     def get_path(self, x, y, rot):
         visitados = [ [ list(range(len(self.game_run.game.piece.pieces[self.game_run.game.piece.type]))) for i in range(self.game_run.game.width) ] for j in range(self.game_run.game.height) ]
         #print(visitados)
-        path, x1, y1 = self.create_path(x, y, rot, visitados)
+        path, x1, y1 = self.create_path(x, y, rot, visitados, ((self.game_run.game.width//2)-2, 0, 0))
 
         if path == None:
             #print("(", x,", ", y, ", ", rot, ") has no path!")
             return None
 
-        for i in range(y1, 0, -1):
-            path = ["B"]+path
-
-        for i in range(x1, (self.game_run.game.width//2)-2, -1):
-            path = ["D"]+path
-        for i in range(x1, (self.game_run.game.width//2)-2, 1):
-            path = ["E"]+path
-        for i in range(rot):
-            path = ["R"]+path
+        last_right = -1
+        last_left = -1
+        i = 0
+        while (i < (len(path))):
+            if path[i] == "E":
+                last_left = i
+            if path[i] == "D":
+                last_right = i
+            if path[i] == "B":
+                last_right = last_left = -1
+            if last_right >= 0 and path[i] == "E":
+                del path[i]
+                del path[last_right]
+                last_right = last_left = -1
+                i = 0
+            if last_left >= 0 and path[i] == "D":
+                del path[i]
+                del path[last_left]
+                last_right = last_left = -1
+                i = 0
+            i+=1
 
         path = path+["B"]
 
         return path
 
-    def create_path(self, x, y, rot, visitados):
+    def create_path(self, x, y, rot, visitados, obj):
 
         #condições de base
         if not rot in visitados[y][x]:
@@ -61,30 +73,22 @@ class Controller:
                 #print("(", x, ", ", y, ", ", rot, ") is blocked")
                 return None, -1, -1
 
-        is_free = True
-        for block in self.game_run.game.piece.pieces[self.game_run.game.piece.type][rot]:
-            i = block // 4
-            j = block % 4
-            for k in range(y, 0, -1):
-                if (self.game_run.game.field[k+i][x+j] > -1):
-                    is_free = False
-
-        if is_free:
-            #print("(", x, ", ", y, ", ", rot, ") is free")
+#        print((x, y, rot))
+        if ((x, y, rot) == obj):
             return [], x, y
 
         #recursão
 
-        aux, x1, y1 = self.create_path(x, y+1, rot, visitados)
+        aux, x1, y1 = self.create_path(x, y-1, rot, visitados, obj)
         if aux != None:
             return aux+["B"], x1,  y1
-        aux, x1, y1 = self.create_path(x+1, y, rot, visitados)
+        aux, x1, y1 = self.create_path(x+1, y, rot, visitados, obj)
         if aux != None:
             return aux+["E"], x1, y1
-        aux, x1, y1 = self.create_path(x-1, y, rot, visitados)
+        aux, x1, y1 = self.create_path(x-1, y, rot, visitados, obj)
         if aux != None:
             return aux+["D"], x1, y1
-        aux, x1, y1 = self.create_path(x, y, (rot-1) % len(self.game_run.game.piece.pieces[self.game_run.game.piece.type]), visitados)
+        aux, x1, y1 = self.create_path(x, y, (rot-1) % len(self.game_run.game.piece.pieces[self.game_run.game.piece.type]), visitados, obj)
         if aux != None:
             return aux+["R"], x1, y1
         return None, -1, -1
@@ -110,7 +114,7 @@ class Controller:
                     if placeable and has_block_under:
                         return_list.append((x, y, rot, self.get_path(x, y, rot)))
 
-        return_list = [elem for elem in return_list if elem[3] != None]
+        #return_list = [elem for elem in return_list if elem[3] != None]
 
         return return_list
 
