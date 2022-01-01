@@ -19,7 +19,14 @@ if __name__ == '__main__':
 
     while game_run.run_frame():
         if old_piece != game_run.game.pieces:
-            print(controller.get_all_possible_pos())
+            pos = controller.get_all_possible_pos()
+            print(pos)
+            best_pos = pos[0]
+            for elem in pos:
+                if best_pos[1] < elem[1]:
+                    best_pos = elem
+            print("best position: ", best_pos)
+            controller.put_piece(best_pos[2], best_pos[0], best_pos[1], path=best_pos[3])
         old_piece = game_run.game.pieces
 
     print("Score: ", game_run.game.score)

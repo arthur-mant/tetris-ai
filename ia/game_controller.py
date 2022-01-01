@@ -14,7 +14,7 @@ class Controller:
         collide = False
         while not collide:
             y += 1
-            for block in self.game.piece.image:
+            for block in self.game.piece.image():
                 i = block // 4
                 j = block % 4
                 if (self.game.field[y+i][x+j] == -1):
@@ -24,12 +24,12 @@ class Controller:
         return y
 
     def get_path(self, x, y, rot):
-        visitados = [ [ self.game.piece.pieces[self.game.piece.type] for i in range(self.game.width) ] for j in range(self.game.height) ]
-
+        visitados = [ [ list(range(len(self.game.piece.pieces[self.game.piece.type]))) for i in range(self.game.width) ] for j in range(self.game.height) ]
+        #print(visitados)
         path, x1, y1 = self.create_path(x, y, rot, visitados)
 
         if path == None:
-            print("(", x,", ", y, ", ", rot, ") has no path!")
+            #print("(", x,", ", y, ", ", rot, ") has no path!")
             return None
 
         for i in range(y1, 0, -1):
@@ -49,14 +49,15 @@ class Controller:
             return None, -1, -1
         visitados[y][x].remove(rot)
 
-        for block in self.game.piece.pieces[self.game.type][rot]:
+        for block in self.game.piece.pieces[self.game.piece.type][rot]:
             i = block // 4
             j = block % 4
-            if (self.game.field[y+i][x+j] != -1):
+            if y+i < 0 or y+i >= self.game.height or x+j < 0 or x+j >= self.game.width or (self.game.field[y+i][x+j] != -1):
+                #print("(", x, ", ", y, ", ", rot, ") is blocked")
                 return None, -1, -1
 
         is_free = True
-        for block in self.game.piece.pieces[self.game.type][rot]:
+        for block in self.game.piece.pieces[self.game.piece.type][rot]:
             i = block // 4
             j = block % 4
             for k in range(y, 0, -1):
@@ -64,20 +65,21 @@ class Controller:
                     is_free = False
 
         if is_free:
+            #print("(", x, ", ", y, ", ", rot, ") is free")
             return [], x, y
 
         #recursão
 
-        aux, x1, y1 = create_path(x, y+1, rot, visitados)
+        aux, x1, y1 = self.create_path(x, y+1, rot, visitados)
         if aux != None:
             return aux+["B"], x1,  y1
-        aux, x1, y1 = create_path(x-1, y, rot, visitados)
+        aux, x1, y1 = self.create_path(x-1, y, rot, visitados)
         if aux != None:
             return aux+["E"], x1, y1
-        aux, x1, y1 = create_path(x+1, y, rot, visitados)
+        aux, x1, y1 = self.create_path(x+1, y, rot, visitados)
         if aux != None:
             return aux+["D"], x1, y1
-        aux, x1, y1 = create_path(x, y, (rot-1) % len(self.game.piece.pieces[self.game.piece.type]), visitados)
+        aux, x1, y1 = self.create_path(x, y, (rot-1) % len(self.game.piece.pieces[self.game.piece.type]), visitados)
         if aux != None:
             return aux+["R"], x1, y1
         return None, -1, -1
@@ -130,7 +132,7 @@ class Controller:
 
         else:
             if path:
-                path_to_command(path)
+                self.path_to_command(path)
             else:
                 path_to_command(get_path(x, y, rotation))
 
