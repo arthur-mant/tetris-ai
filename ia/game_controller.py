@@ -47,12 +47,12 @@ class Controller:
                 del path[i]
                 del path[last_right]
                 last_right = last_left = -1
-                i = 0
+                i = -1
             if last_left >= 0 and path[i] == "D":
                 del path[i]
                 del path[last_left]
                 last_right = last_left = -1
-                i = 0
+                i = -1
             i+=1
 
         path = path+["B"]
@@ -114,7 +114,7 @@ class Controller:
                     if placeable and has_block_under:
                         return_list.append((x, y, rot, self.get_path(x, y, rot)))
 
-        #return_list = [elem for elem in return_list if elem[3] != None]
+        return_list = [elem for elem in return_list if elem[3] != None]
 
         return return_list
 
@@ -135,8 +135,6 @@ class Controller:
         if not bool(path):
             path = self.get_path(x, y, rotation)
 
-        #hard_drop = (y == self.get_piece_shadow(x, rotation))
-
         only_down = False
         for elem in path:
             if elem == "B":
@@ -145,8 +143,13 @@ class Controller:
                 only_down = False
                 break
 
-        #if hard_drop:
-        if only_down:
+        rotation_clusters = 0
+        for i in range(1, len(path)):
+            if path[i] == "R" and path[i-1] != "R":
+                rotation_clusters += 1
+
+
+        if only_down and rotation_clusters <= 1:
             self.game_run.queue_i.rotate(rotation)
             self.game_run.queue_i.move(x - self.game_run.game.piece.x)
             self.game_run.queue_i.hard_drop()
