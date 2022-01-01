@@ -132,7 +132,7 @@ class GameRun:
     clock = pygame.time.Clock()
     fps = 60
     game = None
-    counter = 0
+    counter = 1
 
     keyb = None
     queue_i = None
@@ -155,7 +155,7 @@ class GameRun:
     def run_frame(self):
         if self.game.piece is None:
             self.game.new_piece()
-        self.counter += 1
+        #self.counter += 1
         if self.counter > 100000:
             self.counter = 0
 

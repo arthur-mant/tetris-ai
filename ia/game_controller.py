@@ -40,6 +40,10 @@ class Controller:
             path = ["D"]+path
         for i in range(x1, (self.game_run.game.width//2)-2, 1):
             path = ["E"]+path
+        for i in range(rot):
+            path = ["R"]+path
+
+        path = path+["B"]
 
         return path
 
@@ -74,10 +78,10 @@ class Controller:
         aux, x1, y1 = self.create_path(x, y+1, rot, visitados)
         if aux != None:
             return aux+["B"], x1,  y1
-        aux, x1, y1 = self.create_path(x-1, y, rot, visitados)
+        aux, x1, y1 = self.create_path(x+1, y, rot, visitados)
         if aux != None:
             return aux+["E"], x1, y1
-        aux, x1, y1 = self.create_path(x+1, y, rot, visitados)
+        aux, x1, y1 = self.create_path(x-1, y, rot, visitados)
         if aux != None:
             return aux+["D"], x1, y1
         aux, x1, y1 = self.create_path(x, y, (rot-1) % len(self.game_run.game.piece.pieces[self.game_run.game.piece.type]), visitados)
@@ -124,17 +128,26 @@ class Controller:
 
     def put_piece(self, rotation, x, y, path=None):
 
-        hard_drop = (y == self.get_piece_shadow(x, rotation))
+        if not bool(path):
+            path = self.get_path(x, y, rotation)
 
-        print("hard drop? ", y, " ", self.get_piece_shadow(x, rotation), " ", hard_drop)
+        #hard_drop = (y == self.get_piece_shadow(x, rotation))
 
-        if hard_drop:
-            self.game_run.queue_i.move(x - self.game_run.game.piece.x)
+        only_down = False
+        for elem in path:
+            if elem == "B":
+                only_down = True
+            if only_down and elem != "B":
+                only_down = False
+                break
+
+        #if hard_drop:
+        if only_down:
             self.game_run.queue_i.rotate(rotation)
+            self.game_run.queue_i.move(x - self.game_run.game.piece.x)
             self.game_run.queue_i.hard_drop()
 
         else:
-            if not bool(path):
-                path = self.get_path(x, y, rotation)
+            print("following path")
             self.path_to_command(path)
 
