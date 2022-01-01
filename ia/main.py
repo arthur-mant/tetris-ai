@@ -13,14 +13,14 @@ if __name__ == '__main__':
         tetris.Tetris(height, width), #, field=generate_field.generate_plain_field(width, height, height//3, 3)),
         60
     )
-    controller = game_controller.Controller(game_run.game)
+    controller = game_controller.Controller(game_run)
 
     old_piece = -1
 
-    while game_run.run_frame():
+    while game_run.run_frame() and game_run.game.state != "gameover":
         if old_piece != game_run.game.pieces:
             pos = controller.get_all_possible_pos()
-            print(pos)
+            #print(pos)
             best_pos = pos[0]
             for elem in pos:
                 if best_pos[1] < elem[1]:
@@ -30,3 +30,6 @@ if __name__ == '__main__':
         old_piece = game_run.game.pieces
 
     print("Score: ", game_run.game.score)
+
+    while game_run.run_frame():
+        pass
