@@ -169,4 +169,14 @@ class Controller:
                 return None
             new_field[y+i][x+j] = self.game_run.game.piece.type
 
+        for i in range(len(new_field)):
+            hole = False
+            for j in range(len(new_field[i])):
+                if new_field[i][j] == -1:
+                    hole = True
+            if not hole:
+                for k in range(i, 1, -1):
+                    for j in range(len(new_field[i])):
+                        new_field[k][j] = new_field[k-1][j]
+
         return new_field

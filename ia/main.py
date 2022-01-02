@@ -17,17 +17,21 @@ if __name__ == '__main__':
     controller = game_controller.Controller(game_run)
 
     old_piece = -1
+    weights = [-1, -1, -1]
 
     while game_run.run_frame() and game_run.game.state != "gameover":
         if old_piece != game_run.game.pieces:
             pos = controller.get_all_possible_pos()
             #print(pos)
             best_pos = pos[0]
-            for elem in pos:
+            aux = heuristics.score(controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2]), weights)
 
-                #print("element: ", elem, "score: ", heuristics.score(controller.simulate_piece(elem[0], elem[1], elem[2])))
-                if heuristics.score(controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])) < heuristics.score(controller.simulate_piece(elem[0], elem[1], elem[2])):
+            for elem in pos:
+                aux2=heuristics.score(controller.simulate_piece(elem[0], elem[1], elem[2]), weights)
+                if aux < aux2:
                     best_pos = elem
+                    aux = aux2
+                print("element: ", elem, "score: ", aux2)
             print("best position: ", best_pos)
             _unused = input()
             controller.put_piece(best_pos[2], best_pos[0], best_pos[1], path=best_pos[3])
