@@ -4,7 +4,7 @@ def score(field, weights):
     functions = [hard_hole_number, soft_hole_number, absolute_height]
     score = 0
     for i in range(len(functions)):
-        print(functions[i], ": ", functions[i](field))
+        #print(functions[i], ": ", functions[i](field))
         score += weights[i]*functions[i](field)
     return score
 

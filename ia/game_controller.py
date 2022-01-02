@@ -180,3 +180,14 @@ class Controller:
                         new_field[k][j] = new_field[k-1][j]
 
         return new_field
+
+    def check_if_right_position(self, new_field):
+        if not bool(new_field):
+            return True
+
+        for i in range(self.game_run.game.height):
+            for j in range(self.game_run.game.width):
+                if self.game_run.game.field[i][j] != new_field[i][j]:
+                    print("ERROR: PREDICTED FIELD DIFFERENT FROM REAL ONE")
+                    return False
+        return True
