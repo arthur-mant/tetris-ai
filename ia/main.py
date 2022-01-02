@@ -3,6 +3,7 @@ sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
 import tetris
 import game_controller
 import generate_field
+import heuristics
 
 if __name__ == '__main__':
 
@@ -22,13 +23,11 @@ if __name__ == '__main__':
             pos = controller.get_all_possible_pos()
             #print(pos)
             best_pos = pos[0]
-            aux = 0
             for elem in pos:
-                for block in game_run.game.piece.pieces[game_run.game.piece.type][elem[2]]:
-                    i = block // 4
-                    if aux < elem[1]+i:
-                        best_pos = elem
-                        aux = elem[1]+i
+
+                #print("element: ", elem, "score: ", heuristics.score(controller.simulate_piece(elem[0], elem[1], elem[2])))
+                if heuristics.score(controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])) < heuristics.score(controller.simulate_piece(elem[0], elem[1], elem[2])):
+                    best_pos = elem
             print("best position: ", best_pos)
             _unused = input()
             controller.put_piece(best_pos[2], best_pos[0], best_pos[1], path=best_pos[3])
