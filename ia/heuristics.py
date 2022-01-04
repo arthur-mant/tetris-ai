@@ -9,12 +9,14 @@ def score(field, lines, weights):
     return score
 
 def hard_hole_number(field, lines):
+    hole_matrix = [ [ 0 for j in range(len(field[0])) ] for i in range(len(field)) ]
+    print(hole_matrix)
     holes = 0
     for i in range(len(field)):
         for j in range(len(field[i])):
             if field[i][j] == -1:
                 blocked = (False, False, False)
-                if i-1 > 0 and field[i-1][j] > -1:
+                if i-1 > 0 and ((field[i-1][j] > -1) or (hole_matrix[i-1][j] == 1)):
                     blocked = (True, blocked[1], blocked[2])
                 if j-1 < 0 or field[i][j-1] > -1:
                     blocked = (blocked[0], True, blocked[2])
@@ -23,6 +25,8 @@ def hard_hole_number(field, lines):
 
                 if blocked[0] and blocked[1] and blocked[2]:
                     holes += 1
+                    hole_matrix[i][j] = 1
+
 
     return holes
 
@@ -32,6 +36,9 @@ def soft_hole_number(field, lines):
         for j in range(len(field[i])):
             if field[i][j] == -1 and i-1 > 0 and field[i-1][j] > -1:
                 holes += 1
+                for k in range(i+1, len(field)):
+                    if field[k][j] == -1:
+                        holes += 1
 
     return holes
 
