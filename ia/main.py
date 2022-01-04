@@ -11,13 +11,14 @@ if __name__ == '__main__':
     height = 10
 
     game_run = tetris.GameRun(
-        tetris.Tetris(height, width), #, field=generate_field.generate_plain_field(width, height, height//3, 3)),
+        #tetris.Tetris(height, width), #, field=generate_field.generate_plain_field(width, height, height//3, 3)),
+        tetris.Tetris(height, width, field=generate_field.generate_test_field(width, height)),
         60
     )
     controller = game_controller.Controller(game_run)
 
     old_piece = -1
-    weights = [-1, -1, -1]
+    weights = [-10, -8, -4, -3, 10, 10, 5]
     new_field = None
 
     while game_run.run_frame() and game_run.game.state != "gameover":
@@ -26,17 +27,18 @@ if __name__ == '__main__':
             #print(pos)
             controller.check_if_right_position(new_field)
             best_pos = pos[0]
-            new_field = controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])
-            aux = heuristics.score(new_field, weights)
+            new_field, lines_cleared = controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])
+            score = heuristics.score(new_field, lines_cleared, weights)
 
             for elem in pos:
-                aux2=heuristics.score(controller.simulate_piece(elem[0], elem[1], elem[2]), weights)
-                if aux < aux2:
+                new_field, lines_cleared = controller.simulate_piece(elem[0], elem[1], elem[2])
+                score_2=heuristics.score(new_field, lines_cleared, weights)
+                if score < score_2:
                     best_pos = elem
-                    aux = aux2
-                #print("element: ", elem, "score: ", aux2)
-            print("best position: ", best_pos)
-            _unused = input()
+                    score = score_2
+                print("element: ", elem, "score: ", score_2)
+            print("best position: ", best_pos, "score: ", score)
+            _unused = input()       #trava para executar uma peça por vez
             controller.put_piece(best_pos[2], best_pos[0], best_pos[1], path=best_pos[3])
             new_field = controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])
         old_piece = game_run.game.pieces
