@@ -187,9 +187,22 @@ class Controller:
         if not bool(new_field):
             return True
 
+        print("predicted field:")
+        for i in range(self.game_run.game.height):
+            for j in range(self.game_run.game.width):
+                print(new_field[i][j])
+            print()
+        print("actual field:")
+        for i in range(self.game_run.game.height):
+            for j in range(self.game_run.game.width):
+                print(self.game_run.game.field[i][j])
+            print()
+
         for i in range(self.game_run.game.height):
             for j in range(self.game_run.game.width):
                 if self.game_run.game.field[i][j] != new_field[i][j]:
-                    print("ERROR: PREDICTED FIELD DIFFERENT FROM REAL ONE")
+                    #print("ERROR: PREDICTED FIELD DIFFERENT FROM REAL ONE")
+                    print(i, ", ", j)
+                    raise Exception("ERROR: PREDICTED FIELD DIFFERENT FROM REAL ONE")
                     return False
         return True
