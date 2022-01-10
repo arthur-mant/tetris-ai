@@ -8,7 +8,7 @@ import heuristics
 if __name__ == '__main__':
 
     width = 10
-    height = 10
+    height = 20
 
     game_run = tetris.GameRun(
         #tetris.Tetris(height, width), #, field=generate_field.generate_plain_field(width, height, height//3, 3)),
@@ -28,16 +28,16 @@ if __name__ == '__main__':
             controller.check_if_right_position(new_field)
             best_pos = pos[0]
             new_field, lines_cleared = controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])
-            score = heuristics.score(new_field, lines_cleared, weights)
+            score_best = heuristics.score(new_field, lines_cleared, weights)
 
             for elem in pos:
                 new_field, lines_cleared = controller.simulate_piece(elem[0], elem[1], elem[2])
-                score_2=heuristics.score(new_field, lines_cleared, weights)
-                if score < score_2:
+                score=heuristics.score(new_field, lines_cleared, weights)
+                if score_best < score:
                     best_pos = elem
-                    score = score_2
-                print("element: ", elem, "score: ", score_2)
-            print("best position: ", best_pos, "score: ", score)
+                    score_best = score
+                print("element: ", elem, "score: ", score)
+            print("best position: ", best_pos, "score: ", score_best)
             _unused = input()       #trava para executar uma peça por vez
             controller.put_piece(best_pos[2], best_pos[0], best_pos[1], path=best_pos[3])
             new_field = controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])

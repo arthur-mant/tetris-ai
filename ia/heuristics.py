@@ -93,8 +93,13 @@ def get_height(field, column):
 def check_i_valley(field):
     pos = -1
     num = 0
+    heights = []
     for j in range(len(field[0])):
-        if ((j - 1) < 0 or abs(get_height(field, j-1) - get_height(field, j)) >= 4) and ((j+1) >= len(field[0]) or abs(get_height(field, j) - get_height(field, j+1)) >= 4):
+        heights.append(get_height(field, j))
+    for j in heights:
+        if min(heights) == j:
             pos = j
             num += 1
+        if j - min(heights) < 4:
+            return -1, 0
     return pos, num
