@@ -1,16 +1,16 @@
 
 
 def score(field, lines, weights):
-    functions = [hard_hole_number, soft_hole_number, absolute_height, cumulative_height_difference, lines_cleared, has_i_valley, i_valley_pos_relative_to_center]
+    functions = [hard_hole_number, soft_hole_number, absolute_height, cumulative_height_difference, lines_cleared, has_i_valley, i_valley_pos_relative_to_center, invades_spawn_area]
     score = 0
     for i in range(len(functions)):
-        print(functions[i], ": ", functions[i](field, lines))
+#        print(functions[i], ": ", functions[i](field, lines))
         score += weights[i]*pow(functions[i](field, lines), 2)
     return score
 
 def hard_hole_number(field, lines):
     hole_matrix = [ [ 0 for j in range(len(field[0])) ] for i in range(len(field)) ]
-    print(hole_matrix)
+    #print(hole_matrix)
     holes = 0
     for i in range(len(field)):
         for j in range(len(field[i])):
@@ -63,7 +63,10 @@ def cumulative_height_difference(field, lines):
     return height_sum
 
 def lines_cleared(field, lines): #mexer no expoente?
-    return lines*lines
+    total = 0
+    for elem in lines:
+        total = total + elem*elem
+    return total
 
 def has_i_valley(field, lines):
     _unused, aux = check_i_valley(field)
@@ -80,7 +83,12 @@ def i_valley_pos_relative_to_center(field, lines):
     else:
         return pos - (len(field[0])//2)
 
-
+def invades_spawn_area(field, lines):
+    for i in range(4):
+        for j in range(len(field[0])//2 - 2, len(field[0])//2 + 2):
+            if field[i][j] > -1:
+                return 1
+    return 0
 
 #auxiliary functions:
 

@@ -30,19 +30,23 @@ class Player:
         self.controller = game_controller.Controller(self.game_run)
 
     def exhaustive_search(self):
-        pos = self.controller.get_all_possible_pos()
-        best_pos = pos[0]
-        new_field, lines_cleared = self.controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])
-        score_best = heuristics.score(new_field, lines_cleared, weights)
+        all_pos = self.controller.get_all_possible_pos(self.game_run.game.field, self.game_run.game.piece.type)
+        best_pos = all_pos[0]
 
-        for elem in pos:
-            new_field, lines_cleared = self.controller.simulate_piece(elem[0], elem[1], elem[2])
-            score=heuristics.score(new_field, lines_cleared, weights)
-            if score_best < score:
-                best_pos = elem
-                score_best = score
-            print("element: ", elem, "score: ", score)
-        return best_pos
+        new_field, lines_cleared = self.controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])
+        score_best = heuristics.score(new_field, [lines_cleared], weights)
+
+        for pos in all_pos:
+            new_field, lines_cleared = self.controller.simulate_piece(pos[0], pos[1], pos[2])
+            all_next_pos = self.controller.get_all_possible_pos(new_field, self.game_run.game.next_piece.type)
+            for next_pos in all_next_pos:
+                new_field, next_lines_cleared = self.controller.simulate_piece(next_pos[0], next_pos[1], next_pos[2])
+                score=heuristics.score(new_field, [lines_cleared, next_lines_cleared], weights)
+                if score_best < score:
+                    best_pos = pos
+                    score_best = score
+                print("pos: ", pos, " next_pos", next_pos, " score: ", score)
+        return best_pos, score_best
 
     def play(self):
 
@@ -56,8 +60,8 @@ class Player:
                 #checks if previous piece was put where it was predicted
                 self.controller.check_if_right_position(new_field)
 
-                best_pos = self.exhaustive_search()
-                print("best position: ", best_pos)
+                best_pos, best_score = self.exhaustive_search()
+                print("best position: ", best_pos, " score: ", best_score)
 
                 _unused = input()       #trava para executar uma peça por vez
 
@@ -65,7 +69,7 @@ class Player:
                 self.controller.put_piece(best_pos[2], best_pos[0], best_pos[1], path=best_pos[3])
 
                 #creates ideal field to compare with the actual field when the piece is placed
-                new_field, lines = self.controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])
+                new_field, _cleared_lines = self.controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])
             old_piece = self.game_run.game.pieces
 
         print("Score: ", self.game_run.game.score)
@@ -77,6 +81,6 @@ class Player:
 
 if __name__ == '__main__':
 
-    weights = [-10, -8, -4, -3, 10, 10, 5]
+    weights = [-10, -8, -4, -3, 10, 10, 5, -10000]
     player = Player(weights, 10, 10)
     player.play()

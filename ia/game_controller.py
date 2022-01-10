@@ -94,22 +94,22 @@ class Controller:
             return aux+["R"], x1, y1
         return None, -1, -1
 
-    def get_all_possible_pos(self):         #returns list of tuple(x, y, rot, path)
+    def get_all_possible_pos(self, field, piece):         #returns list of tuple(x, y, rot, path)
         return_list = []
 
-        for y in range(-2, self.game_run.game.height):
-            for x in range(-2, self.game_run.game.width):
-                for rot in range(len(self.game_run.game.piece.pieces[self.game_run.game.piece.type])):
+        for y in range(-2, len(field)):
+            for x in range(-2, len(field[0])):
+                for rot in range(len(self.game_run.game.piece.pieces[piece])):
                     placeable = True
                     has_block_under = False
-                    for block in self.game_run.game.piece.pieces[self.game_run.game.piece.type][rot]:
+                    for block in self.game_run.game.piece.pieces[piece][rot]:
                         i = block // 4
                         j = block % 4
-                        if (y+i >= self.game_run.game.height) or (x+j >= self.game_run.game.width) or (x+j < 0) or (self.game_run.game.field[y+i][x+j] > -1):
+                        if (y+i >= len(field)) or (x+j >= len(field[0])) or (x+j < 0) or (field[y+i][x+j] > -1):
                             placeable = False
 
 
-                        if placeable and ((y+i+1 > self.game_run.game.height-1) or (self.game_run.game.field[y+i+1][x+j] > -1)):
+                        if placeable and ((y+i+1 > len(field)-1) or (field[y+i+1][x+j] > -1)):
                             has_block_under = True
 
                     if placeable and has_block_under:
