@@ -109,7 +109,7 @@ class Controller:
                             placeable = False
 
 
-                        if placeable and ((y+i+1 > len(field)-1) or (field[y+i+1][x+j] > -1)):
+                        if placeable and ((y+i+1 >= len(field)) or (field[y+i+1][x+j] > -1)):
                             has_block_under = True
 
                     if placeable and has_block_under:

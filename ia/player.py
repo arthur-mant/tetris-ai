@@ -41,10 +41,12 @@ class Player:
             all_next_pos = self.controller.get_all_possible_pos(new_field, self.game_run.game.next_piece.type)
             for next_pos in all_next_pos:
                 new_field, next_lines_cleared = self.controller.simulate_piece(next_pos[0], next_pos[1], next_pos[2])
-                score=heuristics.score(new_field, [lines_cleared, next_lines_cleared], weights)
+                score = heuristics.score(new_field, [lines_cleared, next_lines_cleared], weights)
                 if score_best < score:
                     best_pos = pos
                     score_best = score
+                for i in new_field:
+                    print(i)
                 print("pos: ", pos, " next_pos", next_pos, " score: ", score)
         return best_pos, score_best
 
@@ -81,6 +83,6 @@ class Player:
 
 if __name__ == '__main__':
 
-    weights = [-10, -8, -4, -3, 10, 10, 5, -10000]
-    player = Player(weights, 10, 10)
+    weights = [-10, -5, -5, 10, 10, -1000]
+    player = Player(weights, 10, 20)
     player.play()

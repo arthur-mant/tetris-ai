@@ -1,44 +1,26 @@
 
 
 def score(field, lines, weights):
-    functions = [hard_hole_number, soft_hole_number, absolute_height, cumulative_height_difference, lines_cleared, has_i_valley, i_valley_pos_relative_to_center, invades_spawn_area]
+    functions = [hole_number, absolute_height, cumulative_height_difference, lines_cleared, has_i_valley_on_border, invades_spawn_area]
     score = 0
     for i in range(len(functions)):
-#        print(functions[i], ": ", functions[i](field, lines))
+        print(functions[i], ": ", functions[i](field, lines))
         score += weights[i]*pow(functions[i](field, lines), 2)
     return score
 
-def hard_hole_number(field, lines):
-    hole_matrix = [ [ 0 for j in range(len(field[0])) ] for i in range(len(field)) ]
-    #print(hole_matrix)
-    holes = 0
-    for i in range(len(field)):
-        for j in range(len(field[i])):
-            if field[i][j] == -1:
-                blocked = (False, False, False)
-                if i-1 > 0 and ((field[i-1][j] > -1) or (hole_matrix[i-1][j] == 1)):
-                    blocked = (True, blocked[1], blocked[2])
-                if j-1 < 0 or field[i][j-1] > -1:
-                    blocked = (blocked[0], True, blocked[2])
-                if j+1 >= len(field[i]) or field[i][j+1] > -1:
-                    blocked = (blocked[0], blocked[1], True)
-
-                if blocked[0] and blocked[1] and blocked[2]:
-                    holes += 1
-                    hole_matrix[i][j] = 1
-
-
-    return holes
-
-def soft_hole_number(field, lines):
+def hole_number(field, lines):
     holes = 0
     for i in range(len(field)):
         for j in range(len(field[i])):
             if field[i][j] == -1 and i-1 > 0 and field[i-1][j] > -1:
-                holes += 1
-                for k in range(i+1, len(field)):
+                k = i
+                end_hole = False
+                while k < len(field) and not end_hole:
                     if field[k][j] == -1:
                         holes += 1
+                    else:
+                        end_hole = True
+                    k = k+1
 
     return holes
 
@@ -68,26 +50,19 @@ def lines_cleared(field, lines): #mexer no expoente?
         total = total + elem*elem
     return total
 
-def has_i_valley(field, lines):
-    _unused, aux = check_i_valley(field)
-    if aux == 1:
+def has_i_valley_on_border(field, lines):
+    if get_height(field, 1) - get_height(field, 0) >= 4:
+        return 1
+    if get_height(field, len(field[0])-2) - get_height(field, len(field[0])-1) >= 4:
         return 1
     return 0
 
-def i_valley_pos_relative_to_center(field, lines):
-    pos, num = check_i_valley(field)
-    if num != 1:
-        return -1       #mudar?
-    if pos < len(field[0])//2:
-        return (len(field[0])//2)+1-pos
-    else:
-        return pos - (len(field[0])//2)
 
 def invades_spawn_area(field, lines):
     for i in range(4):
-        for j in range(len(field[0])//2 - 2, len(field[0])//2 + 2):
+        for j in range(0, len(field[0])):
             if field[i][j] > -1:
-                return 1
+                return 4-i
     return 0
 
 #auxiliary functions:
@@ -98,16 +73,3 @@ def get_height(field, column):
             return len(field) - i
     return 0
 
-def check_i_valley(field):
-    pos = -1
-    num = 0
-    heights = []
-    for j in range(len(field[0])):
-        heights.append(get_height(field, j))
-    for j in heights:
-        if min(heights) == j:
-            pos = j
-            num += 1
-        if j - min(heights) < 4:
-            return -1, 0
-    return pos, num
