@@ -9,13 +9,13 @@ class Piece:
     y = 0
 
     pieces = [
-        [[1, 5, 9, 13], [4, 5, 6, 7]],
-        [[1, 2, 5, 9], [4, 5, 6, 10], [1, 5, 9, 8], [0, 4, 5, 6]],
-        [[1, 2, 6, 10], [3, 5, 6, 7], [2, 6, 10, 11], [5, 6, 7, 9]],
-        [[1, 4, 5, 6], [1, 5, 6, 9], [4, 5, 6, 9], [1, 4, 5, 9]],
-        [[1, 2, 5, 6]],
-        [[0, 1, 5, 6], [2, 6, 5, 9]],
-        [[1, 2, 4, 5], [1, 5, 6, 10]]
+        [[8, 9, 10, 11], [2, 6, 10,14]],    #I
+        [[8, 9, 10, 14], [5, 9, 12, 13], [4, 8, 9, 10], [5, 6, 9, 13]],      #J
+        [[8, 9, 10, 12], [4, 5, 9, 13], [6, 8, 9, 10], [5, 9, 13, 14]],      #L
+        [[8, 9, 10, 13], [5, 8, 9, 13], [5, 8, 9, 10], [5, 9, 10, 13]],       #T
+        [[9, 10, 13, 14]],                    #O
+        [[8, 9, 13, 14], [6, 9, 10, 13]],      #Z
+        [[9, 10, 12, 13], [5, 9, 10, 14]]       #S
     ]
 
 
@@ -56,7 +56,7 @@ class Tetris:
 
     def new_piece(self):
         self.piece = self.next_piece
-        self.next_piece = Piece((self.width//2)-2,0)
+        self.next_piece = Piece((self.width//2)-2, -2)
         self.pieces += 1
 
     def intersects(self):
@@ -66,11 +66,13 @@ class Tetris:
             i = block//4
             j = block%4
 
-            if i+self.piece.y > self.height-1 or \
+            if  i+self.piece.y >= 0 and \
+                (i+self.piece.y > self.height-1 or \
                 j+self.piece.x > self.width-1 or \
                 j+self.piece.x < 0 or \
-                self.field[i+self.piece.y][j+self.piece.x] > -1:
+                self.field[i+self.piece.y][j+self.piece.x] > -1):
                     intersection = True
+
         return intersection
 
     def freeze(self):

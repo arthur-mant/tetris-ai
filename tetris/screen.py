@@ -60,10 +60,11 @@ class Screen:
             for block in game.piece.image():
                 i = block//4
                 j = block%4
-                self.pygame.draw.rect(self.display, colors[game.piece.type],
-                    [self.game_pos_x + self.zoom*(j+game.piece.x)+1,
-                     self.game_pos_y + self.zoom*(i+game.piece.y)+1,
-                     self.zoom-2, self.zoom-2])
+                if i+game.piece.y >= 0:
+                    self.pygame.draw.rect(self.display, colors[game.piece.type],
+                        [self.game_pos_x + self.zoom*(j+game.piece.x)+1,
+                        self.game_pos_y + self.zoom*(i+game.piece.y)+1,
+                        self.zoom-2, self.zoom-2])
 
         self.pygame.draw.rect(self.display, GRAY, [self.game_pos_x + self.zoom*(game.width+0.5), self.game_pos_y, self.zoom*6, self.zoom*6], 1)
         text_next = self.text_font.render("Next", True, BLACK)
