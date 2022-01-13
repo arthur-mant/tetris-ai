@@ -40,15 +40,15 @@ class Player:
             new_field, lines_cleared = self.controller.simulate_piece(pos, self.game_run.game.field, self.game_run.game.piece.type)
             all_next_pos = self.controller.get_all_possible_pos(new_field, self.game_run.game.next_piece.type)
             for next_pos in all_next_pos:
-                print(self.game_run.game.next_piece.type, next_pos)
-                for i in new_field:
-                    print(i)
+                #print(self.game_run.game.next_piece.type, next_pos)
+                #for i in new_field:
+                #    print(i)
                 next_new_field, next_lines_cleared = self.controller.simulate_piece(next_pos, new_field, self.game_run.game.next_piece.type)
                 score = heuristics.score(next_new_field, [lines_cleared, next_lines_cleared], weights)
                 if score_best < score:
                     best_pos = pos
                     score_best = score
-                print("pos: ", pos, " next_pos", next_pos, " score: ", score)
+                #print("pos: ", pos, " next_pos", next_pos, " score: ", score)
 
         return best_pos, score_best
 
@@ -65,14 +65,14 @@ class Player:
                 self.controller.check_if_right_position(new_field)
 
                 best_pos, best_score = self.exhaustive_search()
-                print("best position: ", best_pos, " score: ", best_score)
+                #print("best position: ", best_pos, " score: ", best_score)
 
                 #creates ideal field to compare with the actual field when the piece is placed
                 new_field, _cleared_lines = self.controller.simulate_piece(best_pos, self.game_run.game.field, self.game_run.game.piece.type)
-                for i in new_field:
-                    print(i)
+                #for i in new_field:
+                #    print(i)
 
-                _unused = input()       #trava para executar uma peça por vez
+                #_unused = input()       #trava para executar uma peça por vez
 
                 #sends command to put piece in the calculated place
                 self.controller.put_piece(best_pos[2], best_pos[0], best_pos[1], path=best_pos[3])
@@ -80,7 +80,7 @@ class Player:
 
             old_piece = self.game_run.game.pieces
 
-        print("Score: ", self.game_run.game.score)
+        #print("Score: ", self.game_run.game.score)
 
         while self.game_run.run_frame():        #trava para ver o campo no gameover
             pass

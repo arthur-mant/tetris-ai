@@ -4,7 +4,7 @@ def score(field, lines, weights):
     functions = [hole_number, absolute_height, cumulative_height_difference, lines_cleared, has_i_valley_on_border, invades_spawn_area]
     score = 0
     for i in range(len(functions)):
-        print(functions[i], ": ", functions[i](field, lines))
+        #print(functions[i], ": ", functions[i](field, lines))
         score += weights[i]*pow(functions[i](field, lines), 2)
     return score
 

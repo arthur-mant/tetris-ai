@@ -157,7 +157,7 @@ class Controller:
             self.game_run.queue_i.hard_drop()
 
         else:
-            print("following path")
+            #print("following path")
             self.path_to_command(path)
 
     def simulate_piece(self, pos, field, piece):
@@ -169,7 +169,6 @@ class Controller:
         for block in self.game_run.game.piece.pieces[piece][rotation]:
             i = block // 4
             j = block % 4
-            print("(", y+i, ", ", x+j, ")")
             if field[y+i][x+j] > -1:
                 #print("ERROR: TRIED TO OVERWRITE BLOCK")
                 raise Exception("ERROR: TRIED TO OVERWRITE BLOCK")
@@ -194,22 +193,22 @@ class Controller:
         if not bool(new_field):
             return True
 
-        print("predicted field:")
-        for i in range(self.game_run.game.height):
-            for j in range(self.game_run.game.width):
-                print(new_field[i][j])
-            print()
-        print("actual field:")
-        for i in range(self.game_run.game.height):
-            for j in range(self.game_run.game.width):
-                print(self.game_run.game.field[i][j])
-            print()
+        #print("predicted field:")
+        #for i in range(self.game_run.game.height):
+        #    for j in range(self.game_run.game.width):
+        #        print(new_field[i][j])
+        #    print()
+        #print("actual field:")
+        #for i in range(self.game_run.game.height):
+        #    for j in range(self.game_run.game.width):
+        #        print(self.game_run.game.field[i][j])
+        #    print()
 
         for i in range(self.game_run.game.height):
             for j in range(self.game_run.game.width):
                 if self.game_run.game.field[i][j] != new_field[i][j]:
                     #print("ERROR: PREDICTED FIELD DIFFERENT FROM REAL ONE")
-                    print(i, ", ", j)
+                    #print(i, ", ", j)
                     raise Exception("ERROR: PREDICTED FIELD DIFFERENT FROM REAL ONE")
                     return False
         return True
