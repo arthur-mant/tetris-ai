@@ -159,15 +159,21 @@ class Controller:
             print("following path")
             self.path_to_command(path)
 
-    def simulate_piece(self, x, y, rotation):
-        new_field = copy.deepcopy(self.game_run.game.field)
-        for block in self.game_run.game.piece.pieces[self.game_run.game.piece.type][rotation]:
+    def simulate_piece(self, pos, field, piece):
+        x = pos[0]
+        y = pos[1]
+        rotation = pos[2]
+
+        new_field = copy.deepcopy(field)
+        for block in self.game_run.game.piece.pieces[piece][rotation]:
             i = block // 4
             j = block % 4
-            if self.game_run.game.field[y+i][x+j] > 0:
-                print("ERROR: TRIED TO OVERWRITE BLOCK")
-                return None
-            new_field[y+i][x+j] = self.game_run.game.piece.type
+            print("(", y+i, ", ", x+j, ")")
+            if field[y+i][x+j] > -1:
+                #print("ERROR: TRIED TO OVERWRITE BLOCK")
+                raise Exception("ERROR: TRIED TO OVERWRITE BLOCK")
+
+            new_field[y+i][x+j] = piece
 
         lines = 0
         for i in range(len(new_field)):

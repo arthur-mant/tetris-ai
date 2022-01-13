@@ -33,20 +33,21 @@ class Player:
         all_pos = self.controller.get_all_possible_pos(self.game_run.game.field, self.game_run.game.piece.type)
         best_pos = all_pos[0]
 
-        new_field, lines_cleared = self.controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])
+        new_field, lines_cleared = self.controller.simulate_piece(best_pos, self.game_run.game.field, self.game_run.game.piece.type)
         score_best = heuristics.score(new_field, [lines_cleared], weights)
 
         for pos in all_pos:
-            new_field, lines_cleared = self.controller.simulate_piece(pos[0], pos[1], pos[2])
+            new_field, lines_cleared = self.controller.simulate_piece(pos, self.game_run.game.field, self.game_run.game.piece.type)
             all_next_pos = self.controller.get_all_possible_pos(new_field, self.game_run.game.next_piece.type)
             for next_pos in all_next_pos:
-                new_field, next_lines_cleared = self.controller.simulate_piece(next_pos[0], next_pos[1], next_pos[2])
-                score = heuristics.score(new_field, [lines_cleared, next_lines_cleared], weights)
+                print(self.game_run.game.next_piece.type, next_pos)
+                for i in new_field:
+                    print(i)
+                next_new_field, next_lines_cleared = self.controller.simulate_piece(next_pos, new_field, self.game_run.game.next_piece.type)
+                score = heuristics.score(next_new_field, [lines_cleared, next_lines_cleared], weights)
                 if score_best < score:
                     best_pos = pos
                     score_best = score
-                for i in new_field:
-                    print(i)
                 print("pos: ", pos, " next_pos", next_pos, " score: ", score)
         return best_pos, score_best
 
@@ -71,7 +72,7 @@ class Player:
                 self.controller.put_piece(best_pos[2], best_pos[0], best_pos[1], path=best_pos[3])
 
                 #creates ideal field to compare with the actual field when the piece is placed
-                new_field, _cleared_lines = self.controller.simulate_piece(best_pos[0], best_pos[1], best_pos[2])
+                new_field, _cleared_lines = self.controller.simulate_piece(best_pos, self.game_run.game.field, self.game_run.game.piece.type)
             old_piece = self.game_run.game.pieces
 
         print("Score: ", self.game_run.game.score)
