@@ -168,6 +168,7 @@ class GameRun:
         if bool(self.keyb):
             self.done, self.pressing_down = self.keyb.get_event_from_keyboard(pygame, self.game, self.pressing_down)
         elif bool(self.queue_i):
+            self.queue_i.q.print()
             self.queue_i.exec_command(self.game)
         else:
             print("ERROR: NO INPUT")

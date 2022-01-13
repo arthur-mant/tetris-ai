@@ -1,10 +1,30 @@
-import queue
+
+class Queue:
+
+    def __init__(self):
+        self.elements = []
+
+    def put(self, elem):
+        self.elements.append(elem)
+
+    def get(self):
+        if len(self.elements) <= 0:
+            return None
+        head = self.elements[0]
+        self.elements = self.elements[1:]
+        return head
+
+    def print(self):
+        s = ""
+        for e in self.elements:
+            s = s+e+" "
+        print(s)
 
 class interface_queue:
     q = None
 
     def __init__(self):
-        self.q = queue.SimpleQueue()
+        self.q = Queue()
 
     def rotate(self, num):
         for i in range(num % 4):
@@ -27,9 +47,7 @@ class interface_queue:
     def exec_command(self, game):
         aux = None
         try:
-            aux = self.q.get(block=False)
-        except queue.Empty:
-            return None
+            aux = self.q.get()
         except Exception as e:
             print("Unexpected exception in interface queue: ", e)
 
