@@ -26,9 +26,9 @@ class Controller:
         return y
 
     def get_path(self, x, y, rot):
-        visitados = [ [ list(range(len(self.game_run.game.piece.pieces[self.game_run.game.piece.type]))) for i in range(self.game_run.game.width) ] for j in range(self.game_run.game.height) ]
+        visitados = [ [ list(range(len(self.game_run.game.piece.pieces[self.game_run.game.piece.type]))) for i in range(self.game_run.game.width) ] for j in range(self.game_run.game.height+2) ]
         #print(visitados)
-        path, x1, y1 = self.create_path(x, y, rot, visitados, ((self.game_run.game.width//2)-2, 0, 0))
+        path, x1, y1 = self.create_path(x, y, rot, visitados, ((self.game_run.game.width//2)-2, -2, 0))
 
         if path == None:
             #print("(", x,", ", y, ", ", rot, ") has no path!")
@@ -63,14 +63,15 @@ class Controller:
     def create_path(self, x, y, rot, visitados, obj):
 
         #condições de base
-        if not rot in visitados[y][x]:
+        if not rot in visitados[y+2][x]:
             return None, -1, -1
-        visitados[y][x].remove(rot)
+        visitados[y+2][x].remove(rot)
 
         for block in self.game_run.game.piece.pieces[self.game_run.game.piece.type][rot]:
             i = block // 4
             j = block % 4
-            if y+i < 0 or y+i >= self.game_run.game.height or x+j < 0 or x+j >= self.game_run.game.width or (self.game_run.game.field[y+i][x+j] != -1):
+
+            if y < -2 or y+i >= self.game_run.game.height or x+j < 0 or x+j >= self.game_run.game.width or (y+i >= 0 and self.game_run.game.field[y+i][x+j] != -1):
                 #print("(", x, ", ", y, ", ", rot, ") is blocked")
                 return None, -1, -1
 
