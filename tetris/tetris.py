@@ -45,6 +45,7 @@ class Tetris:
     state = "start"
     piece = None
     next_piece = None
+    line_score = [40, 100, 300, 1200]
 
     def __init__(self, height, width, field=None):      #should be at least 4x4
         self.height = height
@@ -76,6 +77,7 @@ class Tetris:
         return intersection
 
     def freeze(self):
+        self.score += self.piece.y
         for block in self.piece.image():
             i = block//4
             j = block%4
@@ -97,20 +99,22 @@ class Tetris:
                 for k in range(i, 1, -1):
                     for l in range(self.width):
                         self.field[k][l] = self.field[k-1][l]
-        self.score += lines*lines
-        self.lines += lines
+        if lines > 0:
+            self.score += line_score[lines-1]
+            self.lines += lines
 
-    def hard_drop(self):
-        while not self.intersects():
-            self.piece.y += 1
-        self.piece.y -=1
-        self.freeze()
+#    def hard_drop(self):
+#        while not self.intersects():
+#            self.piece.y += 1
+#        self.piece.y -=1
+#        self.freeze()
 
     def go_down(self):
         self.piece.y += 1
         if self.intersects():
             self.piece.y -= 1
             self.freeze()
+        
 
     def go_side(self, dx):
         old_x = self.piece.x
