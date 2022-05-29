@@ -57,16 +57,16 @@ class Agent():
         act_values = self.brain(state)
         return np.argmax(act_values)
 
-    def remember(self, state, action, reward, next_state, done):
-        self.memory.append((state, action, reward, next_state, done))
+    def remember(self, state, action, reward, next_state):
+        self.memory.append((state, action, reward, next_state))
 
-    def replay(self, ):
+    def replay(self):
         if len(self.memory) < self.sample_batch_size:
             return
         sample_batch = random.sample(self.memory, self.sample_batch_size)
 
-        for state, action, reward, next_state, done in sample_batch:
-            target = reward + int(not done)*self.gamma*np.amax(self.brain(next_state))
+        for state, action, reward, next_state in sample_batch:
+            target = reward + self.gamma*np.amax(self.brain(next_state))
             target_f = self.brain(state)
             target_f[action] = target
 
