@@ -3,6 +3,8 @@ from keras.layers import Dense
 from tensorflow.keras.optimizers import Adam
 from collections import deque
 
+import numpy as np
+import random
 #import os
 
 
@@ -28,12 +30,18 @@ def build_neural_network(self, input_dim, action_size, nn_layers, lr, filename):
 
 class Agent():
 
-    def __init__(self, input_dim, action_size, nn_layers, lr):
+    def __init__(self, input_dim, action_size, nn_layers, lr, exploration_rate, exploration_min, exploration_decay, gamma, sample_batch_size):
         self.input_dim = input_dim
         self.action_size = action_size
         self.nn_layers = nn_layers
         self.lr = lr
-        self.weight_backup_file = "TBD"
+        self.exploration_rate = exploration_rate
+        self.exploration_min = exploration_min
+        self.exploration_decay = exploration_decay
+        self.gamma = gamma
+        self.sample_batch_size = sample_batch_size
+        self.name = "TBD"
+        self.weight_backup_file = self.name+".h5"
 
         self.brain = build_neural_network(self.input_dim, self.action_size, self.nn_layers, self.lr, self.weight_backup_file)
 
@@ -44,8 +52,25 @@ class Agent():
         self.brain.save(self.weight_backup_file)
 
     def act(self, state):
+        if np.random.rand() <= self.exploration_rate:
+            return random.randrange(self.action_size)
+        act_values = self.brain(state)
+        return np.argmax(act_values)
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
 
+    def replay(self, ):
+        if len(self.memory) < self.sample_batch_size:
+            return
+        sample_batch = random.sample(self.memory, self.sample_batch_size)
 
+        for state, action, reward, next_state, done in sample_batch:
+            target = reward + int(not done)*self.gamma*np.amax(self.brain(next_state))
+            target_f = self.brain(state)
+            target_f[action] = target
+
+            self.brain.fit(state, target_f, epochs=1, verbose=0)
+
+        if self.exploration_rate > self.exploration_min:
+            self.exploration_rate *= self.exploration_decay
