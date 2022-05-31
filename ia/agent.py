@@ -30,7 +30,10 @@ def build_neural_network(self, input_dim, action_size, nn_layers, lr, filename):
 
 class Agent():
 
-    def __init__(self, input_dim, action_size, nn_layers, lr, exploration_rate, exploration_min, exploration_decay, gamma, sample_batch_size):
+    def __init__(self, input_dim, action_size, nn_layers, lr,
+                    exploration_rate, exploration_min, exploration_decay,
+                    gamma, sample_batch_size):
+
         self.input_dim = input_dim
         self.action_size = action_size
         self.nn_layers = nn_layers
