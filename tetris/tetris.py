@@ -36,13 +36,13 @@ class Tetris:
     level = 1
     score = 0
     lines = 0
-    pieces = -2
+    pieces = 0
     field = []
     height = 0
     width = 0
     fps = 0
 
-    state = "start"
+    gameover = False
     piece = None
     next_piece = None
     line_score = [40, 100, 300, 1200]
@@ -54,6 +54,9 @@ class Tetris:
             self.field = field
         else:
             self.field = [ [ -1 for i in range(width) ] for j in range(height) ]
+
+        self.piece = Piece((self.width//2)-2, -2)
+        self.next_piece = Piece((self.width//2)-2, -2)
 
     def new_piece(self):
         self.piece = self.next_piece
@@ -85,7 +88,7 @@ class Tetris:
         self.break_lines()
         self.new_piece()
         if self.intersects():
-            self.state = "gameover"
+            self.gameover = True
 
     def break_lines(self):
         lines = 0
@@ -121,6 +124,12 @@ class Tetris:
         self.piece.x += dx
         if self.intersects():
             self.piece.x = old_x
+
+    def go_right(self):
+        go_side(1)
+
+    def go_left(self):
+        go_side(-1)
 
     def rotate(self):
         old_rotation = self.piece.rotation
@@ -158,30 +167,32 @@ class GameRun:
         else:
             self.queue_i = queue_interface.interface_queue()
 
-    def run_frame(self):
+    def run_from_keyboard(self):
+        if not bool(self.keyb):
+            print("ERROR: Trying to run game using keyboard but no keyboard interface was created")
+            return
+        self.done, self.pressing_down, command_input = self.keyb.get_event_from_keyboard(pygame, self.game, self.pressing_down)
+        self.run_frame(command_input)
+
+    def run_frame(self, command):
         if self.game.piece is None:
-            self.game.new_piece()
+            print("ERROR: No piece")
+            #self.game.new_piece()
         #self.counter += 1
         if self.counter > 100000:
             self.counter = 0
 
-        if self.counter % (self.fps // (2*self.game.level)) == 0 or self.pressing_down:
-            if self.game.state == "start":
-                self.game.go_down()
+        if self.keyb and not self.gameover and (self.counter % (self.fps // (2*self.game.level)) == 0 or self.pressing_down):
+            self.game.go_down()
 
-        if bool(self.keyb):
-            self.done, self.pressing_down = self.keyb.get_event_from_keyboard(pygame, self.game, self.pressing_down)
-        elif bool(self.queue_i):
-            self.queue_i.exec_command(self.game)
-        else:
-            print("ERROR: NO INPUT")
+        command()
 
         if bool(self.screen_i):
             self.screen_i.update_screen(self.game)
 
         self.game.fps = self.true_fps = 1000 // self.clock.tick(self.fps)
 
-#        if self.game.state == "gameover" and bool(self.queue_i):
+#        if self.gameover and bool(self.queue_i):
 #            self.done = True
 
         if self.done:
