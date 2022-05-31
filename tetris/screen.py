@@ -98,7 +98,7 @@ class Screen:
         self.display.blit(text_pieces, [self.game_pos_x + self.zoom*(game.width+1), self.game_pos_y+self.zoom*(7)+self.text_font_size*3.5])
         self.display.blit(text_level, [self.game_pos_x + self.zoom*(game.width+1), self.game_pos_y+self.zoom*(7)+self.text_font_size*5])
         self.display.blit(text_fps, [self.game_pos_x + self.zoom*(game.width+1), self.game_pos_y+self.zoom*(7)+self.text_font_size*6.5])
-        if game.state == "gameover":
+        if game.gameover:
             self.display.blit(text_game_over, [20, 200])
             self.display.blit(text_reset, [25, 265])
 

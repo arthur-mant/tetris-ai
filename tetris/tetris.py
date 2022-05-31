@@ -2,7 +2,6 @@ import pygame
 import random
 import screen
 import interface_keyboard
-import queue_interface
 
 class Piece:
     x = 0
@@ -80,7 +79,7 @@ class Tetris:
         return intersection
 
     def freeze(self):
-        self.score += self.piece.y
+        self.score += self.piece.y+2
         for block in self.piece.image():
             i = block//4
             j = block%4
@@ -103,7 +102,7 @@ class Tetris:
                     for l in range(self.width):
                         self.field[k][l] = self.field[k-1][l]
         if lines > 0:
-            self.score += line_score[lines-1]
+            self.score += self.line_score[lines-1]
             self.lines += lines
 
 #    def hard_drop(self):
@@ -126,10 +125,10 @@ class Tetris:
             self.piece.x = old_x
 
     def go_right(self):
-        go_side(1)
+        self.go_side(1)
 
     def go_left(self):
-        go_side(-1)
+        self.go_side(-1)
 
     def rotate(self):
         old_rotation = self.piece.rotation
@@ -172,7 +171,7 @@ class GameRun:
             print("ERROR: Trying to run game using keyboard but no keyboard interface was created")
             return
         self.done, self.pressing_down, command_input = self.keyb.get_event_from_keyboard(pygame, self.game, self.pressing_down)
-        self.run_frame(command_input)
+        return self.run_frame(command_input)
 
     def run_frame(self, command):
         if self.game.piece is None:
@@ -182,10 +181,11 @@ class GameRun:
         if self.counter > 100000:
             self.counter = 0
 
-        if self.keyb and not self.gameover and (self.counter % (self.fps // (2*self.game.level)) == 0 or self.pressing_down):
+        if self.keyb and not self.game.gameover and (self.counter % (self.fps // (2*self.game.level)) == 0 or self.pressing_down):
             self.game.go_down()
 
-        command()
+        if bool(command):
+            command()
 
         if bool(self.screen_i):
             self.screen_i.update_screen(self.game)
@@ -209,5 +209,5 @@ if __name__ == '__main__':
 
     game_run = GameRun(Tetris(20,10), 60, use_screen=True, use_keyboard=True)
 
-    while game_run.run_frame():
+    while game_run.run_from_keyboard():
         pass
