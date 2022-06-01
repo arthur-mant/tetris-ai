@@ -28,7 +28,7 @@ class AgentRun:
             while index_episode < self.max_episodes and avg_score < self.min_score:
 
                 #print("setting up game")
-                tetris_run = tetris.GameRun(tetris.Tetris(20, 10), 600, use_screen=True, use_keyboard=False)
+                tetris_run = tetris.GameRun(tetris.Tetris(20, 10), -1, use_screen=True, use_keyboard=False)
                 state = np.reshape(utils.get_state(tetris_run.game), [1, self.input_size])
                 done = False
 

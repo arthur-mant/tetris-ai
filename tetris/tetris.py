@@ -179,7 +179,7 @@ class GameRun:
         if self.counter > 100000:
             self.counter = 0
 
-        if self.keyb and not self.game.gameover and (self.counter % (self.fps // (2*self.game.level)) == 0 or self.pressing_down):
+        if self.keyb and not self.game.gameover and self.fps > 0 and (self.counter % (self.fps // (2*self.game.level)) == 0 or self.pressing_down):
             self.game.go_down()
 
         if bool(command):
@@ -188,7 +188,8 @@ class GameRun:
         if bool(self.screen_i):
             self.screen_i.update_screen(self.game)
 
-        self.game.fps = self.true_fps = 1000 // self.clock.tick(self.fps)
+        if self.fps > 0:
+            self.game.fps = self.true_fps = 1000 // self.clock.tick(self.fps)
 
 #        if self.gameover and bool(self.queue_i):
 #            self.done = True
