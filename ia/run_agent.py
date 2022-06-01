@@ -1,6 +1,8 @@
+import sys
+sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
+import tetris
 import agent
 import utils
-import tetris
 
 import numpy as np
 
@@ -17,10 +19,12 @@ class AgentRun:
     def run(self):
         index_episode = 0
         avg_score = 0
+        eps_history = []
 
-        while index_episode < self.max_episodes and avg_score < min_score:
-            try:
-                tetris_run = tetris.GameRun(tetris.Tetris(20, 10), 60, use_screen=True, use_keyboard=False)
+        try:
+            while index_episode < self.max_episodes and avg_score < min_score:
+
+                tetris_run = tetris.GameRun(tetris.Tetris(20, 10), 600, use_screen=True, use_keyboard=False)
                 state = utils.get_state(tetris_run.game)
                 done = False
 
@@ -34,13 +38,16 @@ class AgentRun:
                     self.agent.remember(state, action, reward, next_state, done)
 
                 self.scores.append(tetris_run.game.score)
+                eps_history.append(self.agent.exploration_rate)
+
                 avg_score = np.mean(self.scores[max(0, index_episode-50):index_episode+1])
-                print("Episode {} #Pieces: {} #Score: {} #Avg_Score: {}".format(
-                    index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score)
+                print("Episode {} #Pieces: {} #Score: {} #Avg_Score: {} #Epsilon".format(
+                    index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score, self.agent.exploration_rate))
                 self.agent.replay()
-    
+
                 index_episode += 1
                 tetris_run.close_game()
+
         finally:
             self.agent.save_neural_network()
 

@@ -8,19 +8,19 @@ import random
 #import os
 
 
-def build_neural_network(self, input_dim, action_size, nn_layers, lr, filename):
+def build_neural_network(input_dim, action_size, nn_layers, lr, filename):
     if len(nn_layers) < 1:
         print("neural network needs at least 1 layer")
         return None
 
     model = Sequential()
-    model.add(Dense(nn_layers[0], input_dim=input_dim, activation="relu")
+    model.add(Dense(nn_layers[0], input_dim=input_dim, activation="relu"))
 
     for layer in nn_layers[1:]:
         model.add(Dense(layer, activation="relu"))
 
     model.add(Dense(action_size, activation="linear"))
-    model.compile(loss="mse", optimizer=Adam(learning_rate=lr)
+    model.compile(loss="mse", optimizer=Adam(learning_rate=lr))
 
 #    if os.path.isfile(filename):
 #        model.load_weights(filename)

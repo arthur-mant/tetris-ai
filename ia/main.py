@@ -1,13 +1,17 @@
-#import run_agent
-import sys
-
-sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
-
-import tetris
-import utils
-
+import run_agent
 
 if __name__ == '__main__':
 
-    game = tetris.Tetris(20, 10)
-    print(utils.get_state(game))
+    run_agent = \
+        run_agent.AgentRun(
+            max_episodes = 500,
+            min_score = 1000,
+            nn_layers = [64, 16],
+            lr = 0.001,
+            init_exp = 1,
+            exp_min = 0.01,
+            exp_decay = 0.99,
+            gamma = 0.99,
+            batch_size = 256
+        )
+
