@@ -18,7 +18,10 @@ def get_state(game):
     next_piece = [0 for n in range(7)]
     next_piece[game.next_piece.type] = 1
 
-    return field+piece+next_piece
+    rotation = [0 for n in range(4)]
+    rotation[game.piece.rotation] = 1
+
+    return field+[game.piece.x]+[game.piece.y]+rotation+piece+next_piece
 
 def num_to_action(game, num):
     switch = {
