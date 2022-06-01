@@ -32,15 +32,28 @@ class AgentRun:
                 done = False
 
                 while not done:
+                    old_piece_count = tetris_run.game.pieces
                     #print("solving game")
                     prev_score = tetris_run.game.score
                     action = utils.num_to_action(tetris_run.game, self.agent.act(state))
+                    tetris_run.run_frame(action)
                     reward = tetris_run.game.score - prev_score
                     next_state = utils.get_state(tetris_run.game)
                     done = tetris_run.game.gameover
 
-                    self.agent.remember(state, action, reward, next_state, done)
-                    tetris_run.run_frame(action)
+                    #garante q quando uma peça for colocada o estado anterior
+                    #não saberá qual é a próxima peça
+
+                    remember_state = \
+                        next_state \
+                        if old_piece_count == tetris_run.game.pieces \
+                        else next_state[:-7]+[0,0,0,0,0,0,0]
+
+                    #print("state:\n", state, "\nnext_state:\n", next_state)
+                    #print("altered next_state:\n", remember_state)
+
+                    self.agent.remember(state, action, reward, remember_state, done)
+                    state = next_state
 
                 self.scores.append(tetris_run.game.score)
                 eps_history.append(self.agent.exploration_rate)
