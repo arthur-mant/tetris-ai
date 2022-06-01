@@ -14,4 +14,5 @@ if __name__ == '__main__':
             gamma = 0.99,
             batch_size = 256
         )
+    run_agent.run()
 

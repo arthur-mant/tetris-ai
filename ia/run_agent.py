@@ -21,14 +21,18 @@ class AgentRun:
         avg_score = 0
         eps_history = []
 
-        try:
-            while index_episode < self.max_episodes and avg_score < min_score:
+        #print("running agent")
 
+        try:
+            while index_episode < self.max_episodes and avg_score < self.min_score:
+
+                #print("setting up game")
                 tetris_run = tetris.GameRun(tetris.Tetris(20, 10), 600, use_screen=True, use_keyboard=False)
                 state = utils.get_state(tetris_run.game)
                 done = False
 
                 while not done:
+                    #print("solving game")
                     prev_score = tetris_run.game.score
                     action = utils.num_to_action(tetris_run.game, self.agent.act(state))
                     reward = tetris_run.game.score - prev_score
@@ -36,6 +40,7 @@ class AgentRun:
                     done = tetris_run.game.gameover
 
                     self.agent.remember(state, action, reward, next_state, done)
+                    tetris_run.run_frame(action)
 
                 self.scores.append(tetris_run.game.score)
                 eps_history.append(self.agent.exploration_rate)
@@ -47,6 +52,7 @@ class AgentRun:
 
                 index_episode += 1
                 tetris_run.close_game()
+            print("finished running agent")
 
         finally:
             self.agent.save_neural_network()

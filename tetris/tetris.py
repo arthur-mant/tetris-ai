@@ -163,8 +163,6 @@ class GameRun:
             self.screen_i = screen.Screen(pygame, 500, 500, 100, 60, 20)
         if bool(use_keyboard) and bool(use_screen):
             self.keyb = interface_keyboard.Keyboard()
-        else:
-            self.queue_i = queue_interface.interface_queue()
 
     def run_from_keyboard(self):
         if not bool(self.keyb):

@@ -1,5 +1,5 @@
 def get_state(game):
-
+    print("getting state")
     if game.field == None or game.piece == None or game.next_piece == None:
         print("ERROR: Trying to get board state but something is not initialized")
         return None

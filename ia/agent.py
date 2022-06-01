@@ -69,6 +69,8 @@ class Agent():
         sample_batch = random.sample(self.memory, self.sample_batch_size)
 
         for state, action, reward, next_state, done in sample_batch:
+            print("state:\n", state, "next_state:\n", next_state)
+
             target = reward + self.gamma*int(not done)*np.amax(self.brain(next_state))
             target_f = self.brain(state)
             target_f[action] = target
