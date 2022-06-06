@@ -12,7 +12,7 @@ if __name__ == '__main__':
             exp_min = 0.01,
             exp_decay = 0.95,
             gamma = 0.99,
-            batch_size = 256
+            batch_size = 128
         )
     run_agent.run()
 

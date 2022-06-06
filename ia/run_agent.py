@@ -13,7 +13,7 @@ class AgentRun:
         self.max_episodes = max_episodes
         self.min_score = min_score
         self.scores = []
-        self.input_size = 220
+        self.input_size = 248
 
         self.agent = agent.Agent(self.input_size, 4, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size)
 
