@@ -39,7 +39,10 @@ class AgentRun:
                     action = self.agent.act(state)
 
                     tetris_run.run_frame(utils.num_to_action(tetris_run.game, action))
-                    reward = tetris_run.game.score - prev_score
+                    reward = (tetris_run.game.score - prev_score)*10
+                    if action == 1:
+                        reward += 1
+
                     next_state = utils.get_state(tetris_run.game)
                     done = tetris_run.game.gameover
 

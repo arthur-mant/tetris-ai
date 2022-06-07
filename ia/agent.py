@@ -54,6 +54,7 @@ class Agent():
 
 
     def save_neural_network(self):
+        print("saving neural network to ", self.weight_backup_file)
         self.brain.save(self.weight_backup_file)
 
     def act(self, state):

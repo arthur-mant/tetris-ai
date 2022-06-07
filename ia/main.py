@@ -10,7 +10,7 @@ if __name__ == '__main__':
             lr = 0.001,
             init_exp = 1,
             exp_min = 0.01,
-            exp_decay = 0.95,
+            exp_decay = 0.99,
             gamma = 0.99,
             batch_size = 128
         )

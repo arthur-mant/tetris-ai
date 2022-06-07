@@ -69,7 +69,7 @@ class Tetris:
             i = block//4
             j = block%4
 
-            if  i+self.piece.y >= 0 and \
+            if  i+self.piece.y >= -2 and \
                 (i+self.piece.y > self.height-1 or \
                 j+self.piece.x > self.width-1 or \
                 j+self.piece.x < 0 or \
@@ -83,7 +83,9 @@ class Tetris:
         for block in self.piece.image():
             i = block//4
             j = block%4
-            self.field[i+self.piece.y][j+self.piece.x] = self.piece.type
+            if i+self.piece.y < self.height and i+self.piece.y >= 0 and \
+                j+self.piece.x < self.width and j+self.piece.x >= 0:
+                self.field[i+self.piece.y][j+self.piece.x] = self.piece.type
         self.break_lines()
         self.new_piece()
         if self.intersects():
