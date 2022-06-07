@@ -7,7 +7,7 @@ if __name__ == '__main__':
             max_episodes = 500,
             min_score = 1000,
             nn_layers = [64, 16],
-            lr = 0.001,
+            lr = 0.01,
             init_exp = 1,
             exp_min = 0.01,
             exp_decay = 0.99,

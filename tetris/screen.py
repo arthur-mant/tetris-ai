@@ -44,7 +44,7 @@ class Screen:
 
         self.text_font_size = 19
         self.text_font = self.pygame.font.SysFont('Calibri', self.text_font_size, True, False)
-        self.title_font = self.pygame.font.SysFont('Calibri', 65, True, False)
+        self.title_font = self.pygame.font.SysFont('Calibri', 55, True, False)
 
 
     def update_screen(self, game):
@@ -90,8 +90,8 @@ class Screen:
         text_level = self.text_font.render("Level: " + str(game.level), True, BLACK)
         text_fps = self.text_font.render("FPS: " + str(game.fps), True, BLACK)
 
-        text_game_over = self.title_font.render("GAME OVER", True, (255, 125, 0))
-        text_reset = self.title_font.render("Press ESC", True, (255, 215, 0))
+        text_game_over = self.title_font.render("GAME OVER", True, (0, 0, 0))
+        #text_reset = self.title_font.render("Press ESC", True, (255, 215, 0))
 
         self.display.blit(text_score, [self.game_pos_x + self.zoom*(game.width+1), self.game_pos_y+self.zoom*(7)+self.text_font_size*0.5])
         self.display.blit(text_lines, [self.game_pos_x + self.zoom*(game.width+1), self.game_pos_y+self.zoom*(7)+self.text_font_size*2])
@@ -99,8 +99,8 @@ class Screen:
         self.display.blit(text_level, [self.game_pos_x + self.zoom*(game.width+1), self.game_pos_y+self.zoom*(7)+self.text_font_size*5])
         self.display.blit(text_fps, [self.game_pos_x + self.zoom*(game.width+1), self.game_pos_y+self.zoom*(7)+self.text_font_size*6.5])
         if game.gameover:
-            self.display.blit(text_game_over, [20, 200])
-            self.display.blit(text_reset, [25, 265])
+            self.display.blit(text_game_over, [100, 0])
+            #self.display.blit(text_reset, [25, 265])
 
         self.pygame.display.flip()
 
