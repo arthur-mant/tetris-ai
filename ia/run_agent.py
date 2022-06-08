@@ -29,6 +29,7 @@ class AgentRun:
 
                 #print("setting up game")
                 tetris_run = tetris.GameRun(tetris.Tetris(20, 10), -1, use_screen=True, use_keyboard=False)
+
                 state = np.reshape(utils.get_state(tetris_run.game), [1, self.input_size])
                 done = False
 
@@ -39,12 +40,7 @@ class AgentRun:
                     action = self.agent.act(state)
 
                     tetris_run.run_frame(utils.num_to_action(tetris_run.game, action))
-                    reward = (tetris_run.game.score - prev_score)*10
-                    if action == 1:
-                        reward += 1
-
                     next_state = utils.get_state(tetris_run.game)
-                    done = tetris_run.game.gameover
 
                     #garante q quando uma peça for colocada o estado anterior
                     #não saberá qual é a próxima peça
@@ -54,13 +50,41 @@ class AgentRun:
                         if old_piece_count == tetris_run.game.pieces \
                         else next_state[:-7]+[0,0,0,0,0,0,0]
 
+
+                    next_state = np.reshape(next_state, [1, self.input_size])
+                    done = tetris_run.game.gameover
+
+                    reward = (tetris_run.game.score - prev_score)*100
+
+                    #adiciona um pequeno bonus se a peça se mover para baixo
+                    if action == 1:
+                        reward += 1
+
+                    #penalidade para ações q n fazem nada
+                    if np.array_equal(state[0][200:], next_state[0][200:]) and old_piece_count != tetris_run.game.pieces:
+                        reward -= 10
+
+                    #calcula o numero de espaços preenchidos nas linhas afetadas pelo posicionamento da ultima peça
+
+                    if old_piece_count != tetris_run.game.pieces:
+                        index_list = [x for x in range(200) if (next_state[0][0:200] - state[0][0:200])[x] == 1]
+                        index_list = list(dict.fromkeys([x//10 for x in index_list]))
+                        for i in index_list:
+                            non_holes = 0
+                            for j in next_state[i*10:(i+1)*10]:
+                                non_holes += 1
+
+                        reward += 10*((len(index_list)*10 - non_holes)/(len(index_list)))
+
+
                     remember_state = np.reshape(remember_state, [1, self.input_size])
 
                     #print("state:\n", state, "\nnext_state:\n", next_state)
                     #print("altered next_state:\n", remember_state[0])
 
                     self.agent.remember(state, action, reward, remember_state, done)
-                    state = np.reshape(next_state, [1, self.input_size])
+                    #state = np.reshape(next_state, [1, self.input_size])
+                    state = next_state
 
                 self.scores.append(tetris_run.game.score)
                 eps_history.append(self.agent.exploration_rate)
