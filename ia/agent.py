@@ -5,7 +5,7 @@ from collections import deque
 
 import numpy as np
 import random
-#import os
+import os
 
 
 def build_neural_network(input_dim, action_size, nn_layers, lr, filename):
@@ -34,7 +34,7 @@ class Agent():
 
     def __init__(self, input_dim, action_size, nn_layers, lr,
                     exploration_rate, exploration_min, exploration_decay,
-                    gamma, sample_batch_size):
+                    gamma, sample_batch_size, new):
 
         self.input_dim = input_dim
         self.action_size = action_size
@@ -47,10 +47,20 @@ class Agent():
         self.sample_batch_size = sample_batch_size
         self.name = "TBD"
         self.weight_backup_file = self.name+".h5"
+        self.memory = deque(maxlen=10000)
+
 
         self.brain = build_neural_network(self.input_dim, self.action_size, self.nn_layers, self.lr, self.weight_backup_file)
 
-        self.memory = deque(maxlen=10000)
+        if new:
+            print("generating new neural network")
+        else:
+            print("loading ", self.weight_backup_file, " neural network")
+            if os.path.isfile(self.weight_backup_file):
+                self.brain.load_weights(self.weight_backup_file)
+            else:
+                print("ERROR: ", self.weight_backup_file, " not found")
+
 
 
     def save_neural_network(self):

@@ -1,6 +1,11 @@
 import run_agent
+import sys
 
 if __name__ == '__main__':
+
+    new = False
+    if "--new" in sys.argv:
+        new = True
 
     run_agent = \
         run_agent.AgentRun(
@@ -12,7 +17,8 @@ if __name__ == '__main__':
             exp_min = 0.01,
             exp_decay = 0.95,
             gamma = 0.99,
-            batch_size = 128
+            batch_size = 128,
+            new = new
         )
     run_agent.run()
 

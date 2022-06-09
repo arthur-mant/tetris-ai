@@ -9,14 +9,14 @@ import numpy as np
 
 class AgentRun:
     def __init__(self, max_episodes, min_score, nn_layers, lr,
-                    init_exp, exp_min, exp_decay, gamma, batch_size):
+                    init_exp, exp_min, exp_decay, gamma, batch_size, new):
 
         self.max_episodes = max_episodes
         self.min_score = min_score
         self.scores = []
         self.input_size = 248
 
-        self.agent = agent.Agent(self.input_size, 4, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size)
+        self.agent = agent.Agent(self.input_size, 4, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
 
     def run(self):
         index_episode = 0
@@ -96,7 +96,7 @@ class AgentRun:
 
                     #print("state:\n", state, "\nnext_state:\n", next_state)
                     #print("altered next_state:\n", remember_state[0])
-                    print(reward)
+                    #print(reward)
 
                     self.agent.remember(state, action, reward, remember_state, done)
                     #state = np.reshape(next_state, [1, self.input_size])
@@ -112,6 +112,10 @@ class AgentRun:
 
                 index_episode += 1
                 tetris_run.close_game()
+
+                if index_episode % 5 == 0:
+                    self.agent.save_neural_network()
+
             print("finished running agent")
 
         finally:
