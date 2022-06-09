@@ -3,6 +3,7 @@ sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
 import tetris
 import agent
 import utils
+from collections import deque
 
 import numpy as np
 
@@ -32,6 +33,7 @@ class AgentRun:
 
                 state = np.reshape(utils.get_state(tetris_run.game), [1, self.input_size])
                 done = False
+                state_history = deque(maxlen=20)
 
                 while not done:
                     old_piece_count = tetris_run.game.pieces
@@ -64,9 +66,19 @@ class AgentRun:
                         reward -= 1
 
                     #penalidade para ações q n fazem nada
-                    if np.array_equal(state[0][200:], next_state[0][200:]) and old_piece_count != tetris_run.game.pieces:
+                    if np.array_equal(state[0][200:], next_state[0][200:]) and \
+                        old_piece_count == tetris_run.game.pieces:
                         reward -= 10000
 
+                    #print(next_state[0][200:])
+                    #print(list(state_history)[:10])
+
+                    if len(state_history) == 20 and \
+                        old_piece_count == tetris_run.game.pieces and \
+                        next_state[0][200:] in list(state_history)[:10]:
+                            print("stuck in the same moves")
+                            done = True
+                    state_history.append(next_state)
                     #calcula o numero de espaços preenchidos nas linhas afetadas pelo posicionamento da ultima peça
 
                     if old_piece_count != tetris_run.game.pieces:
@@ -84,6 +96,7 @@ class AgentRun:
 
                     #print("state:\n", state, "\nnext_state:\n", next_state)
                     #print("altered next_state:\n", remember_state[0])
+                    print(reward)
 
                     self.agent.remember(state, action, reward, remember_state, done)
                     #state = np.reshape(next_state, [1, self.input_size])
