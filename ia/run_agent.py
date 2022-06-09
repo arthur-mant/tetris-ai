@@ -9,12 +9,13 @@ import numpy as np
 
 class AgentRun:
     def __init__(self, max_episodes, min_score, nn_layers, lr,
-                    init_exp, exp_min, exp_decay, gamma, batch_size, new):
+                    init_exp, exp_min, exp_decay, gamma, batch_size, new, use_screen):
 
         self.max_episodes = max_episodes
         self.min_score = min_score
         self.scores = []
         self.input_size = 248
+        self.use_screen = use_screen
 
         self.agent = agent.Agent(self.input_size, 4, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
 
@@ -29,7 +30,7 @@ class AgentRun:
             while index_episode < self.max_episodes and avg_score < self.min_score:
 
                 #print("setting up game")
-                tetris_run = tetris.GameRun(tetris.Tetris(20, 10), -1, use_screen=True, use_keyboard=False)
+                tetris_run = tetris.GameRun(tetris.Tetris(20, 10), -1, use_screen=self.use_screen, use_keyboard=False)
 
                 state = np.reshape(utils.get_state(tetris_run.game), [1, self.input_size])
                 done = False
