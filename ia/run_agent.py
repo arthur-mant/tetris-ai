@@ -59,10 +59,13 @@ class AgentRun:
                     #adiciona um pequeno bonus se a peça se mover para baixo
                     if action == 1:
                         reward += 1
+                    #adiciona penalidade pra rotações pra evitar bumerangue
+                    if action == 0:
+                        reward -= 1
 
                     #penalidade para ações q n fazem nada
                     if np.array_equal(state[0][200:], next_state[0][200:]) and old_piece_count != tetris_run.game.pieces:
-                        reward -= 10
+                        reward -= 10000
 
                     #calcula o numero de espaços preenchidos nas linhas afetadas pelo posicionamento da ultima peça
 

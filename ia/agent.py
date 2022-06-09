@@ -81,3 +81,5 @@ class Agent():
 
         if self.exploration_rate > self.exploration_min:
             self.exploration_rate *= self.exploration_decay
+        else:
+            self.exploration_rate = self.exploration_min
