@@ -22,13 +22,13 @@ if __name__ == '__main__':
         run_agent.AgentRun(
             max_episodes = 10000,
             min_score = 10000,
-            nn_layers = [64, 64],
+            nn_layers = [128, 64],
             lr = 0.001,
             init_exp = init_exp,
-            exp_min = 0.01,
-            exp_decay = 0.99,
+            exp_min = 0.1,
+            exp_decay = 0.999,
             gamma = 0.99,
-            batch_size = 256,
+            batch_size = 128,
             new = new,
             use_screen = use_screen
         )

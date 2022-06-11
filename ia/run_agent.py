@@ -3,6 +3,7 @@ sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
 import tetris
 import agent
 import utils
+from collections import deque
 
 import numpy as np
 
@@ -37,6 +38,7 @@ class AgentRun:
                 while not done:
 
                     action = self.agent.act(state)
+                    #print("action: ", action)
 
                     reward = tetris_run.step(action)
                     next_state = utils.get_state(tetris_run.game)

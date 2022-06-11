@@ -215,30 +215,30 @@ class GameRun:
 
     def step(self, action):
 
-        old_piece = copy.deepcopy(self.game.piece)
+        #old_piece = copy.deepcopy(self.game.piece)
         reward = self.game.score
 
         self.run_frame(self.game.num_to_action(action))
 
-        reward = (self.game.score - reward)*100
-        next_state = self.game.field
+        reward = (self.game.score - reward)#*100
+        #next_state = self.game.field
 
         #penalidade para ações q n fazem nada
-        if old_piece == self.game.piece and \
-            old_piece_count == self.game.pieces:
-            reward += -10000
+        #if old_piece == self.game.piece and \
+        #    old_piece_count == self.game.pieces:
+        #    reward += -10000
 
         #adiciona um pequeno bonus se a peça se mover para baixo
         #if action == 1:
         #    reward += self.game.piece.y
-        reward += self.game.piece.y
+        #reward += self.game.piece.y+2
 
         #adiciona penalidade pra rotações pra evitar bumerangue
         #if action == 0:
         #    reward += -1
 
 
-        print("reward: ", reward)
+        #print("reward: ", reward)
 
         return reward
 
