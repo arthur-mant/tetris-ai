@@ -108,18 +108,18 @@ class Tetris:
             self.score += self.line_score[lines-1]
             self.lines += lines
 
-#    def hard_drop(self):
-#        while not self.intersects():
-#            self.piece.y += 1
-#        self.piece.y -=1
-#        self.freeze()
+    def hard_drop(self):
+        while not self.intersects():
+            self.piece.y += 1
+        self.piece.y -=1
+        self.freeze()
 
     def go_down(self):
         self.piece.y += 1
         if self.intersects():
             self.piece.y -= 1
             self.freeze()
-        
+
 
     def go_side(self, dx):
         old_x = self.piece.x

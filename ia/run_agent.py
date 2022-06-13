@@ -32,22 +32,21 @@ class AgentRun:
                 #print("setting up game")
                 tetris_run = tetris.GameRun(tetris.Tetris(20, 10), -1, use_screen=self.use_screen, use_keyboard=False)
 
-                state = np.reshape(utils.get_state(tetris_run.game), [1, self.input_size])
+                state = np.reshape(utils.get_state(tetris_run.game, tetris_run.game.field), [1, self.input_size])
                 done = False
 
                 while not done:
 
-                    action = self.agent.act(state)
+                    action = self.agent.act(game)
                     #print("action: ", action)
 
                     reward = tetris_run.step(action)
-                    next_state = utils.get_state(tetris_run.game)
 
                     done = tetris_run.game.gameover
 
-                    next_state = np.reshape(next_state, [1, self.input_size])
+                    next_state = np.reshape(utils.get_state(tetris_run.game, tetris_run.game.field), [1, self.input_size])
 
-                    self.agent.remember(state, action, reward, next_state, done)
+                    self.agent.remember(state, reward, next_state, done)
 
                     state = next_state
 
