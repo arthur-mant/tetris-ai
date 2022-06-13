@@ -16,8 +16,9 @@ class AgentRun:
         self.scores = []
         self.input_size = 248
         self.use_screen = use_screen
+        self.fps = 60 if use_screen else -1
 
-        self.agent = agent.Agent(self.input_size, 4, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
+        self.agent = agent.Agent(self.input_size, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
 
     def run(self):
         index_episode = 0
@@ -30,14 +31,14 @@ class AgentRun:
             while index_episode < self.max_episodes and avg_score < self.min_score:
 
                 #print("setting up game")
-                tetris_run = tetris.GameRun(tetris.Tetris(20, 10), -1, use_screen=self.use_screen, use_keyboard=False)
+                tetris_run = tetris.GameRun(tetris.Tetris(20, 10), self.fps, use_screen=self.use_screen, use_keyboard=False)
 
                 state = np.reshape(utils.get_state(tetris_run.game, tetris_run.game.field), [1, self.input_size])
                 done = False
 
                 while not done:
 
-                    action = self.agent.act(game)
+                    action = self.agent.act(tetris_run.game)
                     #print("action: ", action)
 
                     reward = tetris_run.step(action)

@@ -3,6 +3,7 @@ from keras.layers import Dense
 from tensorflow.keras.optimizers import Adam
 from collections import deque
 
+import utils
 import numpy as np
 import random
 import os
@@ -70,7 +71,7 @@ class Agent():
         if np.random.rand() <= self.exploration_rate:
             return (random.randrange(game.width)-1, \
                     -2, \
-                    random.randrange(len(game.piece.pieces[game.piece.type]))
+                    random.randrange(len(game.piece.pieces[game.piece.type])))
         pos_states = utils.get_all_states(game)
         pos_fields = []
         field_scores = []
@@ -78,9 +79,15 @@ class Agent():
         max_score = None
         index_max = -1
 
-        for i in range(pos_states):
+        for i in range(len(pos_states)):
 
-            aux = self.brain.predict(utils.get_state(game, utils.coordinates_to_field(game, pos_states[i])))[0]
+            aux = self.brain.predict(
+                np.reshape(
+                    utils.get_state(game,
+                        utils.coordinates_to_field(game, pos_states[i])
+                    ),
+                [1, self.input_dim])
+            )[0]
 
             if max_score == None or aux > max_score:
                 max_score = aux

@@ -142,15 +142,16 @@ class Tetris:
     def level_up(self):
         self.level += 1
 
-    def num_to_action(self, action):
-        switch = {
-            0: self.rotate,
-            1: self.go_down,
-            2: self.go_left,
-            3: self.go_right
-        }
 
-        return switch.get(action, "Invalid input")
+#    def num_to_action(self, action):
+#        switch = {
+#            0: self.rotate,
+#            1: self.go_down,
+#            2: self.go_left,
+#            3: self.go_right
+#        }
+#
+#        return switch.get(action, "Invalid input")
 
 class GameRun:
 
@@ -214,13 +215,28 @@ class GameRun:
 
 
     def step(self, action):
-
         #old_piece = copy.deepcopy(self.game.piece)
         reward = self.game.score
 
-        self.run_frame(self.game.num_to_action(action))
+        #self.run_frame(self.game.num_to_action(action))
+        for i in range(action[2]):
+            self.run_frame(self.game.rotate)
+
+        if action[0] - (self.game.width//2-2) > 0:
+            command = self.game.go_right
+        else:
+            command = self.game.go_left
+
+        for i in range(abs(action[0]-(self.game.width//2 - 2))):
+            self.run_frame(command)
+
+        self.run_frame(self.game.hard_drop)
 
         reward = (self.game.score - reward)#*100
+
+        #if (reward == 0):
+        #    print("ERROR: reward is 0, maybe piece wasnt placed?")
+
         #next_state = self.game.field
 
         #penalidade para ações q n fazem nada

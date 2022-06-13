@@ -68,7 +68,7 @@ def get_all_states(game):   #returns list of board positions
 
     return states
 
-def coordinates_to_field(game, coordinates)
+def coordinates_to_field(game, coordinates):
 
     x = coordinates[0]
     y = coordinates[1]
