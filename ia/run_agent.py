@@ -16,7 +16,8 @@ class AgentRun:
         self.scores = []
         self.input_size = 248
         self.use_screen = use_screen
-        self.fps = 60 if use_screen else -1
+        #self.fps = 60 if use_screen else -1
+        self.fps = -1
 
         self.agent = agent.Agent(self.input_size, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
 
@@ -33,7 +34,7 @@ class AgentRun:
                 #print("setting up game")
                 tetris_run = tetris.GameRun(tetris.Tetris(20, 10), self.fps, use_screen=self.use_screen, use_keyboard=False)
 
-                state = np.reshape(utils.get_state(tetris_run.game, tetris_run.game.field), [1, self.input_size])
+                state = np.reshape(utils.get_state(tetris_run.game), [1, self.input_size])
                 done = False
 
                 while not done:
@@ -45,7 +46,7 @@ class AgentRun:
 
                     done = tetris_run.game.gameover
 
-                    next_state = np.reshape(utils.get_state(tetris_run.game, tetris_run.game.field), [1, self.input_size])
+                    next_state = np.reshape(utils.get_state(tetris_run.game), [1, self.input_size])
 
                     self.agent.remember(state, reward, next_state, done)
 

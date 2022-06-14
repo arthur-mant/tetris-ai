@@ -1,15 +1,15 @@
 import copy
 
-def get_state(game, field):
+def get_state(game):
     #print("getting state")
-    if field == None or game.piece == None or game.next_piece == None:
+    if game.field == None or game.piece == None or game.next_piece == None:
         print("ERROR: Trying to get board state but something is not initialized")
         return None
 
     board = []
-    for i in range(len(field)):
-        for j in range(len(field[0])):
-            if field[i][j] == -1:
+    for i in range(len(game.field)):
+        for j in range(len(game.field[0])):
+            if game.field[i][j] == -1:
                 board.append(0)
             else:
                 board.append(1)
@@ -68,21 +68,22 @@ def get_all_states(game):   #returns list of board positions
 
     return states
 
-def coordinates_to_field(game, coordinates):
+def coordinates_to_field(game, coordinates, original_field_state, temp_field_state):
 
     x = coordinates[0]
     y = coordinates[1]
     rot = coordinates[2]
 
-    field = copy.deepcopy(game.field)
+    for i in range(len(original_field_state[0:200])):
+        temp_field_state[i] = original_field_state[i]
 
     for block in game.piece.pieces[game.piece.type][rot]:
         i = block // 4
         j = block % 4
 
-        if field[y+i][x+j] != -1:   #remover depois
+        if temp_field_state[10*(y+i)+(x+j)] != 0:   #remover depois
             print("ERROR: trying to create field but overwrote something")
 
-        field[y+i][x+j] = game.piece.type
+        temp_field_state[10*(y+i)+(x+j)] = 1
 
-    return field
+    return temp_field_state

@@ -79,13 +79,14 @@ class Agent():
         max_score = None
         index_max = -1
 
+        state = utils.get_state(game)
+        temp_state = state.copy()
+
         for i in range(len(pos_states)):
 
             aux = self.brain.predict(
                 np.reshape(
-                    utils.get_state(game,
-                        utils.coordinates_to_field(game, pos_states[i])
-                    ),
+                    utils.coordinates_to_field(game, pos_states[i], state, temp_state),
                 [1, self.input_dim])
             )[0]
 
