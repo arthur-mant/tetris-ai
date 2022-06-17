@@ -15,9 +15,11 @@ class AgentRun:
         self.min_score = min_score
         self.scores = []
         self.input_size = 248
+        self.action_size = 40
         self.use_screen = use_screen
 
-        self.agent = agent.Agent(self.input_size, 4, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
+
+        self.agent = agent.Agent(self.input_size, 40, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
 
     def run(self):
         index_episode = 0
