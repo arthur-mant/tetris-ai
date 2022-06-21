@@ -14,10 +14,12 @@ class AgentRun:
         self.max_episodes = max_episodes
         self.min_score = min_score
         self.scores = []
-        self.input_size = 8
+        self.input_size = 248
+        self.action_size = 40
         self.use_screen = use_screen
 
-        self.agent = agent.Agent(self.input_size, 4, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
+
+        self.agent = agent.Agent(self.input_size, self.action_size, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
 
     def run(self):
         index_episode = 0
@@ -38,7 +40,7 @@ class AgentRun:
                 while not done:
 
                     action = self.agent.act(state)
-                    #print("action: ", action)
+#                    print("action: ", action)
 
                     reward = tetris_run.step(action)
                     next_state = utils.get_state(tetris_run.game)

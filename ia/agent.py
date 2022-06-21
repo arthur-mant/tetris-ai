@@ -13,8 +13,6 @@ def build_neural_network(input_dim, action_size, nn_layers, lr, filename):
         print("neural network needs at least 1 layer")
         return None
 
-    print("input dim ", input_dim)
-
     model = Sequential()
     model.add(Dense(nn_layers[0], input_dim=input_dim, activation="relu"))
 
@@ -23,9 +21,6 @@ def build_neural_network(input_dim, action_size, nn_layers, lr, filename):
 
     model.add(Dense(action_size, activation="linear"))
     model.compile(loss="mse", optimizer=Adam(learning_rate=lr))
-
-#    if os.path.isfile(filename):
-#        model.load_weights(filename)
 
     return model
 

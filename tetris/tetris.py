@@ -108,11 +108,11 @@ class Tetris:
             self.score += self.line_score[lines-1]
             self.lines += lines
 
-#    def hard_drop(self):
-#        while not self.intersects():
-#            self.piece.y += 1
-#        self.piece.y -=1
-#        self.freeze()
+    def hard_drop(self):
+        while not self.intersects():
+            self.piece.y += 1
+        self.piece.y -=1
+        self.freeze()
 
     def go_down(self):
         self.piece.y += 1
@@ -218,7 +218,22 @@ class GameRun:
         #old_piece = copy.deepcopy(self.game.piece)
         reward = self.game.score
 
-        self.run_frame(self.game.num_to_action(action))
+        x = (action//4)-1
+        rot = (action % 4) % (len(self.game.piece.pieces[self.game.piece.type]))
+
+        for i in range(rot):
+            self.run_frame(self.game.rotate())
+
+        init_x = (self.game.width//2 - 2)
+        delta_x = x-init_x
+
+        sign = 1 if delta_x > 0 else -1
+
+        for i in range(abs(delta_x)):
+            self.game.go_side(sign)
+
+        self.game.hard_drop()
+        #self.run_frame(self.game.num_to_action(action))
 
         reward = (self.game.score - reward)#*100
         #next_state = self.game.field
