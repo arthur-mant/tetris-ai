@@ -14,7 +14,7 @@ class AgentRun:
         self.max_episodes = max_episodes
         self.min_score = min_score
         self.scores = []
-        self.input_size = 248
+        self.input_size = 8
         self.use_screen = use_screen
 
         self.agent = agent.Agent(self.input_size, 4, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
@@ -57,12 +57,15 @@ class AgentRun:
                 avg_score = np.mean(self.scores[max(0, index_episode-50):index_episode+1])
                 print("Episode {} #Pieces: {} #Score: {} #Avg_Score: {} #Epsilon {}".format(
                     index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score, self.agent.exploration_rate))
-                self.agent.replay()
+
+                if index_episode > 0 and index_episode % 50 == 0:
+                    print("learning...")
+                    self.agent.replay()
 
                 index_episode += 1
                 tetris_run.close_game()
 
-                if index_episode % 5 == 0:
+                if index_episode % 500 == 0:
                     self.agent.save_neural_network()
 
             print("finished running agent")

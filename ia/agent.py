@@ -47,7 +47,7 @@ class Agent():
         self.sample_batch_size = sample_batch_size
         self.name = "TBD"
         self.weight_backup_file = self.name+".h5"
-        self.memory = deque(maxlen=10000)
+        self.memory = deque(maxlen=100000)
 
 
         self.brain = build_neural_network(self.input_dim, self.action_size, self.nn_layers, self.lr, self.weight_backup_file)

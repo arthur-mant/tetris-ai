@@ -4,7 +4,7 @@ import sys
 if __name__ == '__main__':
 
     new = False
-    if "--new" in sys.argv:
+    if "-n" in sys.argv or "--new" in sys.argv:
         new = True
 
     use_screen = False
@@ -28,13 +28,13 @@ if __name__ == '__main__':
         run_agent.AgentRun(
             max_episodes = 10000,
             min_score = 10000,
-            nn_layers = [128, 64],
+            nn_layers = [64, 64],
             lr = 0.001,
             init_exp = init_exp,
             exp_min = exp_min,
-            exp_decay = 0.999,
+            exp_decay = 0.95,
             gamma = 0.99,
-            batch_size = 128,
+            batch_size = 512,
             new = new,
             use_screen = use_screen
         )

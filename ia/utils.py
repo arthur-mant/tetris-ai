@@ -1,33 +1,19 @@
+import heuristics
+
 def get_state(game):
     #print("getting state")
     if game.field == None or game.piece == None or game.next_piece == None:
         print("ERROR: Trying to get board state but something is not initialized")
         return None
 
-    field = []
-    for i in range(len(game.field)):
-        for j in range(len(game.field[0])):
-            if game.field[i][j] == -1:
-                field.append(0)
-            else:
-                field.append(1)
+    holes, lines_cleared = heuristics.hole_number(game.field)
+    abs_height = heuristics.absolute_height(game.field)
+    bumpiness = heuristics.cumulative_height_difference(game.field)
 
-    y_pos = [0 for n in range(20)]
-    y_pos[game.piece.y+2] = 1
 
-    x_pos = [0 for n in range(10)]
-    x_pos[game.piece.x] = 1
+    return [game.piece.y, game.piece.x, game.piece.type, game.next_piece.type,
+            holes, lines_cleared, abs_height, bumpiness]
 
-    piece = [0 for n in range(7)]
-    piece[game.piece.type] = 1
-
-    next_piece = [0 for n in range(7)]
-    next_piece[game.next_piece.type] = 1
-
-    rotation = [0 for n in range(4)]
-    rotation[game.piece.rotation] = 1
-
-    return field+x_pos+y_pos+rotation+piece+next_piece
 
 def num_to_action(game, num):
     switch = {
