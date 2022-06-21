@@ -40,7 +40,7 @@ class AgentRun:
                 while not done:
 
                     action = self.agent.act(state)
-                    #print("action: ", action)
+#                    print("action: ", action)
 
                     reward = tetris_run.step(action)
                     next_state = utils.get_state(tetris_run.game)
