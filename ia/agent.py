@@ -65,7 +65,7 @@ class Agent():
     def act(self, state):
         if np.random.rand() <= self.exploration_rate:
             return random.randrange(self.action_size)
-        act_values = self.brain.predict(state)[0]
+        act_values = self.brain.predict(state, verbose=0)[0]
         return np.argmax(act_values)
 
     def remember(self, state, action, reward, next_state, done):
@@ -78,8 +78,8 @@ class Agent():
 
         for state, action, reward, next_state, done in sample_batch:
 
-            target = reward + self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0])
-            target_f = self.brain.predict(state)
+            target = reward + self.gamma*int(not done)*np.amax(self.brain.predict(next_state, verbose=0)[0])
+            target_f = self.brain.predict(state, verbose=0)
             target_f[0][action] = target
 
             self.brain.fit(state, target_f, epochs=1, verbose=0)
