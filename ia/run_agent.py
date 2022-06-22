@@ -1,5 +1,5 @@
-import sys
-sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(sys.path[0]), 'tetris'))
 import tetris
 import agent
 import utils
