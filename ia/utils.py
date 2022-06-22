@@ -11,7 +11,8 @@ def get_state(game):
     bumpiness = heuristics.cumulative_height_difference(game.field)
 
 
-    return [game.piece.y, game.piece.x, game.piece.type, game.next_piece.type,
+    #return [game.piece.y, game.piece.x, game.piece.type, game.next_piece.type,
+    return [game.piece.type, game.next_piece.type,
             holes, lines_cleared, abs_height, bumpiness]
 
 
