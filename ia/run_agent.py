@@ -14,7 +14,7 @@ class AgentRun:
         self.max_episodes = max_episodes
         self.min_score = min_score
         self.scores = []
-        self.input_size = 8
+        self.input_size = 6
         self.action_size = 40
         self.use_screen = use_screen
 
