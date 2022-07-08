@@ -14,12 +14,12 @@ class AgentRun:
         self.max_episodes = max_episodes
         self.min_score = min_score
         self.scores = []
-        self.input_size = 248
+        self.input_shape = [20+4, 10, 1]
         self.action_size = 40
         self.use_screen = use_screen
 
 
-        self.agent = agent.Agent(self.input_size, 40, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
+        self.agent = agent.Agent(self.input_shape, 40, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
 
     def run(self):
         index_episode = 0
@@ -34,7 +34,7 @@ class AgentRun:
                 #print("setting up game")
                 tetris_run = tetris.GameRun(tetris.Tetris(20, 10), -1, use_screen=self.use_screen, use_keyboard=False)
 
-                state = np.reshape(utils.get_state(tetris_run.game), [1, self.input_size])
+                state = np.reshape(utils.get_state(tetris_run.game), [1]+self.input_shape)
                 done = False
 
                 while not done:
@@ -47,7 +47,7 @@ class AgentRun:
 
                     done = tetris_run.game.gameover
 
-                    next_state = np.reshape(next_state, [1, self.input_size])
+                    next_state = np.reshape(next_state, [1]+self.input_shape)
 
                     self.agent.remember(state, action, reward, next_state, done)
 

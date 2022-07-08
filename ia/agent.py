@@ -1,5 +1,5 @@
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Conv2D, Dense, Flatten
 from tensorflow.keras.optimizers import Adam
 from collections import deque
 
@@ -8,17 +8,20 @@ import random
 import os
 
 
-def build_neural_network(input_dim, action_size, nn_layers, lr, filename):
+def build_neural_network(input_shape, action_size, nn_layers, lr, filename):
     if len(nn_layers) < 1:
         print("neural network needs at least 1 layer")
         return None
 
     model = Sequential()
-    model.add(Dense(nn_layers[0], input_dim=input_dim, activation="relu"))
+    model.add(Conv2D(nn_layers[0][0], nn_layers[0][1], input_shape=input_shape))
 
     for layer in nn_layers[1:]:
-        model.add(Dense(layer, activation="relu"))
+        x = layer[0]
+        y = layer[1]
+        model.add(Conv2D(x, y))
 
+    model.add(Flatten())
     model.add(Dense(action_size, activation="linear"))
     model.compile(loss="mse", optimizer=Adam(learning_rate=lr))
 
@@ -27,11 +30,11 @@ def build_neural_network(input_dim, action_size, nn_layers, lr, filename):
 
 class Agent():
 
-    def __init__(self, input_dim, action_size, nn_layers, lr,
+    def __init__(self, input_shape, action_size, nn_layers, lr,
                     exploration_rate, exploration_min, exploration_decay,
                     gamma, sample_batch_size, new):
 
-        self.input_dim = input_dim
+        self.input_shape = input_shape
         self.action_size = action_size
         self.nn_layers = nn_layers
         self.lr = lr
@@ -45,7 +48,7 @@ class Agent():
         self.memory = deque(maxlen=10000)
 
 
-        self.brain = build_neural_network(self.input_dim, self.action_size, self.nn_layers, self.lr, self.weight_backup_file)
+        self.brain = build_neural_network(self.input_shape, self.action_size, self.nn_layers, self.lr, self.weight_backup_file)
 
         if new:
             print("generating new neural network")

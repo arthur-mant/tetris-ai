@@ -4,30 +4,27 @@ def get_state(game):
         print("ERROR: Trying to get board state but something is not initialized")
         return None
 
-    field = []
+    field = [ [ 0 for i in range(len(game.field[0])) ] for j in range(4) ]
+
+    for i in game.piece.image():
+        field[i//4][i%4] = 1
+    for i in game.next_piece.image():
+        field[i//4][4+(i%4)] = 1
+
+
     for i in range(len(game.field)):
+        aux = []
         for j in range(len(game.field[0])):
             if game.field[i][j] == -1:
-                field.append(0)
+                aux.append(0)
             else:
-                field.append(1)
+                aux.append(1)
+        field.append(aux)
 
-    y_pos = [0 for n in range(20)]
-    y_pos[game.piece.y+2] = 1
+    print("types: ", game.piece.type, ", ", game.next_piece.type)
+    print(field)
 
-    x_pos = [0 for n in range(10)]
-    x_pos[game.piece.x] = 1
-
-    piece = [0 for n in range(7)]
-    piece[game.piece.type] = 1
-
-    next_piece = [0 for n in range(7)]
-    next_piece[game.next_piece.type] = 1
-
-    rotation = [0 for n in range(4)]
-    rotation[game.piece.rotation] = 1
-
-    return field+x_pos+y_pos+rotation+piece+next_piece
+    return field
 
 def num_to_action(game, num):
     switch = {
