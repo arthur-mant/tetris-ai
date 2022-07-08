@@ -21,8 +21,8 @@ def get_state(game):
                 aux.append(1)
         field.append(aux)
 
-    print("types: ", game.piece.type, ", ", game.next_piece.type)
-    print(field)
+    #print("types: ", game.piece.type, ", ", game.next_piece.type)
+    #print(field)
 
     return field
 
