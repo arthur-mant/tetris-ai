@@ -4,6 +4,7 @@ import tetris
 import agent
 import utils
 from collections import deque
+from graph import plotLearning
 
 import numpy as np
 
@@ -14,6 +15,7 @@ class AgentRun:
         self.max_episodes = max_episodes
         self.min_score = min_score
         self.scores = []
+        self.eps_history = []
         self.input_shape = [20+4, 10, 1]
         self.action_size = 40
         self.use_screen = use_screen
@@ -23,9 +25,8 @@ class AgentRun:
         self.agent = agent.Agent(self.input_shape, 40, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
 
     def run(self):
-        index_episode = 0
+        index_episode = 1
         avg_score = 0
-        eps_history = []
 
         #print("running agent")
 
@@ -55,13 +56,13 @@ class AgentRun:
                     state = next_state
 
                 self.scores.append(tetris_run.game.score)
-                eps_history.append(self.agent.exploration_rate)
+                self.eps_history.append(self.agent.exploration_rate)
 
                 avg_score = np.mean(self.scores[max(0, index_episode-50):index_episode+1])
                 print("Episode {} #Pieces: {} #Score: {} #Avg_Score: {} #Epsilon {}".format(
                     index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score, self.agent.exploration_rate))
 
-                if index_episode > 0 and index_episode % self.game_batch == 0:
+                if index_episode % self.game_batch == 0:
                     self.agent.replay()
 
                 index_episode += 1
@@ -75,4 +76,7 @@ class AgentRun:
         finally:
             self.agent.save_neural_network()
 
+
+            x = [i+1 for i in range(index_episode-1)]
+            plotLearning(x, self.scores, self.eps_history, self.agent.graph_name)
 

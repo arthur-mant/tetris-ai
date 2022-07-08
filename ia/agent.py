@@ -45,6 +45,8 @@ class Agent():
         self.sample_batch_size = sample_batch_size
         self.name = "TBD"
         self.weight_backup_file = self.name+".h5"
+        self.graph_name = self.name+".png"
+
         self.memory = deque(maxlen=10000)
 
 
