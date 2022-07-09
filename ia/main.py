@@ -18,7 +18,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find initial epsilon USING DEFAULT VALUE 1")
 
-    exp_min = 0.05
+    exp_min = 0.01
     if "-d" in sys.argv or "--demo" in sys.argv:
         init_exp = 0
         exp_min = 0
@@ -29,13 +29,13 @@ if __name__ == '__main__':
             max_episodes = 100000,
             min_score = 10000,
             nn_layers = [(7, 4), (4, 4)],
-            lr = 0.001,
+            lr = 0.0001,
             init_exp = init_exp,
             exp_min = exp_min,
             exp_decay = 0.99,
             gamma = 0.99,
-            batch_size = 1000,
-            game_batch = 50,
+            batch_size = 500,
+            game_batch = 25,
             new = new,
             use_screen = use_screen
         )

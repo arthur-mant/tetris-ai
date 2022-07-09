@@ -62,13 +62,14 @@ class AgentRun:
                 print("Episode {} #Pieces: {} #Score: {} #Avg_Score: {} #Epsilon {}".format(
                     index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score, self.agent.exploration_rate))
 
-                if index_episode % self.game_batch == 0:
+                index_episode += 1
+
+                if (index_episode-1) % self.game_batch == 0:
                     self.agent.replay()
 
-                index_episode += 1
                 tetris_run.close_game()
 
-                if index_episode % (10*self.game_batch) == 0:
+                if (index_episode-1) % (10*self.game_batch) == 0:
                     self.agent.save_neural_network()
 
             print("finished running agent")
@@ -78,5 +79,8 @@ class AgentRun:
 
 
             x = [i+1 for i in range(index_episode-1)]
+            print(len(x))
+            print(len(self.scores))
+            print(len(self.eps_history))
             plotLearning(x, self.scores, self.eps_history, self.agent.graph_name)
 
