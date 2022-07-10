@@ -19,7 +19,7 @@ def build_neural_network(input_shape, action_size, nn_layers, lr, filename):
     for layer in nn_layers[1:]:
         x = layer[0]
         y = layer[1]
-        model.add(Conv2D(x, y))
+        model.add(Conv2D(x, y, activation='relu'))
 
     model.add(Flatten())
     model.add(Dense(action_size, activation="linear"))
