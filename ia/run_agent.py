@@ -55,10 +55,11 @@ class AgentRun:
 
                     state = next_state
 
-                self.scores.append(tetris_run.game.score)
+                avg_score = np.mean(self.scores[max(0, index_episode-50):index_episode+1])
+                self.scores.append(avg_score)
                 self.eps_history.append(self.agent.exploration_rate)
 
-                avg_score = np.mean(self.scores[max(0, index_episode-50):index_episode+1])
+
                 print("Episode {} #Pieces: {} #Score: {} #Avg_Score: {} #Epsilon {}".format(
                     index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score, self.agent.exploration_rate))
 
@@ -79,8 +80,5 @@ class AgentRun:
 
 
             x = [i+1 for i in range(index_episode-1)]
-            print(len(x))
-            print(len(self.scores))
-            print(len(self.eps_history))
             plotLearning(x, self.scores, self.eps_history, self.agent.graph_name)
 

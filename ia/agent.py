@@ -85,6 +85,7 @@ class Agent():
 
             target = reward + self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0])
             target_f = self.brain.predict(state)
+            #print("reward: ", reward, " #target_f: ", target_f)
             target_f[0][action] = target
 
             self.brain.fit(state, target_f, epochs=1, verbose=0)

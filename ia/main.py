@@ -18,7 +18,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find initial epsilon USING DEFAULT VALUE 1")
 
-    exp_min = 0.01
+    exp_min = 0.1
     if "-d" in sys.argv or "--demo" in sys.argv:
         init_exp = 0
         exp_min = 0
