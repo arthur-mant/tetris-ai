@@ -3,6 +3,7 @@ sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
 import tetris
 import agent
 import utils
+import time
 import numpy as np
 from collections import deque
 from graph import plotLearning
@@ -29,6 +30,8 @@ class AgentRun:
     def run(self):
         index_episode = 1
         avg_score = 0
+
+        aux_time = time.time()
 
         #print("running agent")
 
@@ -76,7 +79,11 @@ class AgentRun:
                 index_episode += 1
 
                 if (index_episode-1) % self.game_batch == 0:
+                    print("time spent on games: ", time.time()-aux_time, " s")
+                    aux_time = time.time()
                     self.agent.replay()
+                    print("time spent on replay: ", time.time()-aux_time, " s")
+                    aux_time = time.time()
 
                 tetris_run.close_game()
 
