@@ -4,7 +4,7 @@ import sys
 if __name__ == '__main__':
 
     new = False
-    if "--new" in sys.argv:
+    if "--new" in sys.argv or "-n" in sys.argv:
         new = True
 
     use_screen = False
@@ -34,8 +34,8 @@ if __name__ == '__main__':
             exp_min = exp_min,
             exp_decay = 0.99,
             gamma = 0.99,
-            batch_size = 1000,
-            game_batch = 50,
+            batch_size = 2000,
+            game_batch = 25,
             new = new,
             use_screen = use_screen
         )

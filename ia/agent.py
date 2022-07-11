@@ -82,16 +82,24 @@ class Agent():
         if len(self.memory) < self.sample_batch_size:
             return
         #sample_batch = random.sample(self.memory, self.sample_batch_size)
-        sample_batch = random.choices(self.memory, k=self.sample_batch_size, weights=self.priority)
+        sample_batch = random.choices(list(enumerate(self.memory)), k=self.sample_batch_size, weights=self.priority)
+        #print([i for i in enumerate(self.priority)])
 
-        for state, action, reward, next_state, done in sample_batch:
+        for sample in sample_batch:
 
-            target = reward + self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0])
-            target_f = self.brain.predict(state)
-            #print("reward: ", reward, " #target_f: ", target_f)
-            target_f[0][action] = target
+            if not self.priority[sample[0]] == 0:
 
-            self.brain.fit(state, target_f, epochs=1, verbose=0)
+                #print("(", sample[0], ", ", self.priority[sample[0]], ")")
+                state, action, reward, next_state, done = sample[1]
+                #reseta a prioridade
+                self.priority[sample[0]] = 0
+
+                target = reward + self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0])
+                target_f = self.brain.predict(state)
+                #print("reward: ", reward, " #target_f: ", target_f)
+                target_f[0][action] = target
+
+                self.brain.fit(state, target_f, epochs=1, verbose=0)
 
         if self.exploration_rate > self.exploration_min:
             self.exploration_rate *= self.exploration_decay
