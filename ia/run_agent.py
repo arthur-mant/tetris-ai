@@ -3,6 +3,7 @@ sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
 import tetris
 import agent
 import utils
+import numpy as np
 from collections import deque
 from graph import plotLearning
 
@@ -15,6 +16,7 @@ class AgentRun:
         self.max_episodes = max_episodes
         self.min_score = min_score
         self.scores = []
+        self.avg_scores = []
         self.eps_history = []
         self.input_shape = [20+4, 10, 1]
         self.action_size = 40
@@ -51,12 +53,20 @@ class AgentRun:
 
                     next_state = np.reshape(next_state, [1]+self.input_shape)
 
-                    self.agent.remember(state, action, reward, next_state, done)
+                    #print(self.agent.brain.predict(state)[0])
+
+                    priority = abs(
+                        reward+self.agent.gamma*int(not done)*np.amax(self.agent.brain.predict(next_state)[0])
+                        -(np.amax(self.agent.brain.predict(state)[0]))
+                    )
+
+                    self.agent.remember(state, action, reward, next_state, done, priority)
 
                     state = next_state
 
+                self.scores.append(tetris_run.game.score)
                 avg_score = np.mean(self.scores[max(0, index_episode-50):index_episode+1])
-                self.scores.append(avg_score)
+                self.avg_scores.append(avg_score)
                 self.eps_history.append(self.agent.exploration_rate)
 
 

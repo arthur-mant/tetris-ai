@@ -14,7 +14,7 @@ def build_neural_network(input_shape, action_size, nn_layers, lr, filename):
         return None
 
     model = Sequential()
-    model.add(Conv2D(nn_layers[0][0], nn_layers[0][1], input_shape=input_shape))
+    model.add(Conv2D(nn_layers[0][0], nn_layers[0][1], input_shape=input_shape, activation='relu'))
 
     for layer in nn_layers[1:]:
         x = layer[0]
@@ -47,8 +47,9 @@ class Agent():
         self.weight_backup_file = self.name+".h5"
         self.graph_name = self.name+".png"
 
-        self.memory = deque(maxlen=10000)
-
+        length = 10000
+        self.memory = deque(maxlen=length)
+        self.priority = deque(maxlen=length)
 
         self.brain = build_neural_network(self.input_shape, self.action_size, self.nn_layers, self.lr, self.weight_backup_file)
 
@@ -73,13 +74,15 @@ class Agent():
         act_values = self.brain.predict(state)[0]
         return np.argmax(act_values)
 
-    def remember(self, state, action, reward, next_state, done):
+    def remember(self, state, action, reward, next_state, done, priority):
         self.memory.append((state, action, reward, next_state, done))
+        self.priority.append(priority)
 
     def replay(self):
         if len(self.memory) < self.sample_batch_size:
             return
-        sample_batch = random.sample(self.memory, self.sample_batch_size)
+        #sample_batch = random.sample(self.memory, self.sample_batch_size)
+        sample_batch = random.choices(self.memory, k=self.sample_batch_size, weights=self.priority)
 
         for state, action, reward, next_state, done in sample_batch:
 
