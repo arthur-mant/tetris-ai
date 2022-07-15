@@ -28,14 +28,14 @@ if __name__ == '__main__':
         run_agent.AgentRun(
             max_episodes = 100000,
             min_score = 10000,
-            nn_layers = [(7, 3)],
+            nn_layers = [[(7, 3)], [128]],
             lr = 0.00001,
             init_exp = init_exp,
             exp_min = exp_min,
             exp_decay = 0.99,
             gamma = 0.99,
-            batch_size = 2000,
-            game_batch = 25,
+            batch_size = 1000,
+            game_batch = 100,
             new = new,
             use_screen = use_screen
         )

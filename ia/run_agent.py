@@ -33,12 +33,9 @@ class AgentRun:
 
         aux_time = time.time()
 
-        #print("running agent")
-
         try:
             while index_episode < self.max_episodes and avg_score < self.min_score:
 
-                #print("setting up game")
                 tetris_run = tetris.GameRun(tetris.Tetris(20, 10), -1, use_screen=self.use_screen, use_keyboard=False)
 
                 state = np.reshape(utils.get_state(tetris_run.game), [1]+self.input_shape)
@@ -47,23 +44,12 @@ class AgentRun:
                 while not done:
 
                     action = self.agent.act(state)
-#                    print("action: ", action)
-
                     reward = tetris_run.step(action)
                     next_state = utils.get_state(tetris_run.game)
-
                     done = tetris_run.game.gameover
-
                     next_state = np.reshape(next_state, [1]+self.input_shape)
 
-                    #print(self.agent.brain.predict(state)[0])
-
-                    priority = abs(
-                        reward+self.agent.gamma*int(not done)*np.amax(self.agent.brain.predict(next_state)[0])
-                        -(np.amax(self.agent.brain.predict(state)[0]))
-                    )
-
-                    self.agent.remember(state, action, reward, next_state, done, priority)
+                    self.agent.remember(state, action, reward, next_state, done)
 
                     state = next_state
 
@@ -94,7 +80,6 @@ class AgentRun:
 
         finally:
             self.agent.save_neural_network()
-
 
             x = [i+1 for i in range(index_episode-1)]
             plotLearning(x, self.scores, self.eps_history, self.agent.graph_name)

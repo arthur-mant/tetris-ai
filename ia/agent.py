@@ -14,14 +14,19 @@ def build_neural_network(input_shape, action_size, nn_layers, lr, filename):
         return None
 
     model = Sequential()
-    model.add(Conv2D(nn_layers[0][0], nn_layers[0][1], input_shape=input_shape, activation='relu'))
+    model.add(Conv2D(nn_layers[0][0][0], nn_layers[0][0][1], input_shape=input_shape))
+    print("Created 2D convolutional layer with ", nn_layers[0][0][0], " filters of size", nn_layers[0][0][1])
 
-    for layer in nn_layers[1:]:
+    for layer in nn_layers[0][1:]:
         x = layer[0]
         y = layer[1]
-        model.add(Conv2D(x, y, activation='relu'))
+        model.add(Conv2D(x, y))
+        print("Created 2D convolutional layer with ", x, " filters of size", y)
 
     model.add(Flatten())
+    for layer in nn_layers[1]:
+        model.add(Dense(layer, activation='relu'))
+        print("Created hidden dense layer with ", layer, " neurons")
     model.add(Dense(action_size, activation="linear"))
     model.compile(loss="mse", optimizer=Adam(learning_rate=lr))
 
@@ -49,7 +54,6 @@ class Agent():
 
         length = 10000
         self.memory = deque(maxlen=length)
-        self.priority = deque(maxlen=length)
 
         self.brain = build_neural_network(self.input_shape, self.action_size, self.nn_layers, self.lr, self.weight_backup_file)
 
@@ -74,32 +78,21 @@ class Agent():
         act_values = self.brain.predict(state)[0]
         return np.argmax(act_values)
 
-    def remember(self, state, action, reward, next_state, done, priority):
+    def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
-        self.priority.append(priority)
 
     def replay(self):
         if len(self.memory) < self.sample_batch_size:
             return
-        #sample_batch = random.sample(self.memory, self.sample_batch_size)
-        sample_batch = random.choices(list(enumerate(self.memory)), k=self.sample_batch_size, weights=self.priority)
-        #print([i for i in enumerate(self.priority)])
+        sample_batch = random.sample(self.memory, self.sample_batch_size)
 
-        for sample in sample_batch:
+        for state, action, reward, next_state, done in sample_batch:
 
-            if not self.priority[sample[0]] == 0:
+            target = reward + self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0])
+            target_f = self.brain.predict(state)
+            target_f[0][action] = target
 
-                #print("(", sample[0], ", ", self.priority[sample[0]], ")")
-                state, action, reward, next_state, done = sample[1]
-                #reseta a prioridade
-                self.priority[sample[0]] = 0
-
-                target = reward + self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0])
-                target_f = self.brain.predict(state)
-                #print("reward: ", reward, " #target_f: ", target_f)
-                target_f[0][action] = target
-
-                self.brain.fit(state, target_f, epochs=1, verbose=0)
+            self.brain.fit(state, target_f, epochs=1, verbose=0)
 
         if self.exploration_rate > self.exploration_min:
             self.exploration_rate *= self.exploration_decay

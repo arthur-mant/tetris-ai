@@ -239,7 +239,7 @@ class GameRun:
         #next_state = self.game.field
 
         if (self.game.gameover):
-            reward += -10000
+            reward += -1000
 
         #penalidade para ações q n fazem nada
         #if old_piece == self.game.piece and \
