@@ -19,7 +19,7 @@ class AgentRun:
         self.scores = []
         self.avg_scores = []
         self.eps_history = []
-        self.input_shape = [20+4, 10, 1]
+        self.input_shape = [20, 10, 1]
         self.action_size = 40
         self.use_screen = use_screen
         self.game_batch = game_batch
@@ -38,16 +38,23 @@ class AgentRun:
 
                 tetris_run = tetris.GameRun(tetris.Tetris(20, 10), -1, use_screen=self.use_screen, use_keyboard=False)
 
-                state = np.reshape(utils.get_state(tetris_run.game), [1]+self.input_shape)
+                state = (
+                    np.reshape(utils.get_state(tetris_run.game), [1]+self.input_shape),
+                    self.utils.hot_encode(tetris_run.game.piece.type)+
+                    self.utils.hot_encode(tetris_run.game.next_piece.type)
+                )
                 done = False
 
                 while not done:
 
                     action = self.agent.act(state)
                     reward = tetris_run.step(action)
-                    next_state = utils.get_state(tetris_run.game)
                     done = tetris_run.game.gameover
-                    next_state = np.reshape(next_state, [1]+self.input_shape)
+                    next_state = (
+                        np.reshape(utils.get_state(tetris_run.game), [1]+self.input_shape),
+                        self.utils.hot_encode(tetris_run.game.piece.type)+
+                        self.utils.hot_encode(tetris_run.game.next_piece.type)
+                    )
 
                     self.agent.remember(state, action, reward, next_state, done)
 

@@ -4,13 +4,7 @@ def get_state(game):
         print("ERROR: Trying to get board state but something is not initialized")
         return None
 
-    field = [ [ 0 for i in range(len(game.field[0])) ] for j in range(4) ]
-
-    for i in game.piece.image():
-        field[i//4][i%4] = 1
-    for i in game.next_piece.image():
-        field[i//4][4+(i%4)] = 1
-
+    field = []
 
     for i in range(len(game.field)):
         aux = []
@@ -21,10 +15,13 @@ def get_state(game):
                 aux.append(1)
         field.append(aux)
 
-    #print("types: ", game.piece.type, ", ", game.next_piece.type)
-    #print(field)
-
     return field
+
+def hot_encode(piece_type):
+    v = [ 0 for i in range(6)]
+    if piece_type < 6:
+        v[piece_type] = 1
+    return v
 
 def num_to_action(game, num):
     switch = {
