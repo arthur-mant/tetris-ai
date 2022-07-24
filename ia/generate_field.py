@@ -8,26 +8,29 @@ import time
 
 def generate_experience_db(width, height, num):
 
-    exp_db = []
+    input_v = []
+    action_v = []
 
     begin_time = time.time()
     #aux_time = time.time()
 
     for i in range(num):
+        inp, action = generate_plain_field(
+            width, height,
+            random.randint(4, height-2),
+            random.gauss(1.5, 0.5),
+            int(random.gauss(2, 1))
+        )
+        input_v.append(inp)
+        action_v.append(action)
+
         #if i % 1000 == 0:
         #    print("time for ", i//1000, "th batch of 1000: ", time.time()-aux_time, "s")
         #    aux_time = time.time()
-        aux = generate_plain_field(
-            width, height,
-            random.randint(4, height-2),
-            random.gauss(2, 0.75),
-            int(random.gauss(2, 1))
-        )
-        exp_db.append(aux)
 
     print("Took ", time.time()-begin_time, "s to generate exp db")
 
-    return exp_db
+    return input_v, action_v
 
 def generate_plain_field(width, height, pile_height, bump_factor, mean_holes):
 
@@ -56,16 +59,30 @@ def generate_plain_field(width, height, pile_height, bump_factor, mean_holes):
 
     columns_heights = []
 
+    mean_height = 0
     for i in range(width):
         last_column_height = last_column_height+int(random.gauss(0, bump_factor))
         last_column_height = max(1, last_column_height)
         last_column_height = min(height, last_column_height)
+
         columns_heights.append(last_column_height)
+        mean_height += last_column_height
+
+    mean_height = mean_height//width
 
     for j in range(len(columns_heights)):
         for i in range(columns_heights[j], height):
             #print(i, ", ", j)
             field[i][j] = 1
+
+    for i in range(mean_height+2, height):
+        holes = int(random.gauss(mean_holes, 0.5))
+        holes = max(1, holes)
+        holes = min(width//2, holes)
+
+        for j in range(holes):
+            field[i][random.randint(0, width-1)] = 0
+
 
     #cortando uma peça fora
     possible_cuts = []
@@ -88,7 +105,7 @@ def generate_plain_field(width, height, pile_height, bump_factor, mean_holes):
 
     (x, piece, rot) = chosen_cut
 
-    end_field = copy.deepcopy(field)
+    #end_field = copy.deepcopy(field)
 
     for line in range(len(field)):
         correct_pos = True
@@ -111,18 +128,18 @@ def generate_plain_field(width, height, pile_height, bump_factor, mean_holes):
 
     begin_field = draw_pieces(Piece.pieces[piece][0], next_piece) + field
 
-    end_field = draw_pieces(
-        next_piece,
-        Piece.pieces[random.randint(0, len(Piece.pieces)-1)][0]
-    ) + end_field
+    #end_field = draw_pieces(
+    #    next_piece,
+    #    Piece.pieces[random.randint(0, len(Piece.pieces)-1)][0]
+    #) + end_field
 
     action = 4*(x+1) + rot
 
-    reward = height-y
+    #reward = height-y
 
-    done = False
+    #done = False
 
-    return begin_field, action, reward, end_field, done
+    return begin_field, action#, reward, end_field, done
 
 def can_cut_piece(field, x, piece):
 
@@ -174,9 +191,8 @@ def generate_empty_field(width, height):
 
 
 if __name__ == '__main__':
-    #state, action, reward, next_state, done = generate_experience_db(10, 20, 1)[0]
-    #utils.display_field(state)
-    #print("")
-    #utils.display_field(next_state)
+    state, action = generate_experience_db(10, 20, 1)
+    utils.display_field(state[0])
+    print(action[0])
 
-    aux = generate_experience_db(10, 20, 100000)
+    #aux = generate_experience_db(10, 20, 100000)
