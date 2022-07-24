@@ -35,3 +35,13 @@ def num_to_action(game, num):
     }
 
     return switch.get(num, "Invalid input")
+
+def display_field(field):
+    for i in field:
+        aux = ""
+        for j in i:
+            if j == 0:
+                aux += "  "
+            else:
+                aux += "0 "
+        print("| ", aux, "|")
