@@ -12,7 +12,7 @@ import numpy as np
 
 class AgentRun:
     def __init__(self, max_episodes, min_score, nn_layers, lr,
-                    init_exp, exp_min, exp_decay, gamma, batch_size, game_batch, new, use_screen):
+                    init_exp, exp_min, exp_decay, gamma, batch_size, game_batch, init_size, new, use_screen):
 
         self.max_episodes = max_episodes
         self.min_score = min_score
@@ -25,7 +25,7 @@ class AgentRun:
         self.game_batch = game_batch
 
 
-        self.agent = agent.Agent(self.input_shape, 40, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new)
+        self.agent = agent.Agent(self.input_shape, 40, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new, init_size)
 
     def run(self):
         index_episode = 1

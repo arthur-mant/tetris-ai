@@ -6,7 +6,7 @@ from collections import deque
 import numpy as np
 import random
 import os
-
+import generate_field
 
 def build_neural_network(input_shape, action_size, nn_layers, lr, filename):
     if len(nn_layers) < 1:
@@ -37,7 +37,7 @@ class Agent():
 
     def __init__(self, input_shape, action_size, nn_layers, lr,
                     exploration_rate, exploration_min, exploration_decay,
-                    gamma, sample_batch_size, new):
+                    gamma, sample_batch_size, new, init_size):
 
         self.input_shape = input_shape
         self.action_size = action_size
@@ -59,6 +59,15 @@ class Agent():
 
         if new:
             print("generating new neural network")
+            field_v, action_v = generate_field.generate_experience_db(10, 20, init_size)
+            print("finished generating basic experience")
+            self.brain.fit(
+                np.reshape(field_v, [len(field_v)]+self.input_shape),
+                np.reshape(action_v, [len(field_v), self.action_size]),
+                epochs=100, verbose=0
+            )
+            print("finished basic training for new neural network")
+
         else:
             print("loading ", self.weight_backup_file, " neural network")
             if os.path.isfile(self.weight_backup_file):

@@ -15,14 +15,18 @@ def generate_experience_db(width, height, num):
     #aux_time = time.time()
 
     for i in range(num):
-        inp, action = generate_plain_field(
+        aux = generate_plain_field(
             width, height,
             random.randint(4, height-2),
             random.gauss(1.5, 0.5),
             int(random.gauss(2, 1))
         )
-        input_v.append(inp)
-        action_v.append(action)
+        if aux != None:
+            inp, action = aux
+            aux_arr = [ 0 for i in range(40) ]
+            aux_arr[action] = 1*20
+            input_v.append(inp)
+            action_v.append(aux_arr)
 
         #if i % 1000 == 0:
         #    print("time for ", i//1000, "th batch of 1000: ", time.time()-aux_time, "s")
