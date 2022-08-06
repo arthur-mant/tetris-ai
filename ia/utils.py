@@ -1,17 +1,12 @@
+import copy
+
 def get_state(game):
     #print("getting state")
     if game.field == None or game.piece == None or game.next_piece == None:
         print("ERROR: Trying to get board state but something is not initialized")
         return None
 
-    field = [ [ 0 for i in range(len(game.field[0])) ] for j in range(4) ]
-
-    for i in game.piece.image():
-        field[i//4][i%4] = 1
-    for i in game.next_piece.image():
-        field[i//4][4+(i%4)] = 1
-
-
+    original_field = []
     for i in range(len(game.field)):
         aux = []
         for j in range(len(game.field[0])):
@@ -19,12 +14,31 @@ def get_state(game):
                 aux.append(0)
             else:
                 aux.append(1)
-        field.append(aux)
+        original_field.append(aux)
 
-    #print("types: ", game.piece.type, ", ", game.next_piece.type)
-    #print(field)
+    all_possible_fields = []
+    rot_size = len(game.piece.pieces[game.piece.type])
+    for i in range(10*rot_size):
+        aux_field = copy.deepcopy(original_field)
+        x = (i // rot_size) -2
+        rot = i % rot_size
+        for y in range(20):
+            for block in game.piece.pieces[rot]:
+                l = block // 4
+                c = block % 4
+                if aux_field[y+l][x+c] == 1:
+                    stop = True
+            if stop:
+                for block in game.piece.pieces[rot]:
+                    l = block // 4
+                    c = block % 4
+                    if aux_field[y+l-1][x+c] == 1:
+                        print("ERROR: Trying to override block when making field list")
+                    aux_field[y+l-1][x+c] = 1
+                    break
 
-    return field
+
+    return all_possible_fields
 
 def num_to_action(game, num):
     switch = {

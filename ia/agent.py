@@ -84,8 +84,22 @@ class Agent():
     def act(self, state):
         if np.random.rand() <= self.exploration_rate:
             return random.randrange(self.action_size)
-        act_values = self.brain.predict(state)[0]
-        return np.argmax(act_values)
+        #act_values = self.brain.predict(state)[0]
+        #return np.argmax(act_values)
+
+        possible_fields = utils.generate_all_fields(state)
+        min_dist = self.brain.predict(possible_fields)[0]
+        for field in possible_fields:
+            distance = self.brain.predict(field)[0]
+            if min_dist > distance:
+                min_dist = dist
+            action = possible_fields.index(field)
+        if len(possible_fields) <= 10:
+            action = 2*action
+        if len(possible_fields) <= 20:
+            action = 2*action
+
+        return action
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
