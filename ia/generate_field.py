@@ -8,25 +8,24 @@ import time
 
 def generate_experience_db(width, height, num):
 
-    input_v = []
-    action_v = []
-
     begin_time = time.time()
     #aux_time = time.time()
 
+    aux_v = []
     for i in range(num):
-        aux = generate_plain_field(
+        out = generate_plain_field(
             width, height,
-            random.randint(4, height-2),
-            random.gauss(1.5, 0.5),
+            random.randint(4, height-5),
             int(random.gauss(2, 1))
         )
-        if aux != None:
-            inp, action = aux
-            aux_arr = [ 0 for i in range(40) ]
-            aux_arr[action] = 1*20
-            input_v.append(inp)
-            action_v.append(aux_arr)
+
+        aux_v = aux_v+out
+
+    field_v = []
+    dist_v = []
+    for i in out:
+        field_v.append(i[0])
+        dist_v.append(i[1])
 
         #if i % 1000 == 0:
         #    print("time for ", i//1000, "th batch of 1000: ", time.time()-aux_time, "s")
@@ -34,9 +33,9 @@ def generate_experience_db(width, height, num):
 
     print("Took ", time.time()-begin_time, "s to generate exp db")
 
-    return input_v, action_v
+    return field_v, dist_v
 
-def generate_plain_field(width, height, pile_height, bump_factor, mean_holes):
+def generate_plain_field(width, height, pile_height, mean_holes):
 
     if (width <= 5):
         print("ERROR: board too narrow")
@@ -47,10 +46,6 @@ def generate_plain_field(width, height, pile_height, bump_factor, mean_holes):
     if (pile_height >= height) or (pile_height < 0):
         print("ERROR: invalid board pile_height: ", pile_height)
         return None
-    if (bump_factor <= 0):
-        #print("ERROR: invalid bump_factor: ", bump_factor)
-        #return None
-        bump_factor = 0.1
     if (mean_holes >= width) or (mean_holes <= 0):
         #print("ERROR: invalid board mean holes per line: ", mean_holes)
         #return None
@@ -59,27 +54,13 @@ def generate_plain_field(width, height, pile_height, bump_factor, mean_holes):
 
     field = generate_empty_field(width, height)
 
-    last_column_height = pile_height
-
     columns_heights = []
 
-    mean_height = 0
-    for i in range(width):
-        last_column_height = last_column_height+int(random.gauss(0, bump_factor))
-        last_column_height = max(1, last_column_height)
-        last_column_height = min(height, last_column_height)
-
-        columns_heights.append(last_column_height)
-        mean_height += last_column_height
-
-    mean_height = mean_height//width
-
-    for j in range(len(columns_heights)):
-        for i in range(columns_heights[j], height):
-            #print(i, ", ", j)
+    for j in range(width):
+        for i in range(pile_height, height):
             field[i][j] = 1
 
-    for i in range(mean_height+2, height):
+    for i in range(pile_height+5, height):
         holes = int(random.gauss(mean_holes, 0.5))
         holes = max(1, holes)
         holes = min(width//2, holes)
@@ -87,13 +68,33 @@ def generate_plain_field(width, height, pile_height, bump_factor, mean_holes):
         for j in range(holes):
             field[i][random.randint(0, width-1)] = 0
 
+    i = 0
+    blocks = width*4
+    out = []
+    while blocks > 2 and field != None:
+        i += 1
+        field = cut_piece_out(field, pile_height)
 
-    #cortando uma peça fora
+        if field != None:
+            #utils.display_field(field)
+            out.append((copy.deepcopy(field), i))
+        else:
+            #print("field == None(?)")
+            break
+
+        blocks = 0
+        for j in range(pile_height, pile_height+5):
+            for k in range(width):
+                blocks += field[j][k]
+
+    return out
+
+def cut_piece_out(field, top_line):
     possible_cuts = []
-    for x in range(-2, width):
+    for x in range(-2, len(field[0])):
         for piece in range(len(Piece.pieces)):
             for rot in range(len(Piece.pieces[piece])):
-                if can_cut_piece(field, x, Piece.pieces[piece][rot]):
+                if can_cut_piece(field, x, Piece.pieces[piece][rot], top_line):
                     possible_cuts.append((x, piece, rot))
 
     if len(possible_cuts) <= 0:
@@ -101,15 +102,7 @@ def generate_plain_field(width, height, pile_height, bump_factor, mean_holes):
 
     chosen_cut = random.sample(possible_cuts, 1)[0]
 
-    #print(chosen_cut)
-
-    #x = chosen_cut[0]
-    #piece = chosen_cut[1]
-    #rot = chosen_cut[2]
-
     (x, piece, rot) = chosen_cut
-
-    #end_field = copy.deepcopy(field)
 
     for line in range(len(field)):
         correct_pos = True
@@ -128,24 +121,10 @@ def generate_plain_field(width, height, pile_height, bump_factor, mean_holes):
                 field[line+i][x+j] = 0
             break
 
-    next_piece = Piece.pieces[random.randint(0, len(Piece.pieces)-1)][0]
 
-    begin_field = draw_pieces(Piece.pieces[piece][0], next_piece) + field
+    return field
 
-    #end_field = draw_pieces(
-    #    next_piece,
-    #    Piece.pieces[random.randint(0, len(Piece.pieces)-1)][0]
-    #) + end_field
-
-    action = 4*(x+1) + rot
-
-    #reward = height-y
-
-    #done = False
-
-    return begin_field, action#, reward, end_field, done
-
-def can_cut_piece(field, x, piece):
+def can_cut_piece(field, x, piece, top_line):
 
     for line in range(len(field)):
         viable = True
@@ -160,6 +139,8 @@ def can_cut_piece(field, x, piece):
                 viable = False
 
         if viable:
+            has_block_under = False
+            blocks_inside_tetris = 0
             for block in piece:
                 j = block % 4
 
@@ -167,8 +148,14 @@ def can_cut_piece(field, x, piece):
                     if i < len(field):
                         if field[i][x+j] == 1 and not (4*(i-line)+j) in piece:
                             return False
+                if line+block//4+1 < len(field) and field[line+block//4+1][x+j] == 1:
+                    has_block_under = True
 
-            return True
+                if line+block//4 < top_line+4:
+                    blocks_inside_tetris += 1
+
+
+            return (has_block_under and blocks_inside_tetris >= 2)
     return False
 
 def draw_pieces(piece1, piece2):
@@ -195,8 +182,10 @@ def generate_empty_field(width, height):
 
 
 if __name__ == '__main__':
-    state, action = generate_experience_db(10, 20, 1)
-    utils.display_field(state[0])
-    print(action[0])
+    states, distances = generate_experience_db(10, 20, 1)
+
+    for i in range(len(states)):
+        utils.display_field(states[i])
+        print(distances[i])
 
     #aux = generate_experience_db(10, 20, 100000)

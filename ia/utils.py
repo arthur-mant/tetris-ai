@@ -59,3 +59,5 @@ def display_field(field):
             else:
                 aux += "0 "
         print("| ", aux, "|")
+
+    print((5+2*len(field[0]))*'-')
