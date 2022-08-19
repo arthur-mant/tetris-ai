@@ -31,7 +31,7 @@ def generate_experience_db(width, height, num):
         #    print("time for ", i//1000, "th batch of 1000: ", time.time()-aux_time, "s")
         #    aux_time = time.time()
 
-    print("Took ", time.time()-begin_time, "s to generate exp db")
+    print("Took ", time.time()-begin_time, "s to generate exp db with ", len(field_v), " entries")
 
     return field_v, dist_v
 

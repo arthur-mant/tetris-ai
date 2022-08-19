@@ -8,7 +8,7 @@ import random
 import os
 import generate_field
 
-def build_neural_network(input_shape, action_size, nn_layers, lr, filename):
+def build_neural_network(input_shape, action_size, nn_layers, lr):
     if len(nn_layers) < 1:
         print("neural network needs at least 1 layer")
         return None
@@ -48,20 +48,25 @@ class Agent():
         self.exploration_decay = exploration_decay
         self.gamma = gamma
         self.sample_batch_size = sample_batch_size
-        self.name = "TBD"
+        self.name = "agent"
         self.weight_backup_file = self.name+".h5"
         self.graph_name = self.name+".png"
+
+        self.aux_nn_name = self.name+".precon"
+        self.precon_backup_file = self.aux_nn_name+".h5"
 
         length = 10000
         self.memory = deque(maxlen=length)
 
-        self.brain = build_neural_network(self.input_shape, self.action_size, self.nn_layers, self.lr, self.weight_backup_file)
+        self.brain = build_neural_network(self.input_shape, self.action_size, self.nn_layers, self.lr)
+
+        self.aux_brain = build_neural_network(self.input_shape, self.action_size, self.nn_layers, self.lr)
 
         if new:
             print("generating new neural network")
             field_v, action_v = generate_field.generate_experience_db(10, 20, init_size)
             print("finished generating basic experience")
-            self.brain.fit(
+            self.aux_brain.fit(
                 np.reshape(field_v, [len(field_v)]+self.input_shape),
                 np.reshape(action_v, [len(field_v), self.action_size]),
                 epochs=100, verbose=0
@@ -75,6 +80,11 @@ class Agent():
             else:
                 print("ERROR: ", self.weight_backup_file, " not found")
 
+            print("loading ", self.precon_backup_file, " neural network")
+            if os.path.isfile(self.precon_backup_file):
+                self.aux_brain.load_weights(self.precon_backup_file)
+            else:
+                print("ERROR: ", self.precon_backup_file, " not found")
 
 
     def save_neural_network(self):
@@ -82,18 +92,26 @@ class Agent():
         self.brain.save(self.weight_backup_file)
 
     def act(self, state):
+        possible_fields = utils.generate_all_fields(state)
+
         if np.random.rand() <= self.exploration_rate:
-            return random.randrange(self.action_size)
+            min_dist = self.aux_brain.predict(possible_fields)[0]
+            for field in possible_fields:
+                distance = self.aux_brain.predict(field)[0]
+                if min_dist > distance:
+                    min_dist = dist
+                    action = possible_fields.index(field)
         #act_values = self.brain.predict(state)[0]
         #return np.argmax(act_values)
 
-        possible_fields = utils.generate_all_fields(state)
-        min_dist = self.brain.predict(possible_fields)[0]
-        for field in possible_fields:
-            distance = self.brain.predict(field)[0]
-            if min_dist > distance:
-                min_dist = dist
-            action = possible_fields.index(field)
+        else:
+            max_score = 0
+            for field in possible_fields:
+                score = self.brain.predict(field)[0]
+                if max_score < score:
+                    max_score = score
+                    action = possible_fields.index(field)
+
         if len(possible_fields) <= 10:
             action = 2*action
         if len(possible_fields) <= 20:

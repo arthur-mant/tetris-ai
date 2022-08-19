@@ -39,7 +39,7 @@ if __name__ == '__main__':
             gamma = 0.99,
             batch_size = 1000,
             game_batch = 100,
-            init_size = 50000,
+            init_size = 1000,
             new = new,
             use_screen = use_screen
         )

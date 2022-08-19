@@ -19,13 +19,13 @@ class AgentRun:
         self.scores = []
         self.avg_scores = []
         self.eps_history = []
-        self.input_shape = [20+4, 10, 1]
-        self.action_size = 40
+        self.input_shape = [20, 10, 1]
+        self.output_size = 1
         self.use_screen = use_screen
         self.game_batch = game_batch
 
 
-        self.agent = agent.Agent(self.input_shape, 40, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new, init_size)
+        self.agent = agent.Agent(self.input_shape, self.output_size, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new, init_size)
 
     def run(self):
         index_episode = 1

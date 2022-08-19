@@ -230,9 +230,9 @@ class GameRun:
         sign = 1 if delta_x > 0 else -1
 
         for i in range(abs(delta_x)):
-            self.game.go_side(sign)
+            self.run_frame(self.game.go_side(sign))
 
-        self.game.hard_drop()
+        self.run_frame(self.game.hard_drop())
         #self.run_frame(self.game.num_to_action(action))
 
         reward = (self.game.score - reward)#*100
