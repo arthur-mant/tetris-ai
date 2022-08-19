@@ -58,12 +58,14 @@ class Agent():
         length = 10000
         self.memory = deque(maxlen=length)
 
+        print("building DQN")
         self.brain = build_neural_network(self.input_shape, self.action_size, self.nn_layers, self.lr)
 
+        print("building auxiliary network")
         self.aux_brain = build_neural_network(self.input_shape, self.action_size, self.nn_layers, self.lr)
 
         if new:
-            print("generating new neural network")
+            print("training new neural network")
             field_v, action_v = generate_field.generate_experience_db(10, 20, init_size)
             print("finished generating basic experience")
             self.aux_brain.fit(
@@ -88,29 +90,35 @@ class Agent():
 
 
     def save_neural_network(self):
-        print("saving neural network to ", self.weight_backup_file)
+        print("saving DQN neural network to ", self.weight_backup_file)
         self.brain.save(self.weight_backup_file)
 
+        print("saving auxiliary neural network to ", self.precon_backup_file)
+        self.aux_brain.save(self.precon_backup_file)
+
     def act(self, state):
-        possible_fields = utils.generate_all_fields(state)
+        possible_fields, valid = utils.generate_all_fields(state)
 
         if np.random.rand() <= self.exploration_rate:
             min_dist = self.aux_brain.predict(possible_fields)[0]
-            for field in possible_fields:
-                distance = self.aux_brain.predict(field)[0]
-                if min_dist > distance:
-                    min_dist = dist
-                    action = possible_fields.index(field)
+            for i in range(len(possible_fields)):
+                if valid[i]:
+                    distance = self.aux_brain.predict(possible_fields[i])[0]
+                    if min_dist > distance:
+                        min_dist = dist
+                        action = i
         #act_values = self.brain.predict(state)[0]
         #return np.argmax(act_values)
 
         else:
             max_score = 0
-            for field in possible_fields:
-                score = self.brain.predict(field)[0]
-                if max_score < score:
-                    max_score = score
-                    action = possible_fields.index(field)
+            for i in range(len(possible_fields)):
+                if valid[i]:
+                    score = self.brain.predict(possible_fields[i])[0]
+                    if max_score < score:
+                        max_score = score
+                        action = i
+
 
         if len(possible_fields) <= 10:
             action = 2*action

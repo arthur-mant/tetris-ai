@@ -17,28 +17,40 @@ def get_state(game):
         original_field.append(aux)
 
     all_possible_fields = []
+    valid_v = []
     rot_size = len(game.piece.pieces[game.piece.type])
     for i in range(10*rot_size):
         aux_field = copy.deepcopy(original_field)
         x = (i // rot_size) -2
         rot = i % rot_size
+        stop = False
+        invalid = False
         for y in range(20):
-            for block in game.piece.pieces[rot]:
+            for block in game.piece.pieces[game.piece.type][rot]:
                 l = block // 4
                 c = block % 4
-                if aux_field[y+l][x+c] == 1:
+                if x+c < 0 or x+c >= 10 or y+l <= 0:
+                    invalid = True
+                    break
+                if y+l >= 20 or aux_field[y+l][x+c] == 1:
                     stop = True
+
+            if invalid:
+                break
+
             if stop:
-                for block in game.piece.pieces[rot]:
+                for block in game.piece.pieces[game.piece.type][rot]:
                     l = block // 4
                     c = block % 4
                     if aux_field[y+l-1][x+c] == 1:
                         print("ERROR: Trying to override block when making field list")
                     aux_field[y+l-1][x+c] = 1
-                    break
+                break
+        all_possible_fields.append(aux_field)
+        valid_v.append(not invalid)
 
 
-    return all_possible_fields
+    return all_possible_fields, valid_v
 
 def num_to_action(game, num):
     switch = {
