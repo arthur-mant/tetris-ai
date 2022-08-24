@@ -20,7 +20,7 @@ class AgentRun:
         self.avg_scores = []
         self.eps_history = []
         self.input_shape = [20, 10, 1]
-        self.output_size = 1
+        self.output_size = 40
         self.use_screen = use_screen
         self.game_batch = game_batch
 

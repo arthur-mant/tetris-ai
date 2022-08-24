@@ -62,7 +62,7 @@ class Agent():
         self.brain = build_neural_network(self.input_shape, self.action_size, self.nn_layers, self.lr)
 
         print("building auxiliary network")
-        self.aux_brain = build_neural_network(self.input_shape, self.action_size, self.nn_layers, self.lr)
+        self.aux_brain = build_neural_network(self.input_shape, 1, self.nn_layers, self.lr)
 
         if new:
             print("training new neural network")
@@ -96,10 +96,11 @@ class Agent():
         print("saving auxiliary neural network to ", self.precon_backup_file)
         self.aux_brain.save(self.precon_backup_file)
 
-    def act(self, state):
-        possible_fields, valid = utils.generate_all_fields(state)
+    def act(self, state, piece, piece_v):
 
         if np.random.rand() <= self.exploration_rate:
+            possible_fields, valid = utils.generate_all_fields(state, piece, piece_v)
+
             min_dist = self.aux_brain.predict(possible_fields)[0]
             for i in range(len(possible_fields)):
                 if valid[i]:
@@ -107,25 +108,15 @@ class Agent():
                     if min_dist > distance:
                         min_dist = dist
                         action = i
-        #act_values = self.brain.predict(state)[0]
-        #return np.argmax(act_values)
+            if len(possible_fields) <= 10:
+                action = 2*action
+            if len(possible_fields) <= 20:
+                action = 2*action
+            return action
 
         else:
-            max_score = 0
-            for i in range(len(possible_fields)):
-                if valid[i]:
-                    score = self.brain.predict(possible_fields[i])[0]
-                    if max_score < score:
-                        max_score = score
-                        action = i
-
-
-        if len(possible_fields) <= 10:
-            action = 2*action
-        if len(possible_fields) <= 20:
-            action = 2*action
-
-        return action
+            act_values = self.brain.predict(state)[0]
+            return np.argmax(act_values)
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
