@@ -79,12 +79,9 @@ def display_field(field, action, piece, pieces):
 
         piece_pos.append((l, pos+c))
 
-    print(piece_pos)
-
     for i, line in enumerate(field):
         aux = ""
         for j, value in enumerate(line):
-            #print((i, j))
             if (i, j) in piece_pos:
                 aux += "1 "
             elif value == 0:
@@ -102,6 +99,6 @@ def translate_action(action, piece, pieces):
     aux = int(action * rot_num/4)
 
     rot = aux % rot_num
-    pos = aux // rot_num
+    pos = (aux // rot_num)-1
 
     return pos, rot

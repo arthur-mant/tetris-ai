@@ -58,8 +58,6 @@ def generate_plain_field(width, height, pile_height, bump_factor):
         bump_factor = 0.1
 
 
-    print(pile_height)
-
     field = generate_empty_field(width, height)
 
     for i in range(pile_height, height):            #cria bloco
@@ -71,8 +69,8 @@ def generate_plain_field(width, height, pile_height, bump_factor):
         holes = max(1, holes)
         holes = min(width//2, holes)
 
-#        for j in range(holes):
-#            field[i][random.randint(0, width-1)] = 0
+        for j in range(holes):
+            field[i][random.randint(0, width-1)] = 0
 
     piece = random.randint(0, len(Piece.pieces)-1)
     next_piece = random.randint(0, len(Piece.pieces)-1)
@@ -80,32 +78,36 @@ def generate_plain_field(width, height, pile_height, bump_factor):
 
     pos, rot = utils.translate_action(action, piece, Piece.pieces)
 
-    print(action, pos, rot)
-
     possible_y = []
 
-    for y in range(0, pile_height+1):
-        top_most_layer = 4*[4]
+    for y in range(-1, height):
+        top_most_layer = 4*[10]
         overrode_border = False
+        collided = False
         for block in Piece.pieces[piece][rot]:
             l = block // 4
             c = block % 4
 
-            if y+l >= height or y+l < 0 or pos+c < 0 or pos+c >= width:
+            if  pos+c < 0 or pos+c >= width:
                 overrode_border = True
                 break
 
-            if field[y+l][pos+c] == 1:
-                top_most_layer[c] = min(top_most_layer[c], l)
+            if y+l >= height or field[y+l][pos+c] == 1:
+                collided = True
+
+            top_most_layer[c] = min(top_most_layer[c], l)
 
         if overrode_border:
+            print("board overriden, pos = ", pos)
             break
 
-        lowest_top_layer = 4
+        lowest_top_layer = 0
         for layer in top_most_layer:
-            lowest_top_layer = min(lowest_top_layer, layer)
+            if layer < 4:
+                lowest_top_layer = max(lowest_top_layer, layer)
 
-        if y+lowest_top_layer <= pile_height and lowest_top_layer < 4:
+
+        if y+lowest_top_layer <= pile_height and collided:
             possible_y.append(y)
 
     if len(possible_y) == 0:
@@ -136,7 +138,7 @@ def generate_empty_field(width, height):
 
 
 if __name__ == '__main__':
-    state, action, piece, next_piece = generate_experience_db(10, 20, 2)
+    state, action, piece, next_piece = generate_experience_db(10, 20, 1)
 
     if len(state) == 0:
         print("failed to generate field, try again")
