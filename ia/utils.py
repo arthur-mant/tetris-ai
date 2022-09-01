@@ -67,14 +67,41 @@ def num_to_action(game, num):
 
     return switch.get(num, "Invalid input")
 
-def display_field(field):
-    for i in field:
+def display_field(field, action, piece, pieces):
+
+    pos, rot = translate_action(action, piece, pieces)
+
+    piece_pos = []
+
+    for block in pieces[piece][rot]:
+        l = block // 4
+        c = block % 4
+
+        piece_pos.append((l, pos+c))
+
+    print(piece_pos)
+
+    for i, line in enumerate(field):
         aux = ""
-        for j in i:
-            if j == 0:
+        for j, value in enumerate(line):
+            #print((i, j))
+            if (i, j) in piece_pos:
+                aux += "1 "
+            elif value == 0:
                 aux += "  "
             else:
                 aux += "0 "
         print("| ", aux, "|")
 
     print((5+2*len(field[0]))*'-')
+
+
+def translate_action(action, piece, pieces):
+    rot_num = len(pieces[piece])
+
+    aux = int(action * rot_num/4)
+
+    rot = aux % rot_num
+    pos = aux // rot_num
+
+    return pos, rot

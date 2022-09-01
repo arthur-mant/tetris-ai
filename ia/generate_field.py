@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
 from tetris import Piece
+import numpy as np
 import utils
 import random
 import copy
@@ -8,34 +9,39 @@ import time
 
 def generate_experience_db(width, height, num):
 
+    input_v = []
+    action_v = []
+    piece_v = []
+    next_piece_v = []
+
     begin_time = time.time()
     #aux_time = time.time()
 
-    aux_v = []
     for i in range(num):
-        out = generate_plain_field(
+        aux = generate_plain_field(
             width, height,
-            random.randint(4, height-5),
-            int(random.gauss(2, 1))
+            random.randint(4, height-2),
+            random.gauss(1.5, 0.5)
         )
+        if aux != None:
+            inp, action, piece, next_piece = aux
+            aux_arr = [ 0 for i in range(40) ]
+            aux_arr[action] = 1
+            input_v.append(inp)
+            action_v.append(aux_arr)
+            piece_v.append(piece)
+            next_piece_v.append(next_piece)
 
-        aux_v = aux_v+out
-
-    field_v = []
-    dist_v = []
-    for i in out:
-        field_v.append(i[0])
-        dist_v.append(i[1])
 
         #if i % 1000 == 0:
         #    print("time for ", i//1000, "th batch of 1000: ", time.time()-aux_time, "s")
         #    aux_time = time.time()
 
-    print("Took ", time.time()-begin_time, "s to generate exp db with ", len(field_v), " entries")
+    print("Took ", time.time()-begin_time, "s to generate exp db of ", num, " entries")
 
-    return field_v, dist_v
+    return input_v, action_v, piece_v, next_piece_v
 
-def generate_plain_field(width, height, pile_height, mean_holes):
+def generate_plain_field(width, height, pile_height, bump_factor):
 
     if (width <= 5):
         print("ERROR: board too narrow")
@@ -46,135 +52,83 @@ def generate_plain_field(width, height, pile_height, mean_holes):
     if (pile_height >= height) or (pile_height < 0):
         print("ERROR: invalid board pile_height: ", pile_height)
         return None
-    if (mean_holes >= width) or (mean_holes <= 0):
-        #print("ERROR: invalid board mean holes per line: ", mean_holes)
+    if (bump_factor <= 0):
+        #print("ERROR: invalid bump_factor: ", bump_factor)
         #return None
-        mean_holes = 1
+        bump_factor = 0.1
 
+
+    print(pile_height)
 
     field = generate_empty_field(width, height)
 
-    columns_heights = []
-
-    for j in range(width):
-        for i in range(pile_height, height):
+    for i in range(pile_height, height):            #cria bloco
+        for j in range(len(field[pile_height])):
             field[i][j] = 1
 
-    for i in range(pile_height+5, height):
-        holes = int(random.gauss(mean_holes, 0.5))
+    for i in range(pile_height+1, height):          #cria buracos
+        holes = int(random.gauss(2.5, 1))
         holes = max(1, holes)
         holes = min(width//2, holes)
 
-        for j in range(holes):
-            field[i][random.randint(0, width-1)] = 0
+#        for j in range(holes):
+#            field[i][random.randint(0, width-1)] = 0
 
-    i = 0
-    blocks = width*4
-    out = []
-    while blocks > 2 and field != None:
-        i += 1
-        field = cut_piece_out(field, pile_height)
+    piece = random.randint(0, len(Piece.pieces)-1)
+    next_piece = random.randint(0, len(Piece.pieces)-1)
+    action = random.randint(0, 4*width-1)
 
-        if field != None:
-            #utils.display_field(field)
-            out.append((copy.deepcopy(field), i))
-        else:
-            #print("field == None(?)")
+    pos, rot = utils.translate_action(action, piece, Piece.pieces)
+
+    print(action, pos, rot)
+
+    possible_y = []
+
+    for y in range(0, pile_height+1):
+        top_most_layer = 4*[4]
+        overrode_border = False
+        for block in Piece.pieces[piece][rot]:
+            l = block // 4
+            c = block % 4
+
+            if y+l >= height or y+l < 0 or pos+c < 0 or pos+c >= width:
+                overrode_border = True
+                break
+
+            if field[y+l][pos+c] == 1:
+                top_most_layer[c] = min(top_most_layer[c], l)
+
+        if overrode_border:
             break
 
-        blocks = 0
-        for j in range(pile_height, pile_height+5):
-            for k in range(width):
-                blocks += field[j][k]
+        lowest_top_layer = 4
+        for layer in top_most_layer:
+            lowest_top_layer = min(lowest_top_layer, layer)
 
-    return out
+        if y+lowest_top_layer <= pile_height and lowest_top_layer < 4:
+            possible_y.append(y)
 
-def cut_piece_out(field, top_line):
-    possible_cuts = []
-    for x in range(-2, len(field[0])):
-        for piece in range(len(Piece.pieces)):
-            for rot in range(len(Piece.pieces[piece])):
-                if can_cut_piece(field, x, Piece.pieces[piece][rot], top_line):
-                    possible_cuts.append((x, piece, rot))
-
-    if len(possible_cuts) <= 0:
+    if len(possible_y) == 0:
         return None
 
-    chosen_cut = random.sample(possible_cuts, 1)[0]
+    chosen_y = random.sample(possible_y, 1)[0]
+    columns_used = 4*[0]
 
-    (x, piece, rot) = chosen_cut
+    for block in Piece.pieces[piece][rot]:
+        l = block // 4
+        c = block % 4
 
-    for line in range(len(field)):
-        correct_pos = True
-        for block in Piece.pieces[piece][rot]:
-            i = block//4
-            j = block % 4
+        field[chosen_y+l][pos+c] = 0
+        columns_used[c] = 1
 
-            if field[line+i][x+j] != 1:
-                correct_pos = False
-        if correct_pos:
-            y = line
-            for block in Piece.pieces[piece][rot]:
-                i = block // 4
-                j = block % 4
+    used_columns = []
+    for i in range(len(columns_used)):
+        if columns_used[i] == 1:
+            used_columns.append(pos+i)
 
-                field[line+i][x+j] = 0
-            break
+    return field, action, piece, next_piece
 
 
-    return field
-
-def can_cut_piece(field, x, piece, top_line):
-
-    for line in range(len(field)):
-        viable = True
-        for block in piece:
-            i = block//4
-            j = block % 4
-
-            if x+j < 0 or x+j >= len(field[0]) or line+i >= len(field):
-                return False
-
-            if field[line+i][x+j] != 1:
-                viable = False
-
-        if viable:
-            has_block_under = False
-            blocks_inside_tetris = 0
-            for block in piece:
-                j = block % 4
-
-                for i in range(line+block//4, 0, -1):
-                    if i < len(field):
-                        if field[i][x+j] == 1 and not (4*(i-line)+j) in piece:
-                            return False
-                if line+block//4+1 < len(field) and field[line+block//4+1][x+j] == 1:
-                    has_block_under = True
-
-                if line+block//4 < top_line+4:
-                    blocks_inside_tetris += 1
-
-
-            return (has_block_under and blocks_inside_tetris >= 2)
-    return False
-
-def draw_pieces(piece1, piece2):
-
-    field = [ [ 0 for i in range(10) ] for j in range(4) ]
-
-    for block in piece1:
-        i = block // 4
-        j = block % 4
-
-        field[i][j] = 1
-
-    for block in piece2:
-        i = block // 4
-        j = block % 4
-
-        field[i][4+j] = 1
-
-    return field
 
 def generate_empty_field(width, height):
     field = [ [ 0 for i in range(width) ] for j in range(height) ]
@@ -182,10 +136,14 @@ def generate_empty_field(width, height):
 
 
 if __name__ == '__main__':
-    states, distances = generate_experience_db(10, 20, 1)
+    state, action, piece, next_piece = generate_experience_db(10, 20, 2)
 
-    for i in range(len(states)):
-        utils.display_field(states[i])
-        print(distances[i])
+    if len(state) == 0:
+        print("failed to generate field, try again")
+        exit(0)
+
+    utils.display_field(state[0], np.argmax(action[0]), piece[0], Piece.pieces)
+    print(action[0])
+    print(np.argmax(action[0]))
 
     #aux = generate_experience_db(10, 20, 100000)
