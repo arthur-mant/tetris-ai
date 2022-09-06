@@ -17,7 +17,9 @@ def generate_experience_db(width, height, num):
     begin_time = time.time()
     #aux_time = time.time()
 
-    for i in range(num):
+    i = 0
+
+    while len(input_v) < num and i < 2*num:
         aux = generate_plain_field(
             width, height,
             random.randint(4, height-2),
@@ -31,17 +33,20 @@ def generate_experience_db(width, height, num):
             action_v.append(aux_arr)
             piece_v.append(piece)
             next_piece_v.append(next_piece)
+        i += 1
 
 
         #if i % 1000 == 0:
         #    print("time for ", i//1000, "th batch of 1000: ", time.time()-aux_time, "s")
         #    aux_time = time.time()
 
-    print("Took ", time.time()-begin_time, "s to generate exp db of ", num, " entries")
+    print("Took ", time.time()-begin_time, "s to generate exp db of ", len(input_v), " entries")
 
     return input_v, action_v, piece_v, next_piece_v
 
 def generate_plain_field(width, height, pile_height, bump_factor):
+
+    max_height = 3
 
     if (width <= 5):
         print("ERROR: board too narrow")
@@ -63,14 +68,6 @@ def generate_plain_field(width, height, pile_height, bump_factor):
     for i in range(pile_height, height):            #cria bloco
         for j in range(len(field[pile_height])):
             field[i][j] = 1
-
-    for i in range(pile_height+1, height):          #cria buracos
-        holes = int(random.gauss(2.5, 1))
-        holes = max(1, holes)
-        holes = min(width//2, holes)
-
-        for j in range(holes):
-            field[i][random.randint(0, width-1)] = 0
 
     piece = random.randint(0, len(Piece.pieces)-1)
     next_piece = random.randint(0, len(Piece.pieces)-1)
@@ -127,6 +124,24 @@ def generate_plain_field(width, height, pile_height, bump_factor):
     for i in range(len(columns_used)):
         if columns_used[i] == 1:
             used_columns.append(pos+i)
+
+    print(len(field), len(field[0]))
+
+    for i in range(len(field[0])):
+        if not i in used_columns:
+            new_height = pile_height - random.randint(0, 3)
+            new_height = max(max_height, new_height)
+            for j in range(new_height, height):
+                print(i, j)
+                field[j][i] = 1
+
+    for i in range(pile_height+1, height):          #cria buracos
+        holes = int(random.gauss(2.5, 1))
+        holes = max(1, holes)
+        holes = min(width//2, holes)
+
+        for j in range(holes):
+            field[i][random.randint(0, width-1)] = 0
 
     return field, action, piece, next_piece
 
