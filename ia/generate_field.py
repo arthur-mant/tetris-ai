@@ -40,7 +40,7 @@ def generate_experience_db(width, height, num):
         #    print("time for ", i//1000, "th batch of 1000: ", time.time()-aux_time, "s")
         #    aux_time = time.time()
 
-    print("Took ", time.time()-begin_time, "s to generate exp db of ", len(input_v), " entries")
+    print("Took ", time.time()-begin_time, "s to generate experience data of ", len(input_v), " entries")
 
     return input_v, action_v, piece_v, next_piece_v
 
@@ -95,7 +95,7 @@ def generate_plain_field(width, height, pile_height, bump_factor):
             top_most_layer[c] = min(top_most_layer[c], l)
 
         if overrode_border:
-            print("board overriden, pos = ", pos)
+            #print("board overriden, pos = ", pos)
             break
 
         lowest_top_layer = 0
@@ -117,6 +117,10 @@ def generate_plain_field(width, height, pile_height, bump_factor):
         l = block // 4
         c = block % 4
 
+        if (chosen_y+l < 0) or (chosen_y+l >= height):
+            #print("board overriden, y = ", chosen_y+l)
+            return None
+
         field[chosen_y+l][pos+c] = 0
         columns_used[c] = 1
 
@@ -125,14 +129,11 @@ def generate_plain_field(width, height, pile_height, bump_factor):
         if columns_used[i] == 1:
             used_columns.append(pos+i)
 
-    print(len(field), len(field[0]))
-
     for i in range(len(field[0])):
         if not i in used_columns:
             new_height = pile_height - random.randint(0, 3)
             new_height = max(max_height, new_height)
             for j in range(new_height, height):
-                print(i, j)
                 field[j][i] = 1
 
     for i in range(pile_height+1, height):          #cria buracos
@@ -153,7 +154,7 @@ def generate_empty_field(width, height):
 
 
 if __name__ == '__main__':
-    state, action, piece, next_piece = generate_experience_db(10, 20, 1)
+    state, action, piece, next_piece = generate_experience_db(10, 20, 10000)
 
     if len(state) == 0:
         print("failed to generate field, try again")
@@ -162,5 +163,7 @@ if __name__ == '__main__':
     utils.display_field(state[0], np.argmax(action[0]), piece[0], Piece.pieces)
     print(action[0])
     print(np.argmax(action[0]))
+
+    print("entry num = ", len(state))
 
     #aux = generate_experience_db(10, 20, 100000)
