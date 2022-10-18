@@ -57,15 +57,22 @@ def generate_all_fields(original_field, piece, piece_v):
     return all_possible_fields, valid_v
 
 
-def num_to_action(game, num):
-    switch = {
-        0: game.rotate,
-        1: game.go_down,
-        2: game.go_left,
-        3: game.go_right
-    }
+def get_piece_vector(game):
 
-    return switch.get(num, "Invalid input")
+    num_pieces = len(game.piece.pieces)
+
+    v = 2*(num_pieces-1)*[0]
+
+    for i in range(0, num_pieces-1):
+        if game.piece.type == i:
+            v[i] = 1
+
+    for i in range(num_pieces-1, 2*(num_pieces-1)):
+        if game.next_piece.type == i:
+            v[i] = 1
+    
+
+    return v
 
 def display_field(field):
     for i in field:

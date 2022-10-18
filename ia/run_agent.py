@@ -1,6 +1,6 @@
-import sys
-sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
-import tetris
+#import sys
+#sys.path.insert(0, '/home/bcc/ama18/tetris-ia/tetris')
+from tetris import tetris
 import agent
 import utils
 import time
