@@ -31,7 +31,7 @@ if __name__ == '__main__':
         run_agent.AgentRun(
             max_episodes = 100000,
             min_score = 10000,
-            nn_layers = [[(7, 3)], []],
+            nn_layers = [[(7, 3)], [100]],
             lr = 0.00001,
             init_exp = init_exp,
             exp_min = exp_min,

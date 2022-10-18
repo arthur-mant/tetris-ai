@@ -8,26 +8,39 @@ import random
 import os
 import generate_field
 
-def build_neural_network(input_shape, action_size, nn_layers, lr):
+def build_neural_network(table_shape, action_size, nn_layers, lr):
     if len(nn_layers) < 1:
         print("neural network needs at least 1 layer")
         return None
 
-    model = Sequential()
-    model.add(Conv2D(nn_layers[0][0][0], nn_layers[0][0][1], input_shape=input_shape))
-    print("Created 2D convolutional layer with ", nn_layers[0][0][0], " filters of size", nn_layers[0][0][1])
+    table_input = Input(shape=table_shape)
 
-    for layer in nn_layers[0][1:]:
+    for (i, layer) in enumerate(nn_layers[0]):
+
+        if i == 0:
+            conv = table_input
+
         x = layer[0]
         y = layer[1]
-        model.add(Conv2D(x, y))
+        conv = Conv2D(x, y, activation="relu")(conv)
+
         print("Created 2D convolutional layer with ", x, " filters of size", y)
 
-    model.add(Flatten())
-    for layer in nn_layers[1]:
-        model.add(Dense(layer, activation='relu'))
+    conv = Flatten()(conv)
+
+    piece_input = Input(shape=[2*(7-1)])    #considera as 2 peças
+                                            #retira 1 linha para ser LI
+    concat = Concatenate()([conv, piece_input])
+
+    for (i, layer) in enumerate(nn_layers[1]):
+
+        if i == 0:
+            hidden = concat
+
+        hidden = Dense(layer, activation='relu')(hidden)
         print("Created hidden dense layer with ", layer, " neurons")
-    model.add(Dense(action_size, activation="linear"))
+
+    output = Dense(action_size, activation="linear")(hidden)
     model.compile(loss="mse", optimizer=Adam(learning_rate=lr))
 
     return model
