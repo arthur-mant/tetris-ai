@@ -12,7 +12,7 @@ import numpy as np
 
 class AgentRun:
     def __init__(self, max_episodes, min_score, nn_layers, lr,
-                    init_exp, exp_min, exp_decay, gamma, batch_size, game_batch, init_size, new, use_screen):
+                    init_exp, exp_min, exp_decay, gamma, game_batch, init_size, new, use_screen):
 
         self.max_episodes = max_episodes
         self.min_score = min_score
@@ -26,7 +26,7 @@ class AgentRun:
         self.game_batch = game_batch
 
 
-        self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new, init_size)
+        self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, self.game_batch, new, init_size)
 
     def run(self):
         index_episode = 1
@@ -41,6 +41,7 @@ class AgentRun:
 
                 #state = np.reshape(utils.get_state(tetris_run.game), [1]+self.input_shape)
                 state = utils.get_state(tetris_run.game, self.input_shape)
+                game_record = []
                 done = False
 
                 while not done:
@@ -52,9 +53,11 @@ class AgentRun:
                     done = tetris_run.game.gameover
 
 
-                    self.agent.remember(state, action, reward, next_state, done)
+                    game_record.append((state, action, reward, next_state, done))
 
                     state = next_state
+
+                self.agent.remember(index_episode, game_record, tetris_run.game.score)
 
                 self.scores.append(tetris_run.game.score)
                 avg_score = np.mean(self.scores[max(0, index_episode-50):index_episode+1])

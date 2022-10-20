@@ -52,7 +52,7 @@ class Agent():
 
     def __init__(self, table_shape, input_shape, action_size, nn_layers, lr,
                     exploration_rate, exploration_min, exploration_decay,
-                    gamma, sample_batch_size, new, init_size):
+                    gamma, game_batch, new, init_size):
 
         self.table_shape = table_shape
         self.input_shape = input_shape
@@ -63,7 +63,7 @@ class Agent():
         self.exploration_min = exploration_min
         self.exploration_decay = exploration_decay
         self.gamma = gamma
-        self.sample_batch_size = sample_batch_size
+        self.game_batch = game_batch
         self.name = "agent"
         self.weight_backup_file = self.name+".h5"
         self.graph_name = self.name+".png"
@@ -71,8 +71,9 @@ class Agent():
         self.aux_nn_name = self.name+".precon"
         self.precon_backup_file = self.aux_nn_name+".h5"
 
-        length = 10000
-        self.memory = deque(maxlen=length)
+        #length = 10000
+        #self.memory = deque(maxlen=self.game_batch)
+        self.memory = [ [] for i in range(self.game_batch) ]
 
         print("building DQN")
         self.brain = build_neural_network(self.table_shape, self.action_size, self.nn_layers, self.lr)
@@ -123,21 +124,31 @@ class Agent():
         return np.argmax(act_values)
 
 
-    def remember(self, state, action, reward, next_state, done):
-        self.memory.append((state, action, reward, next_state, done))
+    #def remember(self, state, action, reward, next_state, done):
+    #    self.memory.append((state, action, reward, next_state, done))
+    def remember(self, game_id, game_record, score):
+        self.memory[(game_id % self.game_batch)-1] = (game_id, game_record, score)
 
     def replay(self):
-        if len(self.memory) < self.sample_batch_size:
-            return
-        sample_batch = random.sample(self.memory, self.sample_batch_size)
+        input_v = []
+        out_v = []
 
-        for state, action, reward, next_state, done in sample_batch:
+        self.memory.sort(key=lambda y: y[2])    #ordena pelo score
+        sample_batch = self.memory[:self.game_batch//10] + self.memory[9*self.game_batch//10:]
 
-            target = reward + self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0])
-            target_f = self.brain.predict(state)
-            target_f[0][action] = target
+        for i in sample_batch:
+            print(i[0])
 
-            self.brain.fit(state, target_f, epochs=1, verbose=0)
+        for game_id, game_record, score in sample_batch:
+            for state, action, reward, next_state, done in game_record:
+
+                target = reward + self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0])
+                target_f = self.brain.predict(state)
+                target_f[0][action] = target
+
+                input_v.append(state)
+                out_v.append(target_f)
+        self.brain.fit(state, target_f, epochs=10, verbose=0)
 
         if self.exploration_rate > self.exploration_min:
             self.exploration_rate *= self.exploration_decay
