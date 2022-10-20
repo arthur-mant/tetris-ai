@@ -84,7 +84,6 @@ class Agent():
             print("training new neural network")
             input_v, piece_v, action_v = generate_field.generate_experience_db(10, 20, init_size)
             print("finished generating basic experience")
-            print(len(input_v))
 
             self.aux_brain.fit(
                 [np.reshape(input_v, [len(input_v)]+self.input_shape[0]),
@@ -115,27 +114,14 @@ class Agent():
         print("saving auxiliary neural network to ", self.precon_backup_file)
         self.aux_brain.save(self.precon_backup_file)
 
-    def act(self, state, piece, piece_v):
-
+    def act(self, state):
         if np.random.rand() <= self.exploration_rate:
-            possible_fields, valid = utils.generate_all_fields(state, piece, piece_v)
-
-            min_dist = self.aux_brain.predict(possible_fields)[0]
-            for i in range(len(possible_fields)):
-                if valid[i]:
-                    distance = self.aux_brain.predict(possible_fields[i])[0]
-                    if min_dist > distance:
-                        min_dist = dist
-                        action = i
-            if len(possible_fields) <= 10:
-                action = 2*action
-            if len(possible_fields) <= 20:
-                action = 2*action
-            return action
-
+            brain_used = self.aux_brain
         else:
-            act_values = self.brain.predict(state)[0]
-            return np.argmax(act_values)
+            brain_used = self.brain
+        act_values = brain_used.predict(state)[0]
+        return np.argmax(act_values)
+
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))

@@ -39,16 +39,18 @@ class AgentRun:
 
                 tetris_run = tetris.GameRun(tetris.Tetris(20, 10), -1, use_screen=self.use_screen, use_keyboard=False)
 
-                state = np.reshape(utils.get_state(tetris_run.game), [1]+self.input_shape)
+                #state = np.reshape(utils.get_state(tetris_run.game), [1]+self.input_shape)
+                state = utils.get_state(tetris_run.game, self.input_shape)
                 done = False
 
                 while not done:
 
                     action = self.agent.act(state)
                     reward = tetris_run.step(action)
-                    next_state = utils.get_state(tetris_run.game)
+                    #next_state = np.reshape(utils.get_state(tetris_run.game), [1]+self.input_shape)
+                    next_state = utils.get_state(tetris_run.game, self.input_shape)
                     done = tetris_run.game.gameover
-                    next_state = np.reshape(next_state, [1]+self.input_shape)
+
 
                     self.agent.remember(state, action, reward, next_state, done)
 

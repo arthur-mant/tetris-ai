@@ -35,12 +35,12 @@ if __name__ == '__main__':
             lr = 0.00001,
             init_exp = init_exp,
             exp_min = exp_min,
-            exp_decay = 1,
-            #exp_decay = 0.99,
+            #exp_decay = 1,
+            exp_decay = 0.999,
             gamma = 0.99,
             batch_size = 1000,
             game_batch = 100,
-            init_size = 1000,
+            init_size = 10000,
             new = new,
             use_screen = use_screen
         )

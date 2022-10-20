@@ -1,6 +1,7 @@
 import copy
+import numpy as np
 
-def get_state(game):
+def get_state(game, input_shape):
     #print("getting state")
     if game.field == None or game.piece == None or game.next_piece == None:
         print("ERROR: Trying to get board state but something is not initialized")
@@ -16,10 +17,10 @@ def get_state(game):
                 aux.append(1)
         original_field.append(aux)
 
-    return (original_field, get_piece_vector(game))
+    return [np.reshape(original_field, [1]+input_shape[0]), np.reshape(get_piece_vector(game), [1]+input_shape[1])]
 
 
-def generate_all_fields(original_field, piece, piece_v): 
+def generate_all_fields(original_field, piece, piece_v):
 
     all_possible_fields = []
     valid_v = []
