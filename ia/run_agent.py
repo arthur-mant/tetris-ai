@@ -1,6 +1,6 @@
-#import sys
-#sys.path.insert(0, '/home/bcc/ama18/tetris-ia/tetris')
-from tetris import tetris
+import sys
+sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
+import tetris
 import agent
 import utils
 import time
@@ -19,13 +19,14 @@ class AgentRun:
         self.scores = []
         self.avg_scores = []
         self.eps_history = []
-        self.input_shape = [20, 10, 1]
+        self.table_shape = [20, 10, 1]
+        self.input_shape = (self.table_shape, [2*(7-1)])
         self.output_size = 40
         self.use_screen = use_screen
         self.game_batch = game_batch
 
 
-        self.agent = agent.Agent(self.input_shape, self.output_size, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new, init_size)
+        self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, batch_size, new, init_size)
 
     def run(self):
         index_episode = 1

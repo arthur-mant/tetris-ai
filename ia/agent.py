@@ -1,5 +1,5 @@
 from keras.models import Model
-from keras.layers import Conv2D, Dense, Flatten
+from keras.layers import Conv2D, Dense, Flatten, Input, Concatenate
 from tensorflow.keras.optimizers import Adam
 from collections import deque
 
@@ -42,7 +42,7 @@ def build_neural_network(table_shape, action_size, nn_layers, lr):
 
     output = Dense(action_size, activation="linear")(hidden)
 
-    model = Model(inputs=(table_input, piece_input), output=output)
+    model = Model(inputs=[table_input, piece_input], outputs=output)
     model.compile(loss="mse", optimizer=Adam(learning_rate=lr))
 
     return model
@@ -50,10 +50,11 @@ def build_neural_network(table_shape, action_size, nn_layers, lr):
 
 class Agent():
 
-    def __init__(self, input_shape, action_size, nn_layers, lr,
+    def __init__(self, table_shape, input_shape, action_size, nn_layers, lr,
                     exploration_rate, exploration_min, exploration_decay,
                     gamma, sample_batch_size, new, init_size):
 
+        self.table_shape = table_shape
         self.input_shape = input_shape
         self.action_size = action_size
         self.nn_layers = nn_layers
@@ -74,18 +75,21 @@ class Agent():
         self.memory = deque(maxlen=length)
 
         print("building DQN")
-        self.brain = build_neural_network(self.input_shape, self.action_size, self.nn_layers, self.lr)
+        self.brain = build_neural_network(self.table_shape, self.action_size, self.nn_layers, self.lr)
 
         print("building auxiliary network")
-        self.aux_brain = build_neural_network(self.input_shape, 1, self.nn_layers, self.lr)
+        self.aux_brain = build_neural_network(self.table_shape, self.action_size, self.nn_layers, self.lr)
 
         if new:
             print("training new neural network")
-            field_v, action_v = generate_field.generate_experience_db(10, 20, init_size)
+            input_v, piece_v, action_v = generate_field.generate_experience_db(10, 20, init_size)
             print("finished generating basic experience")
+            print(len(input_v))
+
             self.aux_brain.fit(
-                np.reshape(field_v, [len(field_v)]+self.input_shape),
-                np.reshape(action_v, [len(field_v), self.action_size]),
+                [np.reshape(input_v, [len(input_v)]+self.input_shape[0]),
+                    np.reshape(piece_v, [len(piece_v)]+self.input_shape[1])],
+                np.reshape(action_v, [len(input_v), self.action_size]),
                 epochs=100, verbose=0
             )
             print("finished basic training for new neural network")

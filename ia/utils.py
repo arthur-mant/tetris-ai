@@ -16,7 +16,7 @@ def get_state(game):
                 aux.append(1)
         original_field.append(aux)
 
-    return original_field
+    return (original_field, get_piece_vector(game))
 
 
 def generate_all_fields(original_field, piece, piece_v): 
@@ -67,9 +67,9 @@ def get_piece_vector(game):
         if game.piece.type == i:
             v[i] = 1
 
-    for i in range(num_pieces-1, 2*(num_pieces-1)):
+    for i in range(0, num_pieces-1):
         if game.next_piece.type == i:
-            v[i] = 1
+            v[i+num_pieces-1] = 1
     
 
     return v

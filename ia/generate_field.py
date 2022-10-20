@@ -12,7 +12,8 @@ def generate_experience_db(width, height, num):
     input_v = []
     action_v = []
     piece_v = []
-    next_piece_v = []
+
+    num_pieces = 7
 
     begin_time = time.time()
     #aux_time = time.time()
@@ -26,13 +27,22 @@ def generate_experience_db(width, height, num):
             random.gauss(1.5, 0.5)
         )
         if aux != None:
-            inp, action, piece, next_piece = aux
+            table, action, piece, next_piece = aux
             aux_arr = [ 0 for i in range(40) ]
             aux_arr[action] = 1
-            input_v.append(inp)
             action_v.append(aux_arr)
-            piece_v.append(piece)
-            next_piece_v.append(next_piece)
+
+            aux_arr = [ 0 for i in range(12) ]
+            for i in range(0, num_pieces-1):
+                if piece == i:
+                    aux_arr[i] = 1
+            for i in range(0, num_pieces-1):
+                if next_piece == i:
+                    aux_arr[i+num_pieces-1] = 1
+            piece_v.append(aux_arr)
+
+            input_v.append(table)
+
         i += 1
 
 
@@ -42,7 +52,8 @@ def generate_experience_db(width, height, num):
 
     print("Took ", time.time()-begin_time, "s to generate experience data of ", len(input_v), " entries")
 
-    return input_v, action_v, piece_v, next_piece_v
+
+    return input_v, piece_v, action_v
 
 def generate_plain_field(width, height, pile_height, bump_factor):
 
