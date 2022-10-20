@@ -130,14 +130,12 @@ class Agent():
         self.memory[(game_id % self.game_batch)-1] = (game_id, game_record, score)
 
     def replay(self):
-        input_v = []
+        table_v = []
+        piece_v = []
         out_v = []
 
         self.memory.sort(key=lambda y: y[2])    #ordena pelo score
         sample_batch = self.memory[:self.game_batch//10] + self.memory[9*self.game_batch//10:]
-
-        for i in sample_batch:
-            print(i[0])
 
         for game_id, game_record, score in sample_batch:
             for state, action, reward, next_state, done in game_record:
@@ -146,9 +144,15 @@ class Agent():
                 target_f = self.brain.predict(state)
                 target_f[0][action] = target
 
-                input_v.append(state)
+                table_v.append(state[0])
+                piece_v.append(state[1])
                 out_v.append(target_f)
-        self.brain.fit(state, target_f, epochs=10, verbose=0)
+
+        self.brain.fit(
+                [np.reshape(table_v, [len(table_v)]+self.input_shape[0]),
+                    np.reshape(piece_v, [len(piece_v)]+self.input_shape[1])],
+                np.reshape(out_v, [len(out_v), self.action_size]),
+            epochs=10, verbose=0)
 
         if self.exploration_rate > self.exploration_min:
             self.exploration_rate *= self.exploration_decay
