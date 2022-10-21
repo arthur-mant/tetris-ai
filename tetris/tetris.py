@@ -107,6 +107,7 @@ class Tetris:
         if lines > 0:
             self.score += self.line_score[lines-1]
             self.lines += lines
+            print(lines, " cleared!!!!!!!!!!!!")
 
     def hard_drop(self):
         while not self.intersects():

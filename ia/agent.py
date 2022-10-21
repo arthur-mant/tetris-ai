@@ -7,6 +7,7 @@ import numpy as np
 import random
 import os
 import generate_field
+import time
 
 def build_neural_network(table_shape, action_size, nn_layers, lr):
     if len(nn_layers) < 1:
@@ -86,12 +87,15 @@ class Agent():
             input_v, piece_v, action_v = generate_field.generate_experience_db(10, 20, init_size)
             print("finished generating basic experience")
 
+            begin_time = time.time()
+
             self.aux_brain.fit(
                 [np.reshape(input_v, [len(input_v)]+self.input_shape[0]),
                     np.reshape(piece_v, [len(piece_v)]+self.input_shape[1])],
                 np.reshape(action_v, [len(input_v), self.action_size]),
-                epochs=100, verbose=0
+                epochs=200, verbose=0
             )
+            print("took ", time.time()-begin_time, "s to train nn")
             print("finished basic training for new neural network")
 
         else:
