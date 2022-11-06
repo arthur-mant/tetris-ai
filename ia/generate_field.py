@@ -32,13 +32,10 @@ def generate_experience_db(width, height, num):
             aux_arr[action] = 1
             action_v.append(aux_arr)
 
-            aux_arr = [ 0 for i in range(12) ]
+            aux_arr = [ 0 for i in range(7-1) ]
             for i in range(0, num_pieces-1):
                 if piece == i:
                     aux_arr[i] = 1
-            for i in range(0, num_pieces-1):
-                if next_piece == i:
-                    aux_arr[i+num_pieces-1] = 1
             piece_v.append(aux_arr)
 
             input_v.append(table)

@@ -62,16 +62,11 @@ def get_piece_vector(game):
 
     num_pieces = len(game.piece.pieces)
 
-    v = 2*(num_pieces-1)*[0]
+    v = (num_pieces-1)*[0]
 
     for i in range(0, num_pieces-1):
         if game.piece.type == i:
             v[i] = 1
-
-    for i in range(0, num_pieces-1):
-        if game.next_piece.type == i:
-            v[i+num_pieces-1] = 1
-    
 
     return v
 

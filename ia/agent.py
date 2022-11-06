@@ -29,7 +29,7 @@ def build_neural_network(table_shape, action_size, nn_layers, lr):
 
     conv = Flatten()(conv)
 
-    piece_input = Input(shape=[2*(7-1)])    #considera as 2 peças
+    piece_input = Input(shape=[(7-1)])      #considera a prox peça
                                             #retira 1 linha para ser LI
     concat = Concatenate()([conv, piece_input])
 
