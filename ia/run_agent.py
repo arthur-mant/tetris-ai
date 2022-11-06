@@ -25,6 +25,8 @@ class AgentRun:
         self.use_screen = use_screen
         self.game_batch = game_batch
 
+        self.log_filename = "log.txt"
+        self.log_file = open(self.log_filename, 'w')
 
         self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, gamma, self.game_batch, epochs_per_batch, new, init_epochs, init_size)
 
@@ -67,8 +69,11 @@ class AgentRun:
                 self.avg_scores.append(avg_score)
 
 
-                print("Episode {} #Pieces: {} #Score: {} #Avg_Score: {}".format(
-                    index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score))
+                log_str = "Episode {} #Pieces: {} #Score: {} #Avg_Score: {}".format(
+                    index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score)
+
+                print(log_str)
+                self.log_file.write(log_str+"\n")
 
                 index_episode += 1
 
@@ -83,6 +88,8 @@ class AgentRun:
 
                 if (index_episode-1) % (10*self.game_batch) == 0:
                     self.agent.save_neural_network()
+                    self.log_file.close()
+                    self.log_file = open(self.log_filename, 'a')
 
             print("finished running agent")
 
