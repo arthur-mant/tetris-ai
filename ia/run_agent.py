@@ -12,7 +12,7 @@ import numpy as np
 
 class AgentRun:
     def __init__(self, max_episodes, min_score, nn_layers, lr,
-                    init_exp, exp_min, exp_decay, gamma, game_batch, init_size, new, use_screen):
+                    gamma, game_batch, epochs_per_batch, new, init_epochs, init_size, use_screen, sleep=-1):
 
         self.max_episodes = max_episodes
         self.min_score = min_score
@@ -20,13 +20,13 @@ class AgentRun:
         self.avg_scores = []
         self.eps_history = []
         self.table_shape = [20, 10, 1]
-        self.input_shape = (self.table_shape, [2*(7-1)])
+        self.input_shape = (self.table_shape, [(7-1)])
         self.output_size = 40
         self.use_screen = use_screen
         self.game_batch = game_batch
 
 
-        self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, init_exp, exp_min, exp_decay, gamma, self.game_batch, new, init_size)
+        self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, gamma, self.game_batch, epochs_per_batch, new, init_epochs, init_size)
 
     def run(self):
         index_episode = 1
@@ -45,6 +45,9 @@ class AgentRun:
                 done = False
 
                 while not done:
+
+                    if self.use_screen and self.sleep > 0:
+                        time.sleep(self.sleep)
 
                     action = self.agent.act(state)
                     reward = tetris_run.step(action)
