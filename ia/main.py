@@ -27,7 +27,7 @@ if __name__ == '__main__':
             epochs_per_batch = 100,
             new = new,
             init_epochs = 200,
-            init_size = 200000,
+            init_size = 100000,
             use_screen = use_screen,
             sleep = sleep
         )

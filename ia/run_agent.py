@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
+sys.path.insert(0, './tetris')
 import tetris
 import agent
 import utils
@@ -65,11 +65,10 @@ class AgentRun:
                 self.scores.append(tetris_run.game.score)
                 avg_score = np.mean(self.scores[max(0, index_episode-50):index_episode+1])
                 self.avg_scores.append(avg_score)
-                self.eps_history.append(self.agent.exploration_rate)
 
 
-                print("Episode {} #Pieces: {} #Score: {} #Avg_Score: {} #Epsilon {}".format(
-                    index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score, self.agent.exploration_rate))
+                print("Episode {} #Pieces: {} #Score: {} #Avg_Score: {}".format(
+                    index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score))
 
                 index_episode += 1
 
@@ -91,5 +90,5 @@ class AgentRun:
             self.agent.save_neural_network()
 
             x = [i+1 for i in range(index_episode-1)]
-            plotLearning(x, self.scores, self.eps_history, self.agent.graph_name)
+            plotLearning(x, self.scores, self.avg_scores, self.agent.graph_name)
 

@@ -134,5 +134,5 @@ class Agent():
                 [np.reshape(table_v, [len(table_v)]+self.input_shape[0]),
                     np.reshape(piece_v, [len(piece_v)]+self.input_shape[1])],
                 np.reshape(out_v, [len(out_v), self.action_size]),
-            epochs=epochs_per_batch, verbose=0)
+            epochs=self.epochs_per_batch, verbose=0)
 
