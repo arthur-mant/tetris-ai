@@ -27,8 +27,8 @@ if __name__ == '__main__':
             epochs_per_batch = 50,
             new = new,
             init_epochs = 500,
-            init_size = 150000,
-            depth = 3,
+            init_size = 100000,
+            depth = 10,
             use_screen = use_screen,
             sleep = sleep
         )

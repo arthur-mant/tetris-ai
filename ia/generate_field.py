@@ -31,7 +31,7 @@ def generate_experience_db(width, height, num, depth):
             for play in aux:
                 table, action, piece = play
                 aux_arr = [ 0 for i in range(40) ]
-                aux_arr[action] = 1
+                aux_arr[action] = 20
                 action_v.append(aux_arr)
 
                 aux_arr = [ 0 for i in range(7-1) ]
@@ -262,18 +262,18 @@ def copia_alteracoes(field_s, field_t, pile_height, altered_columns):
 
 
 if __name__ == '__main__':
-    state, piece, action = generate_experience_db(10, 20, 10000, 3)
+    state, piece, action = generate_experience_db(10, 20, 1, 10)
 
     if len(state) == 0:
         print("failed to generate field, try again")
         exit(0)
 
-#    for i in range(len(state)):
-#        utils.display_field(state[i], np.argmax(action[i]), utils.piece_num(piece[i]), Piece.pieces)
-#        print(np.argmax(action[i]))
-#        print(utils.translate_action(np.argmax(action[i]), utils.piece_num(piece[i]), Piece.pieces))
-#        print("piece: ", utils.piece_num(piece[i]))
-#        print(piece[i])
-#        print("entry num = ", i)
+    for i in range(len(state)):
+        utils.display_field(state[i], np.argmax(action[i]), utils.piece_num(piece[i]), Piece.pieces)
+        print(np.argmax(action[i]))
+        print(utils.translate_action(np.argmax(action[i]), utils.piece_num(piece[i]), Piece.pieces))
+        print("piece: ", utils.piece_num(piece[i]))
+        print(piece[i])
+        print("entry num = ", i)
 
     #aux = generate_experience_db(10, 20, 100000)
