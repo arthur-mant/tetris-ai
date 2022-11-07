@@ -12,7 +12,7 @@ import numpy as np
 
 class AgentRun:
     def __init__(self, max_episodes, min_score, nn_layers, lr,
-                    gamma, game_batch, epochs_per_batch, new, init_epochs, init_size, use_screen, sleep=-1):
+                    gamma, game_batch, epochs_per_batch, new, init_epochs, init_size, depth, use_screen, sleep=-1):
 
         self.max_episodes = max_episodes
         self.min_score = min_score
@@ -28,7 +28,7 @@ class AgentRun:
         self.log_filename = "log.txt"
         self.log_file = open(self.log_filename, 'w')
 
-        self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, gamma, self.game_batch, epochs_per_batch, new, init_epochs, init_size)
+        self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, gamma, self.game_batch, epochs_per_batch, new, init_epochs, init_size, depth)
 
     def run(self):
         index_episode = 1

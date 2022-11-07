@@ -24,10 +24,11 @@ if __name__ == '__main__':
             lr = 0.00001,
             gamma = 0.99,
             game_batch = 100,
-            epochs_per_batch = 100,
+            epochs_per_batch = 50,
             new = new,
             init_epochs = 500,
-            init_size = 100000,
+            init_size = 150000,
+            depth = 3,
             use_screen = use_screen,
             sleep = sleep
         )

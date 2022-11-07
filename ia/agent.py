@@ -52,7 +52,7 @@ def build_neural_network(table_shape, action_size, nn_layers, lr):
 class Agent():
 
     def __init__(self, table_shape, input_shape, action_size, nn_layers, lr,
-                    gamma, game_batch, epochs_per_batch, new, init_epochs, init_size):
+                    gamma, game_batch, epochs_per_batch, new, init_epochs, init_size, depth):
 
         self.table_shape = table_shape
         self.input_shape = input_shape
@@ -75,7 +75,7 @@ class Agent():
 
         if new:
             print("training new neural network")
-            input_v, piece_v, action_v = generate_field.generate_experience_db(10, 20, init_size)
+            input_v, piece_v, action_v = generate_field.generate_experience_db(10, 20, init_size, depth)
             print("finished generating basic experience")
 
             begin_time = time.time()
@@ -84,7 +84,7 @@ class Agent():
                 [np.reshape(input_v, [len(input_v)]+self.input_shape[0]),
                     np.reshape(piece_v, [len(piece_v)]+self.input_shape[1])],
                 np.reshape(action_v, [len(input_v), self.action_size]),
-                epochs=init_epochs, verbose=0
+                epochs=init_epochs, verbose=0, shuffle=True
             )
             print("took ", time.time()-begin_time, "s to train nn")
             print("finished basic training for new neural network")
@@ -134,5 +134,5 @@ class Agent():
                 [np.reshape(table_v, [len(table_v)]+self.input_shape[0]),
                     np.reshape(piece_v, [len(piece_v)]+self.input_shape[1])],
                 np.reshape(out_v, [len(out_v), self.action_size]),
-            epochs=self.epochs_per_batch, verbose=0)
+            epochs=self.epochs_per_batch, verbose=0, shuffle=True)
 
