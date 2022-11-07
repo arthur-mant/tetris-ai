@@ -91,10 +91,10 @@ def display_field(field, action, piece, pieces):
                 aux += "  "
             else:
                 aux += "0 "
-        print("| ", aux, "|")
+        print("| ", aux, "| ", i)
 
     print((5+2*len(field[0]))*'-')
-
+    print("   0 1 2 3 4 5 6 7 8 9")
 
 def translate_action(action, piece, pieces):
     rot_num = len(pieces[piece])
@@ -105,3 +105,9 @@ def translate_action(action, piece, pieces):
     pos = (aux // rot_num)-1
 
     return pos, rot
+
+def piece_num(piece_v):
+    aux = np.argmax(piece_v)
+    if piece_v[aux] == 0:
+        return len(piece_v)+1-1
+    return aux
