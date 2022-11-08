@@ -101,6 +101,5 @@ class AgentRun:
         finally:
             self.agent.save_neural_network()
 
-            x = [i+1 for i in range(index_episode-1)]
-            plotLearning(x, self.scores, self.avg_scores, self.agent.graph_name)
+            plotLearning(self.avg_scores, self.game_batch, self.agent.graph_name)
 
