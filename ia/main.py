@@ -3,6 +3,39 @@ import sys
 
 if __name__ == '__main__':
 
+    init_epochs = 300
+    if "-ie" in sys.argv:
+        try:
+            init_epochs = int(sys.argv[sys.argv.index("-ie")+1])
+            print("init_epochs = ", init_epochs)
+        except:
+            print("ERROR: unable to find init epochs number USING DEFAULT VALUE ", init_epochs)
+
+    epochs_per_batch = 20
+    if "-eb" in sys.argv:
+        try:
+            epochs_per_batch = int(sys.argv[sys.argv.index("-eb")+1])
+            print("epochs_per_batch = ", epochs_per_batch)
+        except:
+            print("ERROR: unable to find epochs per batch number USING DEFAULT VALUE", epochs_per_batch)
+
+    game_batch = 100
+    if "-gb" in sys.argv:
+        try:
+            game_batch = int(sys.argv[sys.argv.index("-gb")+1])
+            print("game_batch = ", game_batch)
+        except:
+            print("ERROR: unable to find game batch number USING DEFAULT VALUE", game_batch)
+
+    lr = 0.00001
+    if "-lr" in sys.argv:
+        try:
+            lr = float(sys.argv[sys.argv.index("-lr")+1])
+            print("lr = ", lr)
+        except:
+            print("ERROR: unable to find learning rate number USING DEFAULT VALUE", lr)
+
+
     new = False
     if "--new" in sys.argv or "-n" in sys.argv:
         new = True
@@ -16,18 +49,19 @@ if __name__ == '__main__':
         sleep = 0.5
         use_screen = True
 
+
     run_agent = \
         run_agent.AgentRun(
-            max_episodes = 100000,
-            min_score = 10000,
+            max_episodes = 50000,
+            min_score = 100000,
             nn_layers = [[(7, 3)], [100]],
-            lr = 0.00001,
+            lr = lr,                                #!!!
             gamma = 0.99,
-            game_batch = 100,
-            epochs_per_batch = 50,
+            game_batch = game_batch,                #!!
+            epochs_per_batch = epochs_per_batch,    #!!!
             new = new,
-            init_epochs = 500,
-            init_size = 100000,
+            init_epochs = init_epochs,              #!!!
+            init_size = 100000,                     #qto mais, melhor
             depth = 10,
             use_screen = use_screen,
             sleep = sleep

@@ -65,12 +65,9 @@ class AgentRun:
                 self.agent.remember(index_episode, game_record, tetris_run.game.score)
 
                 self.scores.append(tetris_run.game.score)
-                avg_score = np.mean(self.scores[max(0, index_episode-50):index_episode+1])
-                self.avg_scores.append(avg_score)
 
-
-                log_str = "Episode {} #Pieces: {} #Score: {} #Avg_Score: {}".format(
-                    index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score)
+                log_str = "Episode {} #Pieces: {} #Score: {}".format(
+                    index_episode, tetris_run.game.pieces, tetris_run.game.score)
 
                 print(log_str)
                 self.log_file.write(log_str+"\n")
@@ -78,6 +75,14 @@ class AgentRun:
                 index_episode += 1
 
                 if (index_episode-1) % self.game_batch == 0:
+
+                    avg_score = np.mean(self.scores[max(0, index_episode-self.game_batch):index_episode+1])
+                    self.avg_scores.append(avg_score)
+
+                    log_str = "Batch average score: {}".format(avg_score)
+                    print(log_str)
+                    self.log_file.write(log_str+"\n")
+
                     print("time spent on games: ", time.time()-aux_time, " s")
                     aux_time = time.time()
                     self.agent.replay()

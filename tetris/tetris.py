@@ -45,7 +45,7 @@ class Tetris:
     gameover = False
     piece = None
     next_piece = None
-    line_score = [40, 100, 300, 1200]
+    line_score = [400, 1000, 3000, 12000]
 
     def __init__(self, height, width, field=None):      #should be at least 4x4
         self.height = height
