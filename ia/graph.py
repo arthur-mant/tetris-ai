@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import gym
 
-def plotLearning(scores, game_batch, filename, lines=None):
+def plotLearning(scores, game_batch, filename):
 
     x = [ game_batch*i for i in range(len(scores)) ]
 

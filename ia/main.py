@@ -27,7 +27,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find game batch number USING DEFAULT VALUE", game_batch)
 
-    lr = 0.00001
+    lr = 0.001
     if "-lr" in sys.argv:
         try:
             lr = float(sys.argv[sys.argv.index("-lr")+1])
