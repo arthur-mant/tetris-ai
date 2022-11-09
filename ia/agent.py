@@ -52,7 +52,7 @@ def build_neural_network(table_shape, action_size, nn_layers, lr):
 class Agent():
 
     def __init__(self, table_shape, input_shape, action_size, nn_layers, lr,
-                    gamma, game_batch, epochs_per_batch, new, init_epochs, init_size, depth):
+                    gamma, game_batch, epochs_per_batch, new, init_epochs, init_size, depth, name):
 
         self.table_shape = table_shape
         self.input_shape = input_shape
@@ -62,7 +62,7 @@ class Agent():
         self.gamma = gamma
         self.game_batch = game_batch
         self.epochs_per_batch = epochs_per_batch
-        self.name = "agent"
+        self.name = name
         self.weight_backup_file = self.name+".h5"
         self.graph_name = self.name+".png"
 

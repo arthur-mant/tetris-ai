@@ -3,6 +3,14 @@ import sys
 
 if __name__ == '__main__':
 
+    name = "default_name"
+    if "--name" in sys.argv:
+        try:
+            name = str(sys.argv[sys.argv.index("--name")+1])
+            print("name = ", name)
+        except:
+            print("ERROR: unable to find name USING DEFAULT VALUE ", name)
+
     init_epochs = 300
     if "-ie" in sys.argv:
         try:
@@ -27,7 +35,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find game batch number USING DEFAULT VALUE", game_batch)
 
-    lr = 0.001
+    lr = 0.000001
     if "-lr" in sys.argv:
         try:
             lr = float(sys.argv[sys.argv.index("-lr")+1])
@@ -64,7 +72,8 @@ if __name__ == '__main__':
             init_size = 100000,                     #qto mais, melhor
             depth = 10,
             use_screen = use_screen,
-            sleep = sleep
+            sleep = sleep,
+            name = name
         )
     run_agent.run()
 
