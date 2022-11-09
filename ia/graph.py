@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import gym
 
-def plotLearning(scores, game_batch, filename):
+def plotLearning(scores, filename):
 
-    x = [ game_batch*i for i in range(len(scores)) ]
+    x = [ i+1 for i in range(len(scores)) ]
 
     plt.plot(x, scores, color="C1")
 

@@ -53,7 +53,6 @@ class AgentRun:
 
                     action = self.agent.act(state)
                     reward = tetris_run.step(action)
-                    #next_state = np.reshape(utils.get_state(tetris_run.game), [1]+self.input_shape)
                     next_state = utils.get_state(tetris_run.game, self.input_shape)
                     done = tetris_run.game.gameover
 
@@ -66,8 +65,11 @@ class AgentRun:
 
                 self.scores.append(tetris_run.game.score)
 
-                log_str = "Episode {} #Pieces: {} #Score: {}".format(
-                    index_episode, tetris_run.game.pieces, tetris_run.game.score)
+                avg_score = np.mean(self.scores[max(0, index_episode-self.game_batch):])
+                self.avg_scores.append(avg_score)
+
+                log_str = "Episode {} #Pieces: {} #Score: {} #Avg Score: {}".format(
+                    index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score)
 
                 print(log_str)
                 self.log_file.write(log_str+"\n")
@@ -75,13 +77,6 @@ class AgentRun:
                 index_episode += 1
 
                 if (index_episode-1) % self.game_batch == 0:
-
-                    avg_score = np.mean(self.scores[max(0, index_episode-self.game_batch):index_episode+1])
-                    self.avg_scores.append(avg_score)
-
-                    log_str = "Batch average score: {}".format(avg_score)
-                    print(log_str)
-                    self.log_file.write(log_str+"\n")
 
                     print("time spent on games: ", time.time()-aux_time, " s")
                     aux_time = time.time()
@@ -92,14 +87,23 @@ class AgentRun:
                 tetris_run.close_game()
 
                 if (index_episode-1) % (10*self.game_batch) == 0:
+                    print("Saving...")
+
+                    aux_time = time.time()
+
+                    plotLearning(self.avg_scores, self.agent.graph_name)
+
                     self.agent.save_neural_network()
                     self.log_file.close()
                     self.log_file = open(self.log_filename, 'a')
+
+                    print("saving took ", time.time()-aux_time, " s")
+                    aux_time = time.time()
 
             print("finished running agent")
 
         finally:
             self.agent.save_neural_network()
 
-            plotLearning(self.avg_scores, self.game_batch, self.agent.graph_name)
+            plotLearning(self.avg_scores, self.agent.graph_name)
 
