@@ -63,15 +63,30 @@ class Agent():
         self.game_batch = game_batch
         self.epochs_per_batch = epochs_per_batch
         self.name = name
-        self.weight_backup_file = self.name+".h5"
-        self.graph_name = self.name+".png"
+        self.directory = "./resultados/"+self.name+"/"
+        self.weight_backup_file = self.directory+"nn.h5"
+        self.graph_name = self.directory+"graph.png"
 
         #length = 10000
         #self.memory = deque(maxlen=self.game_batch)
         self.memory = [ [] for i in range(self.game_batch) ]
 
+        if os.path.exists(self.directory):
+            print("WARNING: will override "+self.directory)
+        else:
+            os.makedirs(self.directory)
+
         print("building DQN")
         self.brain = build_neural_network(self.table_shape, self.action_size, self.nn_layers, self.lr)
+
+
+        if not new:
+            print("loading ", self.weight_backup_file, " neural network")
+            if os.path.isfile(self.weight_backup_file):
+                self.brain.load_weights(self.weight_backup_file)
+            else:
+                print("ERROR: ", self.weight_backup_file, " not found, generating new")
+                new = True
 
         if new:
             print("training new neural network")
@@ -89,16 +104,13 @@ class Agent():
             print("took ", time.time()-begin_time, "s to train nn")
             print("finished basic training for new neural network")
 
+    def save_neural_network(self, num=-1):
+        if num >= 0:
+            backup_file = self.weight_backup_file.replace(".h5", str(num)+".h5")
         else:
-            print("loading ", self.weight_backup_file, " neural network")
-            if os.path.isfile(self.weight_backup_file):
-                self.brain.load_weights(self.weight_backup_file)
-            else:
-                print("ERROR: ", self.weight_backup_file, " not found")
-
-    def save_neural_network(self):
-        print("saving DQN neural network to ", self.weight_backup_file)
-        self.brain.save(self.weight_backup_file)
+            backup_file = self.weight_backup_file
+        print("saving DQN neural network to ", backup_file)
+        self.brain.save(backup_file)
 
     def act(self, state):
         act_values = self.brain.predict(state)[0]

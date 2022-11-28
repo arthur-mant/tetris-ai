@@ -3,7 +3,7 @@ import sys
 
 if __name__ == '__main__':
 
-    name = "default_name"
+    name = "default"
     if "--name" in sys.argv:
         try:
             name = str(sys.argv[sys.argv.index("--name")+1])
@@ -11,7 +11,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find name USING DEFAULT VALUE ", name)
 
-    init_epochs = 300
+    init_epochs = 500
     if "-ie" in sys.argv:
         try:
             init_epochs = int(sys.argv[sys.argv.index("-ie")+1])
@@ -19,7 +19,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find init epochs number USING DEFAULT VALUE ", init_epochs)
 
-    epochs_per_batch = 20
+    epochs_per_batch = 10
     if "-eb" in sys.argv:
         try:
             epochs_per_batch = int(sys.argv[sys.argv.index("-eb")+1])
@@ -69,7 +69,7 @@ if __name__ == '__main__':
             epochs_per_batch = epochs_per_batch,    #!!!
             new = new,
             init_epochs = init_epochs,              #!!!
-            init_size = 100000,                     #qto mais, melhor
+            init_size = 50000,                     #qto mais, melhor
             depth = 10,
             use_screen = use_screen,
             sleep = sleep,

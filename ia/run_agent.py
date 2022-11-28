@@ -25,10 +25,10 @@ class AgentRun:
         self.use_screen = use_screen
         self.game_batch = game_batch
 
-        self.log_filename = name+".log"
-        self.log_file = open(self.log_filename, 'w')
-
         self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, gamma, self.game_batch, epochs_per_batch, new, init_epochs, init_size, depth, name)
+
+        self.log_filename = self.agent.directory+"out.log"
+        self.log_file = open(self.log_filename, 'w')
 
     def run(self):
         index_episode = 1
@@ -94,6 +94,7 @@ class AgentRun:
                     plotLearning(self.avg_scores, self.agent.graph_name)
 
                     self.agent.save_neural_network()
+                    self.agent.save_neural_network((index_episode-1) // (10*self.game_batch))
                     self.log_file.close()
                     self.log_file = open(self.log_filename, 'a')
 
