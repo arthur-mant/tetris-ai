@@ -4,6 +4,7 @@ import tetris
 import agent
 import utils
 import time
+import pickle
 import numpy as np
 from collections import deque
 from graph import plotLearning
@@ -18,12 +19,16 @@ class AgentRun:
         self.min_score = min_score
         self.scores = []
         self.avg_scores = []
+        self.accuracy = []
         self.eps_history = []
         self.table_shape = [20, 10, 1]
         self.input_shape = (self.table_shape, [(7-1)])
         self.output_size = 40
         self.use_screen = use_screen
         self.game_batch = game_batch
+
+        with open("dataset.pickle", 'rb') as f:
+            self.test_data = pickle.load(f)
 
         self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, gamma, self.game_batch, epochs_per_batch, new, init_epochs, init_size, depth, name)
 
@@ -66,7 +71,6 @@ class AgentRun:
                 self.scores.append(tetris_run.game.score)
 
                 avg_score = np.mean(self.scores[max(0, index_episode-self.game_batch):])
-                self.avg_scores.append(avg_score)
 
                 log_str = "Episode {} #Pieces: {} #Score: {} #Avg Score: {}".format(
                     index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score)
@@ -77,6 +81,13 @@ class AgentRun:
                 index_episode += 1
 
                 if (index_episode-1) % self.game_batch == 0:
+                    self.avg_scores.append(avg_score)
+                    self.accuracy.append(
+                            self.agent.brain.evaluate(
+                                    self.test_data["X"],
+                                    self.test_data["Y"]
+                            )
+                    )
 
                     print("time spent on games: ", time.time()-aux_time, " s")
                     aux_time = time.time()
