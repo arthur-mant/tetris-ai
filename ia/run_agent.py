@@ -89,7 +89,7 @@ class AgentRun:
                             self.agent.brain.evaluate(
                                     self.test_data["X"],
                                     self.test_data["Y"]
-                            )
+                            )[1]
                     )
 
                     print("time spent on games: ", time.time()-aux_time, " s")
