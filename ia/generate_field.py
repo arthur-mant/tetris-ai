@@ -31,7 +31,7 @@ def generate_experience_db(width, height, num, depth):
             for play in aux:
                 table, action, piece = play
                 aux_arr = [ 0 for i in range(40) ]
-                aux_arr[action] = 1
+                aux_arr[action] = 100
                 action_v.append(aux_arr)
 
                 aux_arr = [ 0 for i in range(7-1) ]

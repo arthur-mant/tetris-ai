@@ -2,7 +2,7 @@ from keras.models import Model
 from keras.layers import Conv2D, Dense, Flatten, Input, Concatenate
 from tensorflow.keras.optimizers import Adam
 from collections import deque
-
+from keras.metrics import Accuracy
 import numpy as np
 import random
 import os
@@ -41,13 +41,13 @@ def build_neural_network(table_shape, action_size, nn_layers, lr):
         hidden = Dense(layer, activation='relu')(hidden)
         print("Created hidden dense layer with ", layer, " neurons")
 
-    output = Dense(action_size, activation="softmax")(hidden)
+    output = Dense(action_size, activation="linear")(hidden)
 
     model = Model(inputs=[table_input, piece_input], outputs=output)
     model.compile(
-                    loss="categorical_crossentropy",
+                    loss="mse",
                     optimizer=Adam(learning_rate=lr),
-                    metrics=['accuracy']
+                    metrics=[Accuracy()]
                 )
 
     return model

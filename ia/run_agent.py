@@ -119,5 +119,6 @@ class AgentRun:
 
         finally:
             self.agent.save_neural_network()
-            plotLearning(self.avg_scores, self.accuracy, self.game_batch, self.agent.graph_name)
+
+            plotLearning(self.avg_scores, self.agent.graph_name)
 
