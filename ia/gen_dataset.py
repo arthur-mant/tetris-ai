@@ -1,6 +1,11 @@
-import generate_field
 import pickle
 import numpy as np
+import sys
+sys.path.insert(0, './tetris')
+
+from tetris import Piece
+import generate_field
+import utils
 
 def gen_dataset(filename, num):
 
@@ -27,6 +32,10 @@ def gen_dataset(filename, num):
 if __name__ == '__main__':
     gen_dataset("dataset.pickle", 10000)
 
-    #with open("dataset.pickle", 'rb') as f:
-    #    data = pickle.load(f)
-    #print(data)
+    with open("dataset.pickle", 'rb') as f:
+        data = pickle.load(f)
+    state = data["X"][0][0]
+    piece = data["X"][1][0]
+    action = data["Y"][0]
+    print("Example:")
+    utils.display_field(state, np.argmax(action), utils.piece_num(piece), Piece.pieces)

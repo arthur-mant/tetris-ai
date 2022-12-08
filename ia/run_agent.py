@@ -86,11 +86,9 @@ class AgentRun:
                 if (index_episode-1) % self.game_batch == 0:
                     self.avg_scores.append(avg_score)
                     self.accuracy.append(
-                            self.agent.brain.evaluate(
-                                    self.test_data["X"],
-                                    self.test_data["Y"]
-                            )[1]
+                            self.agent.evaluate_accuracy(self.test_data)
                     )
+                    print("Accuracy: ", self.accuracy[-1])
 
                     print("time spent on games: ", time.time()-aux_time, " s")
                     aux_time = time.time()

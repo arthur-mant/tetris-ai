@@ -132,7 +132,7 @@ class Agent():
 
         self.memory.sort(key=lambda y: y[2])    #ordena pelo score
         #sample_batch = self.memory[4*self.game_batch//5:]
-        sample_batch = self.memory[:self.game_batch//4] + self.memory[3*self.game_batch//4:]
+        sample_batch = self.memory[:self.game_batch//10] + self.memory[9*self.game_batch//10:]
 
         for game_id, game_record, score in sample_batch:
             for state, action, reward, next_state, done in game_record:
@@ -150,4 +150,17 @@ class Agent():
                     np.reshape(piece_v, [len(piece_v)]+self.input_shape[1])],
                 np.reshape(out_v, [len(out_v), self.action_size]),
             epochs=self.epochs_per_batch, verbose=0, shuffle=True)
+
+    def evaluate_accuracy(self, test_data):
+        nn_output = self.brain.predict(test_data["X"])
+
+        hit = 0
+        for i in range(len(nn_output)):
+            if np.argmax(nn_output[i]) == np.argmax(test_data["Y"][i]):
+                hit += 1
+
+        print(hit, len(nn_output))
+
+        return hit/len(nn_output)
+
 

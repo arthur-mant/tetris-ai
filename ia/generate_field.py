@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, '/home/martinelli/tetris-ia/tetris')
 from tetris import Piece
+from tetris import Tetris
 import numpy as np
 import utils
 import random
@@ -31,7 +32,7 @@ def generate_experience_db(width, height, num, depth):
             for play in aux:
                 table, action, piece = play
                 aux_arr = [ 0 for i in range(40) ]
-                aux_arr[action] = 12000
+                aux_arr[action] = Tetris.line_score[0]
                 action_v.append(aux_arr)
 
                 aux_arr = [ 0 for i in range(7-1) ]
