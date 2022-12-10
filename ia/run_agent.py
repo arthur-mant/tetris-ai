@@ -37,6 +37,7 @@ class AgentRun:
 
         self.log_filename = self.agent.directory+"out.log"
         self.log_file = open(self.log_filename, 'w')
+        self.sleep = sleep
 
     def run(self):
         index_episode = 1
@@ -73,7 +74,7 @@ class AgentRun:
 
                 self.scores.append(tetris_run.game.score)
 
-                avg_score = np.mean(self.scores[max(0, index_episode-self.game_batch):])
+                avg_score = np.mean(self.scores[max(0, index_episode-2*self.game_batch):])
 
                 log_str = "Episode {} #Pieces: {} #Score: {} #Avg Score: {}".format(
                     index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score)
