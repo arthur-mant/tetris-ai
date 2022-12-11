@@ -2,6 +2,7 @@ from keras.models import Model
 from keras.layers import Conv2D, Dense, Flatten, Input, Concatenate
 from tensorflow.keras.optimizers import Adam
 from collections import deque
+from tetris import Tetris
 
 import numpy as np
 import random
@@ -68,7 +69,7 @@ class Agent():
         self.name = name
         self.directory = "./resultados/"+self.name+"/"
         self.weight_backup_file = self.directory+"nn.h5"
-        self.graph_name = self.directory+"graph.png"
+        self.graph_name = self.directory+self.name+".png"
 
         #length = 10000
         #self.memory = deque(maxlen=self.game_batch)
@@ -137,7 +138,9 @@ class Agent():
         for game_id, game_record, score in sample_batch:
             for state, action, reward, next_state, done in game_record:
 
-                target = reward + self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0])
+                target = reward +\
+                    self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0]) +\
+                    int(done)*(-1*Tetris.line_score[-1])
                 target_f = self.brain.predict(state)
                 target_f[0][action] = target
 
