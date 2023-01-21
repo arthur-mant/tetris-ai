@@ -62,15 +62,15 @@ if __name__ == '__main__':
         run_agent.AgentRun(
             max_episodes = 100000,
             min_score = 100000,
-            nn_layers = [[(64, 3)], [320, 160, 80]],
+            nn_layers = [[(20, 3)], [144]],
             lr = lr,                                #!!!
             gamma = 0.99,
             game_batch = game_batch,                #!!
             epochs_per_batch = epochs_per_batch,    #!!!
             new = new,
             init_epochs = init_epochs,              #!!!
-            init_size = 500000,                     #qto mais, melhor
-            depth = 10,
+            init_size = 100000,                     #qto mais, melhor
+            depth = 3,
             use_screen = use_screen,
             sleep = sleep,
             name = name

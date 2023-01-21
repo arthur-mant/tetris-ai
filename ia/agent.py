@@ -107,6 +107,7 @@ class Agent():
             )
             print("took ", time.time()-begin_time, "s to train nn")
             print("finished basic training for new neural network")
+            self.save_neural_network(0)
 
     def save_neural_network(self, num=-1):
         if num >= 0:
@@ -133,7 +134,7 @@ class Agent():
 
         self.memory.sort(key=lambda y: y[2])    #ordena pelo score
         #sample_batch = self.memory[4*self.game_batch//5:]
-        sample_batch = self.memory[:int(2.5*self.game_batch//10)] + self.memory[int(7.5*self.game_batch//10):]
+        sample_batch = self.memory[:int(1*self.game_batch//10)] + self.memory[int(9*self.game_batch//10):]
 
         for game_id, game_record, score in sample_batch:
             for state, action, reward, next_state, done in game_record:
