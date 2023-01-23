@@ -125,8 +125,6 @@ class Agent():
         return np.argmax(act_values)
 
 
-    #def remember(self, state, action, reward, next_state, done):
-    #    self.memory.append((state, action, reward, next_state, done))
     def remember(self, game_id, game_record, score):
         self.memory[(game_id % self.game_batch)-1] = (game_id, game_record, score)
 
@@ -138,18 +136,57 @@ class Agent():
         self.memory.sort(key=lambda y: y[2])    #ordena pelo score
         sample_batch = self.memory[4*self.game_batch//5:]
 
+        games = []
+
         for game_id, game_record, score in sample_batch:
-            for state, action, reward, next_state, done in game_record:
 
-                target = reward +\
-                    self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0]) +\
-                    int(done)*(-1*Tetris.line_score[-1])
-                target_f = self.brain.predict(state)
-                target_f[0][action] = target
+            aux_game =  {
+                            "score": score,
+                            "segments": []
+                        }
+            aux_segment = {"segment_score": 0, "moves": []}
 
-                table_v.append(state[0])
-                piece_v.append(state[1])
-                out_v.append(target_f)
+            for move in game_record:
+
+                aux_segment["moves"].append(move)
+
+                segment_score = 0
+                for line_score in Tetris.line_score:
+                    if move[2] >= line_score:
+                        segment_score = line_score
+                if done:
+                    segment_score = -1*line_score[-1]*5
+
+                if segment_score != 0:
+                    aux_segment["segment_score"] = segment_score
+                    aux_game["segments"].append(aux_segment)
+                    aux_segment = {"segment_score": 0, "moves": []}
+
+            games.append(aux_game)
+
+        for game in games:
+            print("game score: ", game["score"])
+            for segment in game["segments"]:
+                print("  segment score: ", segment["segment_score"])
+                print("  number of moves: ", len(segment["moves"]))
+
+        highest_score = sample_batch[-1][2]
+
+        for game in games:
+            for segment in game["segments"]:
+                for state, action, reward, next_state, done in segment["moves"]:
+
+                    target = (reward +\                                                             #individual
+                        segment["segment_score"]/len(segment["moves"]) +\                           #segmento
+                        self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0]))\       #futuro
+                        *(game["score"]/highest_score)                                              #global
+
+                    target_f = self.brain.predict(state)
+                    target_f[0][action] = target
+
+                    table_v.append(state[0])
+                    piece_v.append(state[1])
+                    out_v.append(target_f)
 
         self.brain.fit(
                 [np.reshape(table_v, [len(table_v)]+self.input_shape[0]),
