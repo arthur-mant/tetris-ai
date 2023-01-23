@@ -57,6 +57,11 @@ if __name__ == '__main__':
         sleep = 0.5
         use_screen = True
 
+    pretrain_only = False
+    if "--pretrain" in sys.argv or "-pt" in sys.argv:
+        pretrain_only = True
+        name = "pretrained_only"
+        new = True
 
     run_agent = \
         run_agent.AgentRun(
@@ -69,11 +74,13 @@ if __name__ == '__main__':
             epochs_per_batch = epochs_per_batch,    #!!!
             new = new,
             init_epochs = init_epochs,              #!!!
-            init_size = 100000,                     #qto mais, melhor
+            init_size = 50000,                     #qto mais, melhor
+            init_batch = 10,
             depth = 3,
             use_screen = use_screen,
             sleep = sleep,
             name = name
         )
-    run_agent.run()
+    if not pretrain_only:
+        run_agent.run()
 
