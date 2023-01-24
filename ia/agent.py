@@ -152,10 +152,10 @@ class Agent():
 
                 segment_score = 0
                 for line_score in Tetris.line_score:
-                    if move[2] >= line_score:
+                    if move[2] >= line_score:               #reward
                         segment_score = line_score
-                if done:
-                    segment_score = -1*line_score[-1]*5
+                if move[4]:                                 #done
+                    segment_score = -1*Tetris.line_score[-1]*5
 
                 if segment_score != 0:
                     aux_segment["segment_score"] = segment_score
@@ -164,11 +164,11 @@ class Agent():
 
             games.append(aux_game)
 
-        for game in games:
-            print("game score: ", game["score"])
-            for segment in game["segments"]:
-                print("  segment score: ", segment["segment_score"])
-                print("  number of moves: ", len(segment["moves"]))
+        #for game in games:
+        #    print("game score: ", game["score"])
+        #    for segment in game["segments"]:
+        #        print("  segment score: ", segment["segment_score"])
+        #        print("  number of moves: ", len(segment["moves"]))
 
         highest_score = sample_batch[-1][2]
 
@@ -176,10 +176,20 @@ class Agent():
             for segment in game["segments"]:
                 for state, action, reward, next_state, done in segment["moves"]:
 
-                    target = (reward +\                                                             #individual
-                        segment["segment_score"]/len(segment["moves"]) +\                           #segmento
-                        self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0]))\       #futuro
-                        *(game["score"]/highest_score)                                              #global
+                    #individual
+                    #segmento
+                    #futuro
+                    #global
+
+                    target = \
+                        (reward +\
+                        segment["segment_score"]/len(segment["moves"]) +\
+                        self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0]))
+
+                    if target >= 0:
+                        target *= (game["score"]/highest_score)
+                    else:
+                        target *= (1.5 - (game["score"]/highest_score))
 
                     target_f = self.brain.predict(state)
                     target_f[0][action] = target
