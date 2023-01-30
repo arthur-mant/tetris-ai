@@ -3,13 +3,6 @@ import sys
 
 if __name__ == '__main__':
 
-    name = "default"
-    if "--name" in sys.argv:
-        try:
-            name = str(sys.argv[sys.argv.index("--name")+1])
-            print("name = ", name)
-        except:
-            print("ERROR: unable to find name USING DEFAULT VALUE ", name)
 
     init_epochs = 500
     if "-ie" in sys.argv:
@@ -27,7 +20,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find epochs per batch number USING DEFAULT VALUE", epochs_per_batch)
 
-    game_batch = 200
+    game_batch = 100
     if "-gb" in sys.argv:
         try:
             game_batch = int(sys.argv[sys.argv.index("-gb")+1])
@@ -35,7 +28,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find game batch number USING DEFAULT VALUE", game_batch)
 
-    lr = 0.00000001
+    lr = 0.000000005
     if "-lr" in sys.argv:
         try:
             lr = float(sys.argv[sys.argv.index("-lr")+1])
@@ -62,6 +55,14 @@ if __name__ == '__main__':
         pretrain_only = True
         name = "pretrained_only"
         new = True
+
+    name = "default"
+    if "--name" in sys.argv:
+        try:
+            name = str(sys.argv[sys.argv.index("--name")+1])
+            print("name = ", name)
+        except:
+            print("ERROR: unable to find name USING DEFAULT VALUE ", name)
 
     run_agent = \
         run_agent.AgentRun(

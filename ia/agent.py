@@ -133,18 +133,15 @@ class Agent():
         piece_v = []
         out_v = []
 
-        self.memory.sort(key=lambda y: y[2])    #ordena pelo score
-        sample_batch = self.memory[int(0.9*self.game_batch):]
+        highest_score = 0
 
-        games = []
+        segments = []
 
-        for game_id, game_record, score in sample_batch:
+        for game_id, game_record, score in self.memory:
 
-            aux_game =  {
-                            "score": score,
-                            "segments": []
-                        }
-            aux_segment = {"segment_score": 0, "moves": []}
+            highest_score = max(highest_score, score)
+
+            aux_segment = {"segment_score": 0, "moves": [], "game_score": score}
 
             for move in game_record:
 
@@ -155,49 +152,47 @@ class Agent():
                     if move[2] >= line_score:               #reward
                         segment_score = line_score
                 if move[4]:                                 #done
-                    segment_score = -1*Tetris.line_score[-1]*5
+                    segment_score = -1*Tetris.line_score[-1]
 
                 if segment_score != 0:
                     aux_segment["segment_score"] = segment_score
-                    aux_game["segments"].append(aux_segment)
-                    aux_segment = {"segment_score": 0, "moves": []}
-
-            games.append(aux_game)
-
-        #for game in games:
-        #    print("game score: ", game["score"])
-        #    for segment in game["segments"]:
-        #        print("  segment score: ", segment["segment_score"])
-        #        print("  number of moves: ", len(segment["moves"]))
-
-        highest_score = sample_batch[-1][2]
-
-        for game in games:
-            for segment in game["segments"]:
-                for state, action, reward, next_state, done in segment["moves"]:
-
-                    #individual
-                    #segmento
-                    #futuro
-                    #global
-
-                    target = \
-                        (reward +\
-                        segment["segment_score"]/len(segment["moves"]) +\
-                        self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0]))
-
-                    if target >= 0:
-                        target *= (game["score"]/highest_score)
-                    else:
-                        target *= (1 - (game["score"]/highest_score))
+                    segments.append(aux_segment)
+                    aux_segment = {"segment_score": 0, "moves": [], "game_score": score}
 
 
-                    target_f = self.brain.predict(state)
-                    target_f[0][action] = target
+        segments = sorted(segments, key=lambda d:
+                        (pow(d["segment_score"], 3)/len(d["moves"]))
+                    )
 
-                    table_v.append(state[0])
-                    piece_v.append(state[1])
-                    out_v.append(target_f)
+        #for segment in segments:
+        #    print("  segment score: ", segment["segment_score"])
+        #    print("  number of moves: ", len(segment["moves"]))
+
+        for segment in segments[int(0.8*len(segments)):]:
+            for state, action, reward, next_state, done in segment["moves"]:
+
+                #individual
+                #segmento
+                #futuro
+                #global
+
+                target = \
+                    (reward +\
+                    pow(segment["segment_score"], 3)/(len(segment["moves"])*pow(Tetris.line_score[0], 2)) +\
+                    self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0]))
+
+                if target >= 0:
+                    target *= (segment["game_score"]/highest_score)
+                else:
+                    target *= (1 - (segment["game_score"]/highest_score))
+
+
+                target_f = self.brain.predict(state)
+                target_f[0][action] = target
+
+                table_v.append(state[0])
+                piece_v.append(state[1])
+                out_v.append(target_f)
 
         self.brain.fit(
                 [np.reshape(table_v, [len(table_v)]+self.input_shape[0]),
