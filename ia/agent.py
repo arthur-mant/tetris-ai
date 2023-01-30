@@ -10,6 +10,11 @@ import os
 import generate_field
 import time
 
+import tensorflow as tf
+print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
+#tf.debugging.set_log_device_placement(True) # mostra logs do que usa gpu
+
+
 def build_neural_network(table_shape, action_size, nn_layers, lr):
     if len(nn_layers) < 1:
         print("neural network needs at least 1 layer")
