@@ -134,7 +134,7 @@ class Agent():
         out_v = []
 
         self.memory.sort(key=lambda y: y[2])    #ordena pelo score
-        sample_batch = self.memory[4*self.game_batch//5:]
+        sample_batch = self.memory[int(0.9*self.game_batch):]
 
         games = []
 
@@ -189,7 +189,8 @@ class Agent():
                     if target >= 0:
                         target *= (game["score"]/highest_score)
                     else:
-                        target *= (1.5 - (game["score"]/highest_score))
+                        target *= (1 - (game["score"]/highest_score))
+
 
                     target_f = self.brain.predict(state)
                     target_f[0][action] = target

@@ -19,7 +19,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find init epochs number USING DEFAULT VALUE ", init_epochs)
 
-    epochs_per_batch = 10
+    epochs_per_batch = 50
     if "-eb" in sys.argv:
         try:
             epochs_per_batch = int(sys.argv[sys.argv.index("-eb")+1])
@@ -27,7 +27,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find epochs per batch number USING DEFAULT VALUE", epochs_per_batch)
 
-    game_batch = 100
+    game_batch = 200
     if "-gb" in sys.argv:
         try:
             game_batch = int(sys.argv[sys.argv.index("-gb")+1])
@@ -35,7 +35,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find game batch number USING DEFAULT VALUE", game_batch)
 
-    lr = 0.000001
+    lr = 0.00000001
     if "-lr" in sys.argv:
         try:
             lr = float(sys.argv[sys.argv.index("-lr")+1])
