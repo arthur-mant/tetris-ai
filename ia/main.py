@@ -64,7 +64,7 @@ if __name__ == '__main__':
         try:
             init_batch = int(sys.argv[sys.argv.index("-ib")+1])
             print("init_batch = ", init_batch)
-            config.append({"string":"IB"+str(init_batch):, "pretraining": True})
+            config.append({"string":"IB"+str(init_batch), "pretraining": True})
         except:
             print("ERROR: unable to find init batch number USING DEFAULT VALUE", init_batch)
 
@@ -104,7 +104,7 @@ if __name__ == '__main__':
             epochs_per_batch = epochs_per_batch,    #!!!
             new = new,
             init_epochs = init_epochs,              #!!!
-            init_size = 50000,                     #qto mais, melhor
+            init_size = 100000,                     #qto mais, melhor
             init_batch = init_batch,
             depth = 3,
             use_screen = use_screen,

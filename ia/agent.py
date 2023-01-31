@@ -78,10 +78,10 @@ class Agent():
         for i in config["config"]:
             self.name += i["string"]
 
-        self.pt_name = config["name"]
+        self.pt_name = "pretraining_only"
         for i in config["config"]:
             if i["pretraining"]:
-                self.name += i["string"]
+                self.pt_name += i["string"]
 
 
         result_dir = "./resultados/"
