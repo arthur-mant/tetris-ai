@@ -43,8 +43,8 @@ if __name__ == '__main__':
     lr_pt = 0.00000001
     if "-lrpt" in sys.argv:
         try:
-            lr = float(sys.argv[sys.argv.index("-lr")+1])
-            print("lr = ", lr)
+            lr_pt = float(sys.argv[sys.argv.index("-lrpt")+1])
+            print("lr_pt = ", lr_pt)
             config.append({"string":"LRPT"+str(lr_pt), "pretraining": True})
         except:
             print("ERROR: unable to find learning rate number USING DEFAULT VALUE", lr)
@@ -84,7 +84,6 @@ if __name__ == '__main__':
     pretrain_only = False
     if "--pretrain" in sys.argv or "-pt" in sys.argv:
         pretrain_only = True
-        name = name.replace(original_name, "pretrained_only")
         new = True
 
     nn_config = {
