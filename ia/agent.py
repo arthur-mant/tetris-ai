@@ -60,25 +60,37 @@ def build_neural_network(table_shape, action_size, nn_layers, lr):
 
 class Agent():
 
-    def __init__(self, table_shape, input_shape, action_size, nn_layers, lr,
+    def __init__(self, table_shape, input_shape, action_size, nn_layers, lr, lr_pt,
                     gamma, game_batch, epochs_per_batch, new, init_epochs,
-                    init_size, init_batch, depth, name):
+                    init_size, init_batch, depth, config):
 
         self.table_shape = table_shape
         self.input_shape = input_shape
         self.action_size = action_size
         self.nn_layers = nn_layers
         self.lr = lr
+        self.lr_pt = lr_pt
         self.gamma = gamma
         self.game_batch = game_batch
         self.epochs_per_batch = epochs_per_batch
-        self.name = name
-        self.directory = "./resultados/"+self.name+"/"
+
+        self.name = config["name"]
+        for i in config["config"]:
+            self.name += i["string"]
+
+        self.pt_name = config["name"]
+        for i in config["config"]:
+            if i["pretraining"]:
+                self.name += i["string"]
+
+
+        result_dir = "./resultados/"
+        self.directory = result_dir+self.name+"/"
+        self.pt_directory = result_dir+self.pt_name+"/"
+
         self.weight_backup_file = self.directory+"nn.h5"
         self.graph_name = self.directory+self.name+".png"
 
-        #length = 10000
-        #self.memory = deque(maxlen=self.game_batch)
         self.memory = [ [] for i in range(self.game_batch) ]
 
         if os.path.exists(self.directory):
@@ -87,19 +99,31 @@ class Agent():
             os.makedirs(self.directory)
 
         print("building DQN")
-        self.brain = build_neural_network(self.table_shape, self.action_size, self.nn_layers, self.lr)
-
 
         if not new:
             print("loading ", self.weight_backup_file, " neural network")
             if os.path.isfile(self.weight_backup_file):
+                self.brain = build_neural_network(
+                    self.table_shape, self.action_size, self.nn_layers, self.lr
+                )
                 self.brain.load_weights(self.weight_backup_file)
+
+            elif os.path.isfile(self.pt_directory+"nn.h5"):
+                self.brain = build_neural_network(
+                    self.table_shape, self.action_size, self.nn_layers, self.lr
+                )
+                print("ERROR ", self.weight_backup_file, " not found, using ", self.pt_directory+"nn.h5")
+                self.brain.load_weights(self.pt_directory+"nn.h5")
+
             else:
-                print("ERROR: ", self.weight_backup_file, " not found, generating new")
+                print("ERROR: neither ", self.weight_backup_file, " nor ", self.pt_directory+"nn.h5", " found, generating new")
                 new = True
 
         if new:
             print("training new neural network")
+            self.brain = build_neural_network(
+                self.table_shape, self.action_size, self.nn_layers, self.lr_pt
+            )
 
             for i in range(init_batch):
                 input_v, piece_v, action_v = generate_field.generate_experience_db(10, 20, init_size, depth)
@@ -115,7 +139,16 @@ class Agent():
                 )
                 print(i, " took ", time.time()-begin_time, "s to train nn")
                 print(i, " finished basic training for new neural network")
-                self.save_neural_network(0)
+
+            if not os.path.exists(self.pt_directory):
+                os.makedirs(self.pt_directory)
+
+            self.brain.save(self.pt_directory+"nn.h5")
+
+            self.brain = build_neural_network(
+                self.table_shape, self.action_size, self.nn_layers, self.lr
+            )
+            self.brain.load_weights(self.pt_directory+"nn.h5")
 
     def save_neural_network(self, num=-1):
         if num >= 0:

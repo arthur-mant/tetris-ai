@@ -12,9 +12,9 @@ from graph import plotLearning
 import numpy as np
 
 class AgentRun:
-    def __init__(self, max_episodes, min_score, nn_layers, lr,
+    def __init__(self, max_episodes, min_score, nn_layers, lr, lr_pt,
                     gamma, game_batch, epochs_per_batch, new, init_epochs,
-                    init_size, init_batch, depth, use_screen, sleep, name):
+                    init_size, init_batch, depth, use_screen, sleep, config):
 
         self.max_episodes = max_episodes
         self.min_score = min_score
@@ -34,7 +34,7 @@ class AgentRun:
         except IOError:
             sys.exit("file dataset.pickle not found. stopping execution")
 
-        self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, gamma, self.game_batch, epochs_per_batch, new, init_epochs, init_size, init_batch, depth, name)
+        self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, lr_pt, gamma, self.game_batch, epochs_per_batch, new, init_epochs, init_size, init_batch, depth, config)
 
         self.log_filename = self.agent.directory+"out.log"
         self.log_file = open(self.log_filename, 'w')

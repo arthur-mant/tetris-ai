@@ -4,7 +4,7 @@ import sys
 if __name__ == '__main__':
 
     name = "default"
-    original_name = name
+    config = []
     if "--name" in sys.argv:
         try:
             name = str(sys.argv[sys.argv.index("--name")+1])
@@ -18,7 +18,7 @@ if __name__ == '__main__':
         try:
             init_epochs = int(sys.argv[sys.argv.index("-ie")+1])
             print("init_epochs = ", init_epochs)
-            name += "IE"+str(init_epochs)
+            config.append({"string":"IE"+str(init_epochs), "pretraining": True})
         except:
             print("ERROR: unable to find init epochs number USING DEFAULT VALUE ", init_epochs)
 
@@ -27,7 +27,7 @@ if __name__ == '__main__':
         try:
             epochs_per_batch = int(sys.argv[sys.argv.index("-eb")+1])
             print("epochs_per_batch = ", epochs_per_batch)
-            name += "EB"+str(epochs_per_batch)
+            config.append({"string":"EB"+str(epochs_per_batch), "pretraining": True})
         except:
             print("ERROR: unable to find epochs per batch number USING DEFAULT VALUE", epochs_per_batch)
 
@@ -36,24 +36,35 @@ if __name__ == '__main__':
         try:
             game_batch = int(sys.argv[sys.argv.index("-gb")+1])
             print("game_batch = ", game_batch)
+            config.append({"string":"GB"+str(game_batch), "pretraining": False})
         except:
             print("ERROR: unable to find game batch number USING DEFAULT VALUE", game_batch)
+
+    lr_pt = 0.00000001
+    if "-lrpt" in sys.argv:
+        try:
+            lr = float(sys.argv[sys.argv.index("-lr")+1])
+            print("lr = ", lr)
+            config.append({"string":"LRPT"+str(lr_pt), "pretraining": True})
+        except:
+            print("ERROR: unable to find learning rate number USING DEFAULT VALUE", lr)
 
     lr = 0.00000001
     if "-lr" in sys.argv:
         try:
             lr = float(sys.argv[sys.argv.index("-lr")+1])
             print("lr = ", lr)
-            name += "LR"+str(lr)
+            config.append({"string":"LR"+str(lr), "pretraining": False})
         except:
             print("ERROR: unable to find learning rate number USING DEFAULT VALUE", lr)
+
 
     init_batch = 10
     if "-ib" in sys.argv:
         try:
             init_batch = int(sys.argv[sys.argv.index("-ib")+1])
             print("init_batch = ", init_batch)
-            name += "IB"+str(init_batch)
+            config.append({"string":"IB"+str(init_batch):, "pretraining": True})
         except:
             print("ERROR: unable to find init batch number USING DEFAULT VALUE", init_batch)
 
@@ -76,7 +87,10 @@ if __name__ == '__main__':
         name = name.replace(original_name, "pretrained_only")
         new = True
 
-    print("Name: ", name)
+    nn_config = {
+        "name": name,
+        "config": config,
+    }
 
     run_agent = \
         run_agent.AgentRun(
@@ -84,6 +98,7 @@ if __name__ == '__main__':
             min_score = 100000,
             nn_layers = [[(20, 3)], [144]],
             lr = lr,                                #!!!
+            lr_pt = lr_pt,
             gamma = 0.99,
             game_batch = game_batch,                #!!
             epochs_per_batch = epochs_per_batch,    #!!!
@@ -94,7 +109,7 @@ if __name__ == '__main__':
             depth = 3,
             use_screen = use_screen,
             sleep = sleep,
-            name = name
+            config = nn_config
         )
     if not pretrain_only:
         run_agent.run()
