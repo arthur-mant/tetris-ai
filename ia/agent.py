@@ -126,7 +126,7 @@ class Agent():
         self.brain.save(backup_file)
 
     def act(self, state):
-        act_values = self.brain.predict(state)[0]
+        act_values = self.brain.predict(state, verbose=0)[0]
         return np.argmax(act_values)
 
 
@@ -184,7 +184,7 @@ class Agent():
                 target = \
                     (reward +\
                     pow(segment["segment_score"], 3)/(len(segment["moves"])*pow(Tetris.line_score[0], 2)) +\
-                    self.gamma*int(not done)*np.amax(self.brain.predict(next_state)[0]))
+                    self.gamma*int(not done)*np.amax(self.brain.predict(next_state, verbose=0)[0]))
 
                 if target >= 0:
                     target *= (segment["game_score"]/highest_score)
@@ -192,7 +192,7 @@ class Agent():
                     target *= (1 - (segment["game_score"]/highest_score))
 
 
-                target_f = self.brain.predict(state)
+                target_f = self.brain.predict(state, verbose=0)
                 target_f[0][action] = target
 
                 table_v.append(state[0])
@@ -206,7 +206,7 @@ class Agent():
             epochs=self.epochs_per_batch, verbose=0, shuffle=True)
 
     def evaluate_accuracy(self, test_data):
-        nn_output = self.brain.predict(test_data["X"])
+        nn_output = self.brain.predict(test_data["X"], verbose=0)
 
         hit = 0
         for i in range(len(nn_output)):
