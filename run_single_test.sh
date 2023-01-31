@@ -11,4 +11,4 @@
 
 module load libraries/cuda/11.8
 export XLA_FLAGS=--xla_gpu_cuda_data_dir=/cluster/libraries/cuda/11.8
-pipenv run python ~/tetris-ia/ia/main.py -pt
+pipenv run python ~/tetris-ia/ia/main.py $@

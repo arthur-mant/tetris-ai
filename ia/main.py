@@ -3,12 +3,22 @@ import sys
 
 if __name__ == '__main__':
 
+    name = "default"
+    original_name = name
+    if "--name" in sys.argv:
+        try:
+            name = str(sys.argv[sys.argv.index("--name")+1])
+            print("name = ", name)
+        except:
+            print("ERROR: unable to find name USING DEFAULT VALUE ", name)
 
-    init_epochs = 500
+
+    init_epochs = 100
     if "-ie" in sys.argv:
         try:
             init_epochs = int(sys.argv[sys.argv.index("-ie")+1])
             print("init_epochs = ", init_epochs)
+            name += "IE"+str(init_epochs)
         except:
             print("ERROR: unable to find init epochs number USING DEFAULT VALUE ", init_epochs)
 
@@ -17,6 +27,7 @@ if __name__ == '__main__':
         try:
             epochs_per_batch = int(sys.argv[sys.argv.index("-eb")+1])
             print("epochs_per_batch = ", epochs_per_batch)
+            name += "EB"+str(epochs_per_batch)
         except:
             print("ERROR: unable to find epochs per batch number USING DEFAULT VALUE", epochs_per_batch)
 
@@ -33,9 +44,18 @@ if __name__ == '__main__':
         try:
             lr = float(sys.argv[sys.argv.index("-lr")+1])
             print("lr = ", lr)
+            name += "LR"+str(lr)
         except:
             print("ERROR: unable to find learning rate number USING DEFAULT VALUE", lr)
 
+    init_batch = 10
+    if "-ib" in sys.argv:
+        try:
+            init_batch = int(sys.argv[sys.argv.index("-ib")+1])
+            print("init_batch = ", init_batch)
+            name += "IB"+str(init_batch)
+        except:
+            print("ERROR: unable to find init batch number USING DEFAULT VALUE", init_batch)
 
     new = False
     if "--new" in sys.argv or "-n" in sys.argv:
@@ -53,16 +73,10 @@ if __name__ == '__main__':
     pretrain_only = False
     if "--pretrain" in sys.argv or "-pt" in sys.argv:
         pretrain_only = True
-        name = "pretrained_only"
+        name = name.replace(original_name, "pretrained_only")
         new = True
 
-    name = "default"
-    if "--name" in sys.argv:
-        try:
-            name = str(sys.argv[sys.argv.index("--name")+1])
-            print("name = ", name)
-        except:
-            print("ERROR: unable to find name USING DEFAULT VALUE ", name)
+    print("Name: ", name)
 
     run_agent = \
         run_agent.AgentRun(
@@ -76,7 +90,7 @@ if __name__ == '__main__':
             new = new,
             init_epochs = init_epochs,              #!!!
             init_size = 50000,                     #qto mais, melhor
-            init_batch = 10,
+            init_batch = init_batch,
             depth = 3,
             use_screen = use_screen,
             sleep = sleep,
