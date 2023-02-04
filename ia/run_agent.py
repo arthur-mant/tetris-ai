@@ -78,7 +78,7 @@ class AgentRun:
 
                 self.scores.append(tetris_run.game.score)
 
-                avg_score = np.mean(self.scores[max(0, index_episode-2*self.game_batch):])
+                avg_score = np.mean(self.scores[max(0, index_episode-500):])
 
                 log_str = "Episode {} #Pieces: {} #Score: {} #Avg Score: {}".format(
                     index_episode, tetris_run.game.pieces, tetris_run.game.score, avg_score)
@@ -121,6 +121,10 @@ class AgentRun:
             print("finished running agent")
 
         finally:
+
+            self.log_file.write(
+                self.agent.evaluate_accuracy(self.test_data)
+            )
             self.log_file.close()
             self.agent.save_neural_network()
             plotLearning(self.avg_scores, self.accuracy, self.game_batch, self.agent.graph_name)
