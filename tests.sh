@@ -6,7 +6,7 @@ EPOCHS_PER_BATCH=(10 100)
 GAME_BATCH=(50 200)
 
 
-COMMAND="sbatch ./run_single_test.sh -pt"
+COMMAND="sbatch ./run_single_test.sh -pt_test"
 
 echo "python3 ia/gen_dataset.py && ("
 echo $COMMAND

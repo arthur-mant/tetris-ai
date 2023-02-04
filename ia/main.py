@@ -91,9 +91,16 @@ if __name__ == '__main__':
         "config": config,
     }
 
+    pt_test = False
+    max_episodes = 50000
+    if "-pt_test" in sys.argv:
+        pt_test = True
+        max_episodes = 1000
+        game_batch = 2*max_episodes
+
     run_agent = \
         run_agent.AgentRun(
-            max_episodes = 100000,
+            max_episodes = max_episodes,
             min_score = 100000,
             nn_layers = [[(20, 3)], [144]],
             lr = lr,                                #!!!
@@ -108,7 +115,8 @@ if __name__ == '__main__':
             depth = 3,
             use_screen = use_screen,
             sleep = sleep,
-            config = nn_config
+            config = nn_config,
+            pt_test = pt_test
         )
     if not pretrain_only:
         run_agent.run()
