@@ -68,6 +68,15 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find init batch number USING DEFAULT VALUE", init_batch)
 
+    init_size = 50000
+    if "-is" in sys.argv:
+        try:
+            init_size = int(sys.argv[sys.argv.index("-is")+1])
+            print("init_size = ", init_size)
+            config.append({"string":"IS"+str(init_size), "pretraining": True})
+        except:
+            print("ERROR: unable to find init size number USING DEFAULT VALUE", init_size)
+
     new = False
     if "--new" in sys.argv or "-n" in sys.argv:
         new = True
@@ -110,7 +119,7 @@ if __name__ == '__main__':
             epochs_per_batch = epochs_per_batch,    #!!!
             new = new,
             init_epochs = init_epochs,              #!!!
-            init_size = 100000,                     #qto mais, melhor
+            init_size = init_size,                  #qto mais, melhor
             init_batch = init_batch,
             depth = 3,
             use_screen = use_screen,
