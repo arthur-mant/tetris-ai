@@ -13,7 +13,7 @@ if __name__ == '__main__':
             print("ERROR: unable to find name USING DEFAULT VALUE ", name)
 
 
-    init_epochs = 500
+    init_epochs = 300
     if "-ie" in sys.argv:
         try:
             init_epochs = int(sys.argv[sys.argv.index("-ie")+1])
@@ -40,7 +40,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find game batch number USING DEFAULT VALUE", game_batch)
 
-    lr_pt = 0.00000001
+    lr_pt = 0.0000001
     if "-lrpt" in sys.argv:
         try:
             lr_pt = float(sys.argv[sys.argv.index("-lrpt")+1])
