@@ -1,7 +1,5 @@
 #!/bin/bash
 #SBATCH -t 3-00:00:00
-#SBATCH -o out.txt
-#SBATCH -e err.txt
 #SBATCH --job-name=TETRIS
 #SBATCH -p gpu
 #SBATCH --gres=gpu:1	
