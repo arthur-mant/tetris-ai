@@ -123,7 +123,7 @@ class AgentRun:
         finally:
 
             self.log_file.write(
-                self.agent.evaluate_accuracy(self.test_data)
+                "Acurácia: "+str(self.agent.evaluate_accuracy(self.test_data))
             )
             self.log_file.close()
             self.agent.save_neural_network()

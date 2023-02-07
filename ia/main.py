@@ -13,7 +13,7 @@ if __name__ == '__main__':
             print("ERROR: unable to find name USING DEFAULT VALUE ", name)
 
 
-    init_epochs = 300
+    init_epochs = 500
     if "-ie" in sys.argv:
         try:
             init_epochs = int(sys.argv[sys.argv.index("-ie")+1])
@@ -68,7 +68,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find init batch number USING DEFAULT VALUE", init_batch)
 
-    init_size = 50000
+    init_size = 100000
     if "-is" in sys.argv:
         try:
             init_size = int(sys.argv[sys.argv.index("-is")+1])
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     max_episodes = 50000
     if "-pt_test" in sys.argv:
         pt_test = True
-        max_episodes = 1000
+        max_episodes = 600
         game_batch = 2*max_episodes
 
     run_agent = \

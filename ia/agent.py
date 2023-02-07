@@ -216,7 +216,7 @@ class Agent():
 
                 target = \
                     (reward +\
-                    pow(segment["segment_score"], 3)/(len(segment["moves"])*pow(Tetris.line_score[0], 2)) +\
+                    pow(segment["segment_score"], 3)/(len(segment["moves"])*pow(Tetris.line_score[0], 3)) +\
                     self.gamma*int(not done)*np.amax(self.brain.predict(next_state, verbose=0)[0]))
 
                 if target >= 0:
