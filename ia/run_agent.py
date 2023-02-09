@@ -46,6 +46,7 @@ class AgentRun:
     def run(self):
         index_episode = 1
         avg_score = 0
+        avg_line_num = 4*[0]
 
         aux_time = time.time()
 
@@ -65,10 +66,12 @@ class AgentRun:
                         time.sleep(self.sleep)
 
                     action = self.agent.act(state)
-                    reward = tetris_run.step(action)
+                    reward, num_lines = tetris_run.step(action)
                     next_state = utils.get_state(tetris_run.game, self.input_shape)
                     done = tetris_run.game.gameover
 
+                    if isinstance(num_lines, int) and num_lines > 0:
+                        avg_line_num[num_lines-1] += 1
 
                     game_record.append((state, action, reward, next_state, done))
 
@@ -125,6 +128,12 @@ class AgentRun:
             self.log_file.write(
                 "Acurácia: "+str(self.agent.evaluate_accuracy(self.test_data))+"\n"
             )
+            self.log_file.write(
+                "Linhas fechadas em média: [ "
+                 + ", ".join(str(l/(index_episode+1)) for l in avg_line_num)
+                 + "]\n"
+            )
+            print(avg_line_num)
             self.log_file.close()
             self.agent.save_neural_network()
             plotLearning(self.avg_scores, self.accuracy, self.game_batch, self.agent.graph_name)

@@ -87,10 +87,12 @@ class Tetris:
             if i+self.piece.y < self.height and i+self.piece.y >= 0 and \
                 j+self.piece.x < self.width and j+self.piece.x >= 0:
                 self.field[i+self.piece.y][j+self.piece.x] = self.piece.type
-        self.break_lines()
+        lines = self.break_lines()
         self.new_piece()
         if self.intersects():
             self.gameover = True
+            return 0
+        return lines
 
     def break_lines(self):
         lines = 0
@@ -108,18 +110,19 @@ class Tetris:
             self.score += self.line_score[lines-1]
             self.lines += lines
             print(lines, " cleared!!!!!!!!!!!!")
+        return lines
 
     def hard_drop(self):
         while not self.intersects():
             self.piece.y += 1
         self.piece.y -=1
-        self.freeze()
+        return self.freeze()
 
     def go_down(self):
         self.piece.y += 1
         if self.intersects():
             self.piece.y -= 1
-            self.freeze()
+            return self.freeze()
         
 
     def go_side(self, dx):
@@ -182,7 +185,7 @@ class GameRun:
             print("ERROR: Trying to run game using keyboard but no keyboard interface was created")
             return
         self.done, self.pressing_down, command_input = self.keyb.get_event_from_keyboard(pygame, self.game, self.pressing_down)
-        return self.run_frame(command_input)
+        return self.run_frame(command_input)[0]
 
     def run_frame(self, command):
         if self.game.piece is None:
@@ -195,8 +198,9 @@ class GameRun:
         if self.keyb and not self.game.gameover and self.fps > 0 and (self.counter % (self.fps // (2*self.game.level)) == 0 or self.pressing_down):
             self.game.go_down()
 
+        aux = None
         if bool(command):
-            command()
+            aux = command()
 
         if bool(self.screen_i):
             self.screen_i.update_screen(self.game)
@@ -209,9 +213,9 @@ class GameRun:
 
         if self.done:
             self.close_game()
-            return False
+            return False, None
 
-        return True
+        return True, aux
 
 
     def step(self, action):
@@ -223,7 +227,7 @@ class GameRun:
         rot = (action % 4) % (len(self.game.piece.pieces[self.game.piece.type]))
 
         for i in range(rot):
-            self.run_frame(self.game.rotate())
+            self.run_frame(self.game.rotate)
 
         init_x = (self.game.width//2 - 2)
         delta_x = x-init_x
@@ -231,9 +235,12 @@ class GameRun:
         sign = 1 if delta_x > 0 else -1
 
         for i in range(abs(delta_x)):
-            self.run_frame(self.game.go_side(sign))
+            if delta_x > 0:
+                self.run_frame(self.game.go_right)
+            else:
+                self.run_frame(self.game.go_left)
 
-        self.run_frame(self.game.hard_drop())
+        lines = self.run_frame(self.game.hard_drop)[1]
         #self.run_frame(self.game.num_to_action(action))
 
         reward = (self.game.score - reward)#*100
@@ -259,7 +266,7 @@ class GameRun:
 
         #print("reward: ", reward)
 
-        return reward
+        return reward, lines
 
     def close_game(self):
         pygame.quit()
