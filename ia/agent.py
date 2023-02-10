@@ -61,7 +61,7 @@ def build_neural_network(table_shape, action_size, nn_layers, lr):
 class Agent():
 
     def __init__(self, table_shape, input_shape, action_size, nn_layers, lr, lr_pt,
-                    gamma, game_batch, epochs_per_batch, new, init_epochs,
+                    gamma, seg_frac, game_batch, epochs_per_batch, new, init_epochs,
                     init_size, init_batch, depth, config):
 
         self.table_shape = table_shape
@@ -71,6 +71,8 @@ class Agent():
         self.lr = lr
         self.lr_pt = lr_pt
         self.gamma = gamma
+        self.seg_frac = seg_frac
+
         self.game_batch = game_batch
         self.epochs_per_batch = epochs_per_batch
 
@@ -206,7 +208,7 @@ class Agent():
         #    print("  segment score: ", segment["segment_score"])
         #    print("  number of moves: ", len(segment["moves"]))
 
-        for segment in segments[int(0.8*len(segments)):]:
+        for segment in segments[int((1-self.seg_frac)*len(segments)):]:
             for state, action, reward, next_state, done in segment["moves"]:
 
                 #individual

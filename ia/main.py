@@ -77,6 +77,16 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find init size number USING DEFAULT VALUE", init_size)
 
+    seg_frac = 0.2
+    if "-sf" in sys.argv:
+        try:
+            seg_frac = float(sys.argv[sys.argv.index("-sf")+1])
+            print("seg_frac = ", seg_frac)
+            config.append({"string":"SF"+str(seg_frac), "pretraining": False})
+        except:
+            print("ERROR: unable to find segmentation fraction number USING DEFAULT VALUE", seg_frac)
+
+
     new = False
     if "--new" in sys.argv or "-n" in sys.argv:
         new = True
@@ -115,6 +125,7 @@ if __name__ == '__main__':
             lr = lr,                                #!!!
             lr_pt = lr_pt,
             gamma = 0.99,
+            seg_frac = seg_frac,
             game_batch = game_batch,                #!!
             epochs_per_batch = epochs_per_batch,    #!!!
             new = new,

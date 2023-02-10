@@ -13,7 +13,7 @@ import numpy as np
 
 class AgentRun:
     def __init__(self, max_episodes, min_score, nn_layers, lr, lr_pt,
-                    gamma, game_batch, epochs_per_batch, new, init_epochs,
+                    gamma, seg_frac, game_batch, epochs_per_batch, new, init_epochs,
                     init_size, init_batch, depth, use_screen, sleep, config, pt_test):
 
         self.max_episodes = max_episodes
@@ -34,7 +34,7 @@ class AgentRun:
         except IOError:
             sys.exit("file dataset.pickle not found. stopping execution")
 
-        self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, lr_pt, gamma, self.game_batch, epochs_per_batch, new, init_epochs, init_size, init_batch, depth, config)
+        self.agent = agent.Agent(self.table_shape, self.input_shape, self.output_size, nn_layers, lr, lr_pt, gamma, seg_frac, self.game_batch, epochs_per_batch, new, init_epochs, init_size, init_batch, depth, config)
 
         if pt_test:
             self.log_filename = self.agent.pt_directory+"out.log"
