@@ -4,7 +4,7 @@
 #SBATCH -p gpu
 #SBATCH --gres=gpu:1	
 #SBATCH -c 8
-#SBATCH --mem=32G 
+#SBATCH --mem=100G 
 #SBATCH --qos=high
 
 module load libraries/cuda/11.8
