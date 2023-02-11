@@ -30,9 +30,10 @@ def generate_experience_db(width, height, num, depth):
         )
         if aux != None:
             for play in aux:
-                table, action, piece = play
+                table, actions, piece = play
                 aux_arr = [ 0 for i in range(40) ]
-                aux_arr[action] = Tetris.line_score[0]
+                for action in actions:
+                    aux_arr[action] = Tetris.line_score[0]
                 action_v.append(aux_arr)
 
                 aux_arr = [ 0 for i in range(7-1) ]
@@ -109,7 +110,7 @@ def generate_plain_field(width, height, pile_height, bump_factor, max_tables):
     out_v[-1] = (field, play_v[-1][0], play_v[-1][1])
 
     for i in range(len(play_v)-1-1, -1, -1):
-        out_v[i] = (coloca_peca(copy.deepcopy(out_v[i+1][0]), play_v[i+1][0], play_v[i+1][1]), play_v[i][0], play_v[i][1])
+        out_v[i] = (coloca_peca(copy.deepcopy(out_v[i+1][0]), play_v[i+1][0][0], play_v[i+1][1]), play_v[i][0], play_v[i][1])
 
 
     return out_v
@@ -219,8 +220,12 @@ def tira_peça(field, altered_columns, width, height):
         if columns_used[i] == 1:
             used_columns.append(pos+i)
 
+    actions = []
+    base_action = action - (action%(4//len(Piece.pieces[piece])))
+    for i in range(base_action, base_action + 4//len(Piece.pieces[piece])):
+        actions.append(i)
 
-    return (field, action, piece), used_columns
+    return (field, actions, piece), used_columns
 
 def torna_irregular(field, pile_height, used_columns, max_height, height):
 
@@ -271,7 +276,7 @@ if __name__ == '__main__':
 
     for i in range(len(state)):
         utils.display_field(state[i], np.argmax(action[i]), utils.piece_num(piece[i]), Piece.pieces)
-        print(np.argmax(action[i]))
+        print(action[i])
         print(utils.translate_action(np.argmax(action[i]), utils.piece_num(piece[i]), Piece.pieces))
         print("piece: ", utils.piece_num(piece[i]))
         print(piece[i])

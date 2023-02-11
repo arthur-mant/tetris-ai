@@ -7,7 +7,7 @@ LR=(0.000001 0.0000001 0.000000001)
 SEGMENT_FRACTION=(0.1 0.3)
 EPOCHS_PER_BATCH=(10 100)
 
-COMMAND="sbatch ./run_single_test.sh -pt_test"
+COMMAND="sbatch ./run_single_test.sh -is 200000"
 
 echo "python3 ia/gen_dataset.py && ("
 echo $COMMAND

@@ -2,12 +2,13 @@ from keras.models import Model
 from keras.layers import Conv2D, Dense, Flatten, Input, Concatenate
 from tensorflow.keras.optimizers import Adam
 from collections import deque
-from tetris import Tetris
+from tetris import Tetris, Piece
 
 import numpy as np
 import random
 import os
 import generate_field
+import utils
 import time
 
 import tensorflow as tf
@@ -228,7 +229,13 @@ class Agent():
 
 
                 target_f = self.brain.predict(state, verbose=0)
-                target_f[0][action] = target
+
+                piece = utils.piece_num(state[1][0])
+
+                base_action = action - (action%(4//len(Piece.pieces[piece])))
+                for i in range(base_action, base_action + 4//len(Piece.pieces[piece])):
+                    target_f[0][i] = target
+
 
                 table_v.append(state[0])
                 piece_v.append(state[1])
