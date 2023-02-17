@@ -53,7 +53,14 @@ class AgentRun:
     def run(self):
         index_episode = 1
         avg_score = 0
-        avg_line_num = 4*[0]
+
+        lines_num_record = []
+        for i in range(4):
+            lines_num_record.append([])
+
+        avg_lines = []
+        for i in range(4):
+            avg_lines.append([])
 
         aux_time = time.time()
 
@@ -67,6 +74,8 @@ class AgentRun:
                 game_record = []
                 done = False
 
+                lines_num = 4*[0]
+
                 while not done:
 
                     if self.use_screen and self.sleep > 0:
@@ -78,13 +87,16 @@ class AgentRun:
                     done = tetris_run.game.gameover
 
                     if isinstance(num_lines, int) and num_lines > 0:
-                        avg_line_num[num_lines-1] += 1
+                        lines_num[num_lines-1] += 1
 
                     game_record.append((state, action, reward, next_state, done))
 
                     state = next_state
 
                 self.agent.remember(index_episode, game_record, tetris_run.game.score)
+
+                for counter, i_line in enumerate(lines_num):
+                    lines_num_record[counter].append(i_line)
 
                 self.scores.append(tetris_run.game.score)
 
@@ -100,10 +112,23 @@ class AgentRun:
 
                 if (index_episode-1) % self.game_batch == 0:
                     self.avg_scores.append(avg_score)
+
+                    for enum in range(4):
+                        avg_lines[enum].append(
+                            np.mean(lines_num_record[enum][
+                                max(0, (index_episode-1-5*self.game_batch)):
+                            ])
+                        )
+
                     self.accuracy.append(
-                            self.agent.evaluate_accuracy(self.test_data)
+                        self.agent.evaluate_accuracy(self.test_data)
                     )
                     print("Accuracy: ", self.accuracy[-1])
+                    self.log_file.write(
+                        "Linhas fechadas em média: [ "
+                        + ", ".join(str(l/(self.game_batch)) for l in avg_lines[-1])
+                        + "]\n"
+                    )
 
                     print("time spent on games: ", time.time()-aux_time, " s")
                     aux_time = time.time()
@@ -118,7 +143,7 @@ class AgentRun:
 
                     aux_time = time.time()
 
-                    plotLearning(self.avg_scores, self.accuracy, self.game_batch, self.agent.graph_name)
+                    plotLearning(avg_lines, self.accuracy, self.game_batch, self.agent.graph_name)
 
                     self.agent.save_neural_network()
                     self.agent.save_neural_network((index_episode-1) // (10*self.game_batch))
@@ -139,13 +164,8 @@ class AgentRun:
             self.log_file.write(
                 "Acurácia: "+str(self.agent.evaluate_accuracy(self.test_data))+"\n"
             )
-            self.log_file.write(
-                "Linhas fechadas em média: [ "
-                 + ", ".join(str(l/(index_episode+1)) for l in avg_line_num)
-                 + "]\n"
-            )
-            print(avg_line_num)
+
             self.log_file.close()
             self.agent.save_neural_network()
-            plotLearning(self.avg_scores, self.accuracy, self.game_batch, self.agent.graph_name)
+            plotLearning(avg_lines, self.accuracy, self.game_batch, self.agent.graph_name)
 
