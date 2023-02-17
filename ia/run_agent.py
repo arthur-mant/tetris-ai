@@ -6,10 +6,17 @@ import utils
 import time
 import pickle
 import numpy as np
+import gc
 from collections import deque
 from graph import plotLearning
 
 import numpy as np
+
+if gc.isenabled():
+    print("garbage collector was already enabled!")
+else:
+    gc.enable()
+    print("garbage collector is now enabled")
 
 class AgentRun:
     def __init__(self, max_episodes, min_score, nn_layers, lr, lr_pt,
@@ -115,6 +122,10 @@ class AgentRun:
 
                     self.agent.save_neural_network()
                     self.agent.save_neural_network((index_episode-1) // (10*self.game_batch))
+
+                    garbage_collected = gc.collect()
+                    self.log_file.write("Objects collected by GC: "+str(garbage_collected)+"\n")
+
                     self.log_file.close()
                     self.log_file = open(self.log_filename, 'a')
 
