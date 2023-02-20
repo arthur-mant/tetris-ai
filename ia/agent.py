@@ -202,7 +202,8 @@ class Agent():
 
 
         segments = sorted(segments, key=lambda d:
-                        (pow(d["segment_score"], 3)/len(d["moves"]))
+        #                (pow(d["segment_score"], 3)/len(d["moves"]))
+                        (d["segment_score"]/len(d["moves"]))
                     )
 
         #for segment in segments:
@@ -219,7 +220,7 @@ class Agent():
 
                 target = \
                     (reward +\
-                    pow(segment["segment_score"], 3)/(len(segment["moves"])*pow(Tetris.line_score[0], 3)) +\
+                    segment["segment_score"]/len(segment["moves"]) +\
                     self.gamma*int(not done)*np.amax(self.brain.predict(next_state, verbose=0)[0]))
 
                 if target >= 0:

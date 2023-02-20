@@ -27,7 +27,7 @@ if __name__ == '__main__':
         try:
             epochs_per_batch = int(sys.argv[sys.argv.index("-eb")+1])
             print("epochs_per_batch = ", epochs_per_batch)
-            config.append({"string":"EB"+str(epochs_per_batch), "pretraining": True})
+            config.append({"string":"EB"+str(epochs_per_batch), "pretraining": False})
         except:
             print("ERROR: unable to find epochs per batch number USING DEFAULT VALUE", epochs_per_batch)
 
@@ -49,7 +49,7 @@ if __name__ == '__main__':
         except:
             print("ERROR: unable to find learning rate number USING DEFAULT VALUE", lr)
 
-    lr = 0.00000001
+    lr = 0.0000001
     if "-lr" in sys.argv:
         try:
             lr = float(sys.argv[sys.argv.index("-lr")+1])
