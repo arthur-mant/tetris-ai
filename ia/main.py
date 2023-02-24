@@ -111,7 +111,7 @@ if __name__ == '__main__':
     }
 
     pt_test = False
-    max_episodes = 25000
+    max_episodes = 100000
     if "-pt_test" in sys.argv:
         pt_test = True
         max_episodes = 600
