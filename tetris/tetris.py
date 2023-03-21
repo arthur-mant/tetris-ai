@@ -246,9 +246,6 @@ class GameRun:
         reward = (self.game.score - reward)#*100
         #next_state = self.game.field
 
-        if (self.game.gameover):
-            reward += -1000
-
         #penalidade para ações q n fazem nada
         #if old_piece == self.game.piece and \
         #    old_piece_count == self.game.pieces:

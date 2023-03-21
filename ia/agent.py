@@ -193,7 +193,7 @@ class Agent():
                     if move[2] >= line_score:               #reward
                         segment_score = line_score
                 if move[4]:                                 #done
-                    segment_score = -1*Tetris.line_score[-1]
+                    segment_score = 0                       #-1*Tetris.line_score[-1]
 
                 if segment_score != 0:
                     aux_segment["segment_score"] = segment_score
@@ -210,7 +210,9 @@ class Agent():
         #    print("  segment score: ", segment["segment_score"])
         #    print("  number of moves: ", len(segment["moves"]))
 
-        for segment in segments[int((1-self.seg_frac)*len(segments)):]:
+        segment_v = segments[:int(self.seg_frac*len(segments))]+segments[int((1-self.seg_frac)*len(segments)):]
+
+        for segment in segment_v:
             for state, action, reward, next_state, done in segment["moves"]:
 
                 #individual
@@ -226,7 +228,7 @@ class Agent():
                 if target >= 0:
                     target *= (segment["game_score"]/highest_score)
                 else:
-                    target *= (1 - (segment["game_score"]/highest_score))
+                    print("something is wrong, negative score...")
 
 
                 target_f = self.brain.predict(state, verbose=0)
